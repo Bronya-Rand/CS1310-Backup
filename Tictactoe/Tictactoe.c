@@ -1,5 +1,5 @@
 /* C program by Azariel Del Carmen for CS1310 Sep 2020
- * Allows 2 players to play tic-tac-toe in C
+ * This program re-creates Tic-tac-toe in C with 2 human players
  * 
  * ||||||||||||||||||||||||\_|||__|||||||||
  * |||||||||||||||||||S\_\@\_||___|||||||||
