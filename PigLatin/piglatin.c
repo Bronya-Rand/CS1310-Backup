@@ -35,57 +35,85 @@
  * @@@@@SS@@@@@@SSSSS\\\__||_\_||||||||||||
  * @@@SSSSS@@@@@S\\\\\\__|||||||||||||||||| 
  */
- 
-#include <stdio.h> /* standard i/o library */
-#include <string.h> /* string library */
 
-char translate(char *sentence) /* function that handles sentence and word translations */
+/* include standard i/o and string libraries */
+#include <stdio.h> 
+#include <string.h>
+
+/* function that handles sentence and word translations */
+char translate(char *sentence) 
 {
-	int j, pos; /* initalizes j for for loops and pos for holding letter position value */
-	char *psentence; /* points to each word */
-	psentence = strtok(sentence, " "); /* gets word in the sentence*/
-	while(psentence != NULL) /* makes sure it runs if it's not NULL, \0, etc. */
+	/* initalizes j for for loops, pos for letter position and 
+	isVowel checks if word is vowel which is assigned 0 i.e. not a vowel */
+	int j, pos, hasVowel = 0; 
+	/* points to each word */
+	char *psentence; 
+	
+	/* gets word in the sentence*/
+	psentence = strtok(sentence, " "); 
+	
+	/* makes sure it runs if it's not NULL, \0, etc. */
+	while(psentence != NULL) 
 	{
-		for(j=0; j < strlen(psentence); j++) /* for loop that controls letter position of the word */
+		/* for loop that controls letter position of the word */
+		for(j=0; j < strlen(psentence); j++) 
 		{
 			if(psentence[j] == 'a' || psentence[j] == 'e' || psentence[j] == 'i' || psentence[j] == 'o' || psentence[j] == 'u' || psentence[j] == 'A' 
 			|| psentence[j] == 'E' || psentence[j] == 'I' || psentence[j] == 'O' || psentence[j] == 'U') /* checks if the letter in j position is a vowel */
 			{
-				pos = j; /* sets pos to j */
+				/* sets pos to j */
+				pos = j; 
+				/* sets hasVowel to 1 meaning there is a vowel */
+				hasVowel = 1; 
 				break;
 			}
 		}
-		if(pos == 0) /* if it found a vowel in position 0 */
+		/* checks if there is a vowel in position 0 or word is not a vowel*/
+		if(pos == 0 || hasVowel == 0) 
 		{
-			printf("%sway ", psentence); /* prints word with way i.e Echo to Echoway */
+			/* prints word with way i.e Echo to Echoway */
+			printf("%sway ", psentence); 
 		}
 		else
 		{
-			for(j=pos; j < strlen(psentence); j++) /* for loop that adds the letters after position for translation */
+			/* for loop that adds the letters after position for translation */
+			for(j=pos; j < strlen(psentence); j++) 
 			{
-				printf("%c", psentence[j]); /* prints letter at pos and after pos to translate to ay i.e. Schnee to ee */
+				/* prints letter at pos and after pos to translate to ay i.e. Schnee to ee */
+				printf("%c", psentence[j]); 
 			}
-			for(j=0; j < pos; j++) /* for loop that adds text from pos 0 to pos */
+			/* for loop that adds text from pos 0 to pos */
+			for(j=0; j < pos; j++) 
 			{
-				printf("%c", psentence[j]); /* prints letter at j to pos to translate i.e. Schnee to eeSchn */
+				/* prints letter at j to pos to translate i.e. Schnee to eeSchn */
+				printf("%c", psentence[j]); 
 			}
-			printf("ay "); /* prints ay to end translation i.e. Schnee to eeSchnay */
+			/* prints ay to end translation i.e. Schnee to eeSchnay */
+			printf("ay "); 
 		}
-		psentence = strtok(NULL, " "); /* grabs next word of the sentence */
+		
+		/* grabs next word of the sentence */
+		psentence = strtok(NULL, " "); 
 	}
 }
 
 void main (void)
 {
-	char sentence[81]; /* holds input of sentence in a char string */
+	/* holds input of sentence in a char string */
+	char sentence[81]; 
 	
-	printf("This program translates words in sentences to Pig Latin.\n"); /* tells the user the program purpose and how to stop it */
+	/* tells the user the program purpose and how to stop it */
+	printf("This program translates words in sentences to Pig Latin.\n"); 
 	printf("Type stop to end the program.\n");
 	do
 	{
 		printf("\nPlease type a sentence: ");
-		gets(sentence); /* grabs the input and places it in sentence */
-		printf("You typed \"%s\".\n\n", sentence); /* prints the sentence back to the user */
-		translate(sentence); /* calls the translate function with the sentence */
-	}while(strcmp(sentence, "stop") != 0); /* if user inputs stop, after translating stop, the program ends */
+		/* grabs the input and places it in sentence */
+		gets(sentence); 
+		/* prints the sentence back to the user */
+		printf("You typed \"%s\".\n\n", sentence); 
+		/* calls the translate function with the sentence */
+		translate(sentence); 
+	/* continue until user inputs stop with no additional words */
+	}while(strcmp(sentence, "stop\0\0") != 0); 
 }
