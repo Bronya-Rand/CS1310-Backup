@@ -3,34 +3,36 @@
 
 char translate(char *sentence)
 {
-	int i = 1;
-	int j;
+	int j, pos;
 	char *psentence; /* points to each word */
-	psentence = strtok(sentence, " ");
+	psentence = strtok(sentence, " "); /* gets word */
 	while(psentence != NULL)
 	{
-		while(psentence[0] == 'a' || psentence[0] == 'e' || psentence[0] == 'i' || psentence[0] == 'o' || psentence[0] == 'u' || psentence[0] == 'A' || psentence[0] == 'E' || psentence[0] == 'I' || psentence[0] == 'O' || psentence[0] == 'U')
+		for(j=0; j < strlen(psentence); j++)
 		{
-			i = 0;
-			break;
+			if(psentence[j] == 'a' || psentence[j] == 'e' || psentence[j] == 'i' || psentence[j] == 'o' || psentence[j] == 'u' || psentence[j] == 'A' 
+			|| psentence[j] == 'E' || psentence[j] == 'I' || psentence[j] == 'O' || psentence[j] == 'U')
+			{
+				pos = j;
+				break;
+			}
 		}
-		if(i == 0)
+		if(pos == 0)
 		{
-			printf("%sway\n\n", psentence);
+			printf("%sway ", psentence);
 		}
 		else
 		{
-			for(j=i; j < strlen(psentence); j++)
+			for(j=pos; j < strlen(psentence); j++)
 			{
 				printf("%c", psentence[j]);
 			}
-			for(j=0; j < i; j++)
+			for(j=0; j < pos; j++)
 			{
 				printf("%c", psentence[j]);
 			}
-			printf("ay\n\n");
+			printf("ay ");
 		}
-		i = 1;
 		//printf("   word=%s \n", psentence);
 		psentence = strtok(NULL, " ");
 	}
@@ -41,10 +43,10 @@ void main (void)
 	char sentence[81]; /* holds input string */
 	
 	printf("This program translates words in sentences to Pig Latin.\n");
-	printf("Type stop to end the program.\n\n");
+	printf("Type stop to end the program.\n");
 	do
 	{
-		printf("Please type a sentence: ");
+		printf("\nPlease type a sentence: ");
 		gets(sentence);
 		printf("You typed \"%s\".\n\n", sentence);
 		translate(sentence);
