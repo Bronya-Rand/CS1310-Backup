@@ -37,11 +37,16 @@
  * @@@SSSSS@@@@@S\\\\\\__|||||||||||||||||| 
  */
 
-#include <stdio.h>
-#include <string.h>
+/* standard i/o library */
+#include <stdio.h> 
+/* string library */
+#include <string.h> 
+/* I don't know if this is allowed but library that grabs current time for age. */
 #include <time.h>
 
-struct family
+
+/* structure for family information */
+struct family 
 {
 	char name[50];
 	char street[50];
@@ -49,9 +54,12 @@ struct family
 	char relation[50];
 	char birthday[30];
 };
-struct family people[7];
+/* structure for family information with 7 people*/
+struct family people[7]; 
 
-void birthday(FILE *out, int bmonth, int bday, int byear)
+/* function responsible for converting 05-13-1997 to May 13, 1997 */
+void birthday(FILE *out, int bmonth, int bday, int byear) 
+/* uses FILE *out to print to out.txt, and bmonth, bday, and byear as ints */
 {
 	switch(bmonth){
 		case 1:
@@ -91,50 +99,82 @@ void birthday(FILE *out, int bmonth, int bday, int byear)
 			fprintf(out, "Birthday: December %d, %d\n", bday, byear);
 			break; 
 		default:
+			/* normally this will be a error but giving it Unknown Month is funnier IMO*/
 			fprintf(out, "Birthday: Unknown Month %d, %d\n", bday, byear);
 			break;
 	}
 }
 
+/* function responsible for getting age using time library */
 char age(FILE *out, int bmonth, int bday, int byear)
+/* uses FILE *out to print to out.txt, and bmonth, bday, and byear as ints */
 {
-	int cmonth, cday, cyear, tempVal;
+	/* initializes cmonth, cday, cyear, and ageVal as not assigned ints */
+	int cmonth, cday, cyear, ageVal; 
 	
-	time_t now;
-	time(&now);
+	/* grabs current time using time_t as a type and assigns it to now */
+	time_t now; 
+	/* prints time using time_t now and assigns it to now */
+	time(&now);  
+	/* sets structure tm in time using localtime(time_t now) and assigns it to now */
 	struct tm *local = localtime(&now);
-	cday = local->tm_mday;			// get day of month (1 to 31)
-	cmonth = local->tm_mon + 1;   	// get month of year (0 to 11)
-	cyear = local->tm_year + 1900;	// get year since 1900
-	tempVal = cyear-byear;
-	if(bmonth > cmonth && bmonth <= 12)
+	/* grabs day of month */
+	cday = local->tm_mday; 
+	/* grabs month from January (1) to December (12) */
+	cmonth = local->tm_mon + 1; 
+	/* grabs years after 1900 and adds 1900 to it for current year */
+	cyear = local->tm_year + 1900;
+	/* subtracts current year with birthday year */	
+	ageVal = cyear-byear;
+	/* checks if month is past or is birthday month and day is past 
+	or is birthday day and birthday month, day and age is valid */
+	if (cmonth >= bmonth && cday >= bday && bmonth <= 12 && bday <= 31 && byear <= cyear && ageVal >= 0)
 	{
-		fprintf(out, "Age: %d\n\n", tempVal);
+		/* print the age with no changes to out.txt */
+		fprintf(out, "Age: %d\n\n", ageVal);
 	}
-	else if (bmonth == cmonth && bday >= cday && bday <= 31)
+	/* checks if month is before or is birthday month and day is before 
+	birthday day and birthday month, day and age is valid */
+	else if (cmonth <= bmonth && cday < bday && bmonth <= 12 && bday <= 31 && byear <= cyear && ageVal >= 0)
 	{
-		fprintf(out, "Age: %d\n\n", tempVal);
-	}
-	else if (bmonth <= 12 && bday <= 31 && byear <= cyear)
-	{
-		tempVal--;
-		fprintf(out, "Age: %d\n\n", tempVal);
+		/* subtract ageVal by 1 as no birthday */
+		ageVal--;
+		/* if ageVal is not a negative */
+		if (ageVal >= 0)
+		{
+			/* print the age with no changes to out.txt */
+			fprintf(out, "Age: %d\n\n", ageVal);
+		}
+		else
+		{
+			/* print age is unknown to out.txt */
+			fprintf(out, "Age: Unknown");
+		}
+		
 	}
 	else
 	{
-		fprintf(out, "Age: Unknown");
+		/* print the age is unknown to out.txt */
+		fprintf(out, "Age: Unknown\n\n");
 	}
 }
+
 void main(void)
 {
-	FILE *in, *out;
-	char astring[80];
-	int num, month, day, year;
+	/* initializes in and out as file variables */
+	FILE *in, *out; 
+	/* initializes a temp char to hold input to struct */
+	char astring[80]; 
+	/* initializes num, month, day and year as non assigned ints */
+	int num, month, day, year; 
 	
-	in = fopen("in.txt", "r");
-	out = fopen("out.txt", "w");
-	printf("In");
-	for(num = 0; num < 3; num++)
+	/* opens in.txt in read mode to in */
+	in = fopen("in.txt", "r"); 
+	/* opens in.txt in write mode to out */
+	out = fopen("out.txt", "w"); 
+	printf("Reading data. Please wait...\n\n");
+	/* assigns each line section of in.txt to a struct variable */
+	for(num = 0; num < 7; num++)
 	{
 		strcpy(people[num].name, fgets(astring, 80, in));
 		strcpy(people[num].street, fgets(astring, 80, in));
@@ -142,19 +182,24 @@ void main(void)
 		strcpy(people[num].relation, fgets(astring, 80, in));
 		strcpy(people[num].birthday, fgets(astring, 80, in));
 	}
-	for(num = 0; num < 3; num++)
+	printf("Formatting and printing out data. Please wait...");
+	/* formats the data to out.txt */
+	for(num = 0; num < 7; num++)
 	{
-		printf("Out");
-		fprintf(out, "%s ", strtok(people[num].name, "\n"));
+		fprintf(out, "%s     ", strtok(people[num].name, "\n"));
 		fprintf(out, "Relation: %s\n", strtok(people[num].relation, "\n"));
-		fprintf(out, "%s ", strtok(people[num].street, "\n"));
+		fprintf(out, "%s     ", strtok(people[num].street, "\n"));
+		/* splits the birthday month, day and year to month, day and year */
 		month = atoi(strtok(people[num].birthday, "-"));
 		day = atoi(strtok(NULL, "-"));
 		year = atoi(strtok(NULL, " "));
+		/* gets the formatted birthday from birthday class */
 		birthday(out, month, day, year);
-		fprintf(out, "%s ", strtok(people[num].csz, "\n"));
+		fprintf(out, "%s     ", strtok(people[num].csz, "\n"));
+		/* gets the formatted age from birthday class */
 		age(out, month, day, year);
 	}
+	/* closes in and out.txt from read and writing */
 	fclose(in);
 	fclose(out);
 }
