@@ -168,11 +168,12 @@ void main(void)
 	/* initializes num, month, day and year as non assigned ints */
 	int num, month, day, year; 
 	
+	printf("This program takes information from \"in.txt\" and formats it properly to \"out.txt\".\n\n");
 	/* opens in.txt in read mode to in */
 	in = fopen("in.txt", "r"); 
 	/* opens in.txt in write mode to out */
 	out = fopen("out.txt", "w"); 
-	printf("Reading data. Please wait...\n\n");
+	printf("Reading data from \"in.txt\". Please wait...\n");
 	/* assigns each line section of in.txt to a struct variable */
 	for(num = 0; num < 7; num++)
 	{
@@ -182,7 +183,7 @@ void main(void)
 		strcpy(people[num].relation, fgets(astring, 80, in));
 		strcpy(people[num].birthday, fgets(astring, 80, in));
 	}
-	printf("Formatting and printing out data. Please wait...");
+	printf("Formatting and printing out data to \"out.txt\". Please wait...");
 	/* formats the data to out.txt */
 	for(num = 0; num < 7; num++)
 	{
