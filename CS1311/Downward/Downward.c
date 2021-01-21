@@ -16,7 +16,7 @@ void main (void)
 	gets(string);
 	printf("You entered \n %s \n and downward is \n", string);
 	
-	while (string[place] != '\0')
+	while (string[place] != '\0\0')
 	{
 		printf(" %c \n", string[place]);
 		place = place + 1;

@@ -9,10 +9,8 @@
 
 void main (void)
 {
-	/* sets up nameCount for name lengths */
-	int nameCount = 15;
-	/* sets up x for for loops */
-	int x;
+	/* sets up nameCount for name lengths, x for for loops and places */
+	int nameCount = 15, place = 0, x;
 	/* sets up in and out for file access */
 	FILE *in, *out;
 	/* sets up the array for names */
@@ -33,12 +31,20 @@ void main (void)
 		strcpy(names[x], fgets(astring, 60,  in));
 	}
 	
-	/* reads the array and prints it out to a file. Temporary. */
+	/* prints name arrays side-ways TO-DO: Separate Sections */
 	printf("Printing to a output file. Please wait...\n\n");
 	for (x = 0; x <= nameCount; x++)
 	{
+		while (names[x][place] != '\0\0')
+		{
+			/* prints the array to the resulting text file */
+			fprintf(out, " %c ", names[x][place]);
+			place = place + 1;
+		}
+		/* reset counter */
+		place = 0;
 		/* prints the array to the resulting text file */
-		fprintf(out, "%s \n", strtok(names[x], "\n"));
+		//fprintf(out, "%s \n", strtok(names[x], "\n"));
 	}
 	
 	/* lets the user know the process is complete and to close the text files */
