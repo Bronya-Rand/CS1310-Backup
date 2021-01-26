@@ -1,8 +1,33 @@
 /* C program by Azariel Del Carmen for CS1311 Jan 2021
  * This program takes names inputted in a file and 
  * outputs their names downwards
+ *
+ * ||||||SSS\\\\\\\\SS||
+ * ||||SS\\`````````\S||
+ * ||SS\````````````\SS|
+ * |SS\``````````````\SS
+ * |S\\\\\\\\\\\``````\S
+ * S\\SSSSSSSSS\SSS\```S
+ * S\SSSSSSSSS\\SSSS\``\
+ * \\SSS\SSS\\SS\SSS\``\
+ * \\S\\\\\\\SS\\\SSS``\
+ * \\S\\\`\SSSS`__\SS`\S
+ * S\S\\\\SSSSS\\\\\\`\S
+ * S\\\\\\SSSSSS\\\\`\S|
+ * SSS\\\\S\\SSS\\\\SS||
+ * |SSS\\\\\\\\\\``SS|||
+ * ||||SS\_____\\``SS|||
+ * |||||S`|\\`|\S\`SS|||
+ * |||||S_|``_|`S\`\S|||
+ * ||||S\`\SS\``S\\SS|||
+ * ||SS\\\\\S\\``SSS||||
+ * ||S\_|`\\\\\_`S||||||
+ * ||SS\__``|_\`SS||||||
+ * |||SSSS``\\`\S|||||||
+ * ||||||S\`\S\\S|||||||
+ * ||||||SS\SSS\S|||||||
  */
- 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,7 +35,7 @@
 void main (void)
 {
 	/* sets up nameCount for name lengths, x for for loops and places */
-	int nameCount = 15, place = 0, x;
+	int nameCount = 2, place, x;
 	/* sets up in and out for file access */
 	FILE *in, *out;
 	/* sets up the array for names */
@@ -31,24 +56,29 @@ void main (void)
 		strcpy(names[x], fgets(astring, 60,  in));
 	}
 	
-	/* prints name arrays side-ways TO-DO: Separate Sections */
+	/* prints name arrays side-ways TO-DO: Fix out of bounds with a check */
 	printf("Printing to a output file. Please wait...\n\n");
-	for (x = 0; x <= nameCount; x++)
+	for (x = 0; x <= 10; x++)
 	{
-		while (names[x][place] != '\0\0')
+		for (place = 0; place <= nameCount; place++)
 		{
-			/* prints the array to the resulting text file */
-			fprintf(out, " %c ", names[x][place]);
-			place = place + 1;
+			if (names[place][x] != '\n' || names[place][x] != '\0')
+			{
+				printf(" %c", names[place][x]);
+				fprintf(out, " %c", names[place][x]);
+			}
+			else
+			{
+				printf(" ", names[place][x]);
+				fprintf(out, " ", names[place][x]);
+			}
 		}
-		/* reset counter */
-		place = 0;
-		/* prints the array to the resulting text file */
-		//fprintf(out, "%s \n", strtok(names[x], "\n"));
+		printf("\n");
+		fprintf(out, "\n");
 	}
 	
 	/* lets the user know the process is complete and to close the text files */
-	printf("Process Complete. \n");
+	printf("\n The process has been completed. \n");
 	fclose(in);
 	fclose(out);
 }
