@@ -41,19 +41,25 @@ void main (void)
 	/* sets up the array for names */
 	char names [nameCount][60];
 	/* sets up a temp char for reading strings */
-	char astring[60];
 	
 	printf("This program takes in names from a file and outputs them downwards.\n\n");
 	/* opens the files for file access */
 	in = fopen("names.txt", "r");
 	out = fopen("result.txt", "w");
 	
+	for (x = 0; x <= nameCount; x++)
+	{
+		for (place = 0; place <= 60; place++)
+		{
+			names[x][place] = ' ';
+		}
+	}
 	/* begins reading from names.txt and saves it to the arry using astring */
 	printf("Reading data from \"names.txt\". Please wait...\n\n");
 	for (x = 0; x <= nameCount; x++)
 	{
 		/* copies the string from the temp char to the array */
-		strcpy(names[x], fgets(astring, 60,  in));
+		fgets(names[x], 60,  in);
 	}
 	
 	/* prints name arrays side-ways TO-DO: Fix out of bounds with a check */
@@ -62,15 +68,15 @@ void main (void)
 	{
 		for (place = 0; place <= nameCount; place++)
 		{
-			if (names[place][x] != '\n' || names[place][x] != '\0')
+			if (names[place][x] != '\n' && names[place][x] != '\0')
 			{
 				printf(" %c", names[place][x]);
 				fprintf(out, " %c", names[place][x]);
 			}
 			else
 			{
-				printf(" ", names[place][x]);
-				fprintf(out, " ", names[place][x]);
+				printf("  ", names[place][x]);
+				fprintf(out, "  ", names[place][x]);
 			}
 		}
 		printf("\n");
