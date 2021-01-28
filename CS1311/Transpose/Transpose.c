@@ -35,21 +35,22 @@
 void main (void)
 {
 	/* sets up nameCount for name lengths, x for for loops and places */
-	int nameCount = 2, place, x;
+	int nameCount = 27, place, x;
 	/* sets up in and out for file access */
 	FILE *in, *out;
 	/* sets up the array for names */
 	char names [nameCount][60];
 	/* sets up a temp char for reading strings */
-	
+	char astring[60];
+
 	printf("This program takes in names from a file and outputs them downwards.\n\n");
 	/* opens the files for file access */
 	in = fopen("names.txt", "r");
-	out = fopen("result.txt", "w");
+	out = fopen("trans.txt", "w");
 	
 	for (x = 0; x <= nameCount; x++)
 	{
-		for (place = 0; place <= 60; place++)
+		for (place = 0; place < 60; place++)
 		{
 			names[x][place] = ' ';
 		}
@@ -64,7 +65,7 @@ void main (void)
 	
 	/* prints name arrays side-ways TO-DO: Fix out of bounds with a check */
 	printf("Printing to a output file. Please wait...\n\n");
-	for (x = 0; x <= 10; x++)
+	for (x = 0; x < 60; x++)
 	{
 		for (place = 0; place <= nameCount; place++)
 		{
