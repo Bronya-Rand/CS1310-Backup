@@ -34,7 +34,7 @@
 
 void main (void)
 {
-	/* sets up nameCount for name lengths, x for for loops and places */
+	/* sets up nameCount for name lengths, x and places for for loops*/
 	int nameCount = 27, place, x;
 	/* sets up in and out for file access */
 	FILE *in, *out;
@@ -48,6 +48,7 @@ void main (void)
 	in = fopen("names.txt", "r");
 	out = fopen("trans.txt", "w");
 	
+	/* sets the array to blanks */
 	for (x = 0; x <= nameCount; x++)
 	{
 		for (place = 0; place < 60; place++)
@@ -55,31 +56,36 @@ void main (void)
 			names[x][place] = ' ';
 		}
 	}
-	/* begins reading from names.txt and saves it to the arry using astring */
+
 	printf("Reading data from \"names.txt\". Please wait...\n\n");
+	/* begins reading from names.txt and saves it to the array */
 	for (x = 0; x <= nameCount; x++)
 	{
-		/* copies the string from the temp char to the array */
+		/* copies the string to the array */
 		fgets(names[x], 60,  in);
 	}
 	
-	/* prints name arrays side-ways TO-DO: Fix out of bounds with a check */
 	printf("Printing to a output file. Please wait...\n\n");
+	/* prints name arrays side-ways */
 	for (x = 0; x < 60; x++)
 	{
 		for (place = 0; place <= nameCount; place++)
 		{
+			/* checks if the character is not a new line and whitespace */
 			if (names[place][x] != '\n' && names[place][x] != '\0')
 			{
+				/* prints character to screen and out file */
 				printf(" %c", names[place][x]);
 				fprintf(out, " %c", names[place][x]);
 			}
 			else
 			{
+				/* prints blank to screen and out file */
 				printf("  ", names[place][x]);
 				fprintf(out, "  ", names[place][x]);
 			}
 		}
+		/* prints a new line to screen and out file */
 		printf("\n");
 		fprintf(out, "\n");
 	}
