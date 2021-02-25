@@ -36,7 +36,7 @@ void main (void)
 	int val, result = 0; /* initialize val and result for value storing */
 	char runAgain = 'n'; /* initialize runAgain to store a character for the do-while loop */
 	
-	printf("This program takes a value and outputs it inside 3x^2+7x+4, two ways.\n\n");
+	printf("This program takes a value and outputs it inside 3x^2+7x+4, two ways.\n");
 	do
 	{
 		val = posInt(); /* call posInt and store the returned value to val */
