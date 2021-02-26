@@ -42,15 +42,16 @@ struct collegeDormItems
 };
 struct collegeDormItems *head, *element, *last;
 
-/* obtains the name of the college item the user bought */
-//char* getName(void)
-//{
-//	char *itemName;
-//	printf("Please type the name of the item. (Type \"done\" to stop the program): "); /* asks the user for the item name */
-//	fgets(itemName, 50, stdin); /* saves the input to itemName */
-//	printf("\nYou typed in %s.", itemName);
-//	return itemName;
-//}
+/* obtains the user's item name */
+char* getName(char *itemName)
+{
+	while (strcmp(itemName, "") == 0) /* while itemName is not blank */
+	{
+		printf("Please type the name of the item. (Type \"done\" to stop the program): "); /* asks the user for the item name */
+		gets(itemName); /* saves the input to itemName */
+	}
+	printf("\nYou typed in %s.", itemName);
+}
 	
 /* obtains the user's usefulness value of the item. */
 int getInt (void)
@@ -106,16 +107,16 @@ void print_list (void)
 	
 	element = head; /* assigns element as head */
 	printf("\n\nYour college purchase list that you have created is:\n\n");
-	printf("    Item  |  Usefulness  |  Cost     \n");
-	printf("-------------------------------------\n");
+	printf("\tItem | Usefulness | Cost \n");
+	printf("\t---------------------------\n");
 	while (element != NULL) /* while element is not NULL */
 	{
-		printf("    %s         %i          %.2lf\n", element->objectName, element->usefulness, element->costOfItem); /* prints out the item, it's usefulness to the user and cost */
+		printf("\t%s     %i\t   $%.2lf\n", element->objectName, element->usefulness, element->costOfItem); /* prints out the item, it's usefulness to the user and cost */
 		count = count + 1; /* adds item count by 1 */
 		sum = sum + element->costOfItem; /* adds total cost by itself + the new cost */
 		element=element->next; /* move to the next item */
 	}
-	printf("\n\nYou bought %i items for college and the your total cost is $%.2lf.\n", count, sum);
+	printf("\n\nYou bought %i items for college and your total cost is $%.2lf.\n", count, sum);
 }
 
 void main(void)
@@ -126,24 +127,14 @@ void main(void)
 	
 	printf("This program take different college items, their usefulness and cost and outputs them as a list.\n\n");
 	head = NULL; /* sets head to NULL */
-	while (strcmp(nameOfItem, "") == 0)
-	{
-		printf("Please type the name of the item. (Type \"done\" to stop the program): "); /* asks the user for the item name */
-		gets(nameOfItem); /* saves the input to itemName */
-	}
-	printf("\nYou typed in %s.", nameOfItem);
+	getName(nameOfItem); /* asks the user for the item name */
 	while (strcmp(nameOfItem, "done") != 0 && strcmp(nameOfItem, "Done") != 0 && strcmp(nameOfItem, "DONE") != 0) /* while the name of the item is not done or Done or DONE */
 	{
 		rank = getInt(); /* grab the user's usefulness value of the item */
 		cost = getDouble(); /* grabs the cost the user spent on the item */
 		add_element(nameOfItem, rank, cost); /* adds the name, usefulness value, and cost to the structure */
 		gets(nameOfItem); /* resets nameOfItem */
-		while (strcmp(nameOfItem, "") == 0)
-		{
-			printf("Please type the name of the item. (Type \"done\" to stop the program): "); /* asks the user for the item name */
-			gets(nameOfItem); /* saves the input to itemName */
-		}
-		printf("\nYou typed in %s.", nameOfItem);
+		getName(nameOfItem); /* asks the user for another item name */
 	}
 	print_list(); /* prints the list of items the user bought to the console */
 }
