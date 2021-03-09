@@ -45,7 +45,7 @@ struct collegeDormItems *head, *element, *last;
 /* obtains the user's item name */
 char* getName(char *itemName)
 {
-	while (strcmp(itemName, "") == 0) /* while itemName is not blank */
+	while (strcmp(itemName, "") == 0) /* itemName is not blank */
 	{
 		printf("Please type the name of the item. (Type \"done\" to stop the program): "); /* asks the user for the item name */
 		gets(itemName); /* saves the input to itemName */
@@ -58,7 +58,7 @@ int getInt (void)
 {
 	int tempInt = -1; /* get into loop to start getting a val */
 	
-	while(tempInt < 0 || tempInt > 10) /* while temp is less than 0 or temp is greater than 10 */
+	while(tempInt < 0 || tempInt > 10) /* temp is not less than 0 or greater than 10 */
 	{ 
 		printf("\nPlease type the usefulness of this item to you from 1-10: "); /* ask the user for a positive integer from 1-10 */
 		scanf("%i", &tempInt); /* saves the input to tempInt */
@@ -71,7 +71,7 @@ int getInt (void)
 double getDouble (void)
 {
 	double tempDouble = -1.0; /* get into loop to start getting a val */
-	while(tempDouble < 0.0) /* while temp is less than 0.0 */
+	while(tempDouble < 0.0) /* temp is not less than 0.0 */
 	{
 		printf("\nPlease type the cost of this item: "); /* ask the user for a positive long float */
 		scanf("%lf", &tempDouble); /* saves the input to tempDouble */
@@ -88,7 +88,7 @@ void add_element(char *name, int rank, double cost) /* defines name as a char, r
 	element->usefulness = rank; /* assigns rank into usefulness in the structure */
 	element->costOfItem = cost; /* assigns cost into costOfItem in the structure */
 	element->next = NULL; /* assigns next with NULL */
-	if (head == NULL) /* if head is NULL */
+	if (head == NULL) /* if head is not NULL */
 	{
 		head = element; /* assigns head to the first item in list */
 	}
@@ -109,7 +109,7 @@ void print_list (void)
 	printf("\n\nYour college purchase list that you have created is:\n\n");
 	printf("\tItem | Usefulness | Cost \n");
 	printf("\t---------------------------\n");
-	while (element != NULL) /* while element is not NULL */
+	while (element != NULL) /* element hasn't reached the end */
 	{
 		printf("\t%s     %i\t   $%.2lf\n", element->objectName, element->usefulness, element->costOfItem); /* prints out the item, it's usefulness to the user and cost */
 		count = count + 1; /* adds item count by 1 */
@@ -128,12 +128,12 @@ void main(void)
 	printf("This program take different college items, their usefulness and cost and outputs them as a list.\n\n");
 	head = NULL; /* sets head to NULL */
 	getName(nameOfItem); /* asks the user for the item name */
-	while (strcmp(nameOfItem, "done") != 0 && strcmp(nameOfItem, "Done") != 0 && strcmp(nameOfItem, "DONE") != 0) /* while the name of the item is not done or Done or DONE */
+	while (strcmp(nameOfItem, "done") != 0 && strcmp(nameOfItem, "Done") != 0 && strcmp(nameOfItem, "DONE") != 0) /* itemName is not Done or DONE or done */
 	{
 		rank = getInt(); /* grab the user's usefulness value of the item */
 		cost = getDouble(); /* grabs the cost the user spent on the item */
 		add_element(nameOfItem, rank, cost); /* adds the name, usefulness value, and cost to the structure */
-		gets(nameOfItem); /* resets nameOfItem */
+		gets(nameOfItem); /* recieves the newline after reading the double input */
 		getName(nameOfItem); /* asks the user for another item name */
 	}
 	print_list(); /* prints the list of items the user bought to the console */
