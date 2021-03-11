@@ -1,6 +1,8 @@
 /* C program by Azariel Del Carmen for CS1311 Mar 2021
  * This program asks the user for 7 positive numbers from 1-50
- * and generates random numbers, sort them and return them to the user
+ * and generates random numbers, sorts them and return them to the user
+ * while returning any matching numbers from the random generation.
+ *
  * ||||||SSS\\\\\\\\SS||
  * ||||SS\\`````````\S||
  * ||SS\````````````\SS|
@@ -78,32 +80,32 @@ int is_unique(int val, int array[])
 
 void main (void)
 {
-	int i, unique, count, userValues[7] = {0, 0, 0, 0, 0, 0, 0}, randomValues[7] = {0, 0, 0, 0, 0, 0, 0}, matches = 0;
-	printf("This program asks the user for 7 positive integers from 1-50 and\ngenerates 7 random numbers, sorts the values in bubble sort and\nreturns it to the user.\n\n");
+	int input, unique, count, userValues[7] = {0, 0, 0, 0, 0, 0, 0}, randomValues[7] = {0, 0, 0, 0, 0, 0, 0}, matches = 0;
+	printf("This program asks you for 7 numbers from 1-50\ngenerates 7 random numbers, returns your and the computers numbers, sorts them via bubble sort and\nreturns them and any matching numbers found between them.\n\n");
 	
 	while (count < 7) /* get 7 unique values */
 	{
 		printf("Enter a number between 1-50:  ");
-		scanf("%d", &i);
-		unique = is_unique(i, userValues); /* check if value is unique in array */
+		scanf("%d", &input);
+		unique = is_unique(input, userValues); /* check if value is unique in array */
 		if (unique == 0) /* value is unique */
 		{
-			if (i > 0 && i < 50)  /* value is valid */
+			if (input > 0 && input <= 50)  /* value is valid */
 			{
-				printf("You entered %i. \n\n", i);
-				userValues[count] = i; /* sets spot in array to typed value */
+				printf("You entered %i. \n\n", input);
+				userValues[count] = input; /* sets spot in array to typed value */
 				count = count + 1; /* go to next array spot */
 			}
 			else
 			{
-				printf("Invalid Number. Please typen in another number.\n\n");
+				printf("Invalid Number. Please type in another number.\n\n");
 			}
 		}
 		else
 		{
-			if (i > 0 && i < 50) /* value is valid */
+			if (input > 0 && input <= 50) /* value is valid */
 			{
-				printf("You already used %i. Please type in another number.\n\n", i);
+				printf("You already used %i. Please type in another number.\n\n", input);
 			}
 			else
 			{
@@ -113,37 +115,37 @@ void main (void)
 	}
 	count = 0; /* resets count to 0 */
 	srand(time(NULL)); /* starts the generator with a random pseudo-number */
-	printf("Generating random values, please wait...\n");
+	printf("Generating random numbers, please wait...\n");
 	while (count < 7)
 	{
-		i = rand()%50+1; /* generate a random number from 1-50 */
-		unique = is_unique(i, randomValues); /* check if value is unique in array */
+		input = rand()%50+1; /* generate a random number from 1-50 */
+		unique = is_unique(input, randomValues); /* check if value is unique in array */
 		if (unique == 0) /* value is OK */
 		{
-			randomValues[count] = i; /* sets spot in array to random value */
+			randomValues[count] = input; /* sets spot in array to random value */
 			count = count + 1; /* go to next array spot */
 		}
 	}
 	printf("Generation completed.\n\n");
 	// TEST ARRAY ENTERING
-	printf("Your inputted\n");
+	printf("You inputted\n");
 	printArray(userValues);
-	printf("\nAnd sorted are\n");
+	printf("\nAnd sorted is\n");
 	bubbleSort(userValues);
 	printArray(userValues);
 	printf("\n\nThe computer generated\n");
 	printArray(randomValues);
-	printf("\nAnd sorted are\n");
+	printf("\nAnd sorted is\n");
 	bubbleSort(randomValues);
 	printArray(randomValues);
 	printf("\n\nYour matching numbers are\n");
-	for (count = 0; count <= 6; count++)
+	for (input = 0; input <= 6; input++)
 	{
-		for (i = 0; i <= 6; i++)
+		for (count = 0; count <= 6; count++)
 		{
-			if (userValues[count] == randomValues[i])
+			if (userValues[input] == randomValues[count])
 			{
-				printf("  %i  ", userValues[count]);
+				printf("  %i  ", userValues[input]);
 				matches = matches + 1;
 			}
 		}
