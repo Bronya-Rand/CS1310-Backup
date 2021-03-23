@@ -81,7 +81,8 @@ int is_unique(int val, int array[])
 void main (void)
 {
 	int input, unique, count, userValues[7] = {0, 0, 0, 0, 0, 0, 0}, randomValues[7] = {0, 0, 0, 0, 0, 0, 0}, matches = 0;
-	printf("This program asks you for 7 numbers from 1-50\ngenerates 7 random numbers, returns your and the computers numbers, sorts them via bubble sort and\nreturns them and any matching numbers found between them.\n\n");
+	printf("This program asks you for 7 numbers from 1-50\ngenerates 7 random numbers, returns your and the computers numbers," 
+	"sorts them via bubble sort and\nreturns them and any matching numbers found between them.\n\n");
 	
 	while (count < 7) /* get 7 unique values */
 	{
