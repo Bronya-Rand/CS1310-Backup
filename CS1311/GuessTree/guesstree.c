@@ -1,4 +1,6 @@
 /* C program by Azariel Del Carmen for CS1311 Mar 2021
+ * This program attempts to guess a value between 1-20 from the 
+ * user's head.
  *
  * ||||||SSS\\\\\\\\SS||
  * ||||SS\\`````````\S||
@@ -30,9 +32,9 @@
 #include <stdlib.h>
 
 struct guess7 {
-    int num; 
-    struct guess7 *less;
-    struct guess7 *more;
+    int num; /* value of the number */
+    struct guess7 *less; /* holds value less than num */
+    struct guess7 *more; /* holds value more than num */
     };
 
  struct guess7 *current;
@@ -110,9 +112,11 @@ struct guess7 {
 	int input = 0, gotIt = 0;  /* holds user selection for menu options | determines if the program found the number */
       
 	printf ("This program attempts to guess a number you thought of from 1-20.\n");
+	printf ("Think of a number between 1 and 20.\n");
+	
 	create_guesses();  /* makes the guess tree */
    
-	current = &ten;
+	current = &ten; /* start current at 10 */
 	
 	printf("##########################################\n");
 	printf("#        Guessing with Chibi Neo.        #\n");
@@ -162,7 +166,7 @@ struct guess7 {
 	}
 	if (gotIt == 0) /* if number was not found */
 	{
-		printf(" Neo couldn't find the number. Neo wants revenge... :NeoPout:\n");
+		printf("\n Neo couldn't find the number. Neo wants revenge... :NeoPout:\n");
 	}
 	//getchar();     
 }
