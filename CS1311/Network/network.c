@@ -1,5 +1,6 @@
 /* C program by Azariel Del Carmen for CS1311 Apr 2021
- * This program presents the connections of a university ID on-campus 
+ * This program presents the connections of a university ID 
+ * on-campus as a network.
  *
  * ||||||SSS\\\\\\\\SS||
  * ||||SS\\`````````\S||
@@ -65,6 +66,7 @@ void addItems(struct helpDesk *item, char *itemName, char *kind, struct helpDesk
 	}
 }
 
+/* creates items w/ characteristics */
 void createItems(void)
 {
 	if (debugSetting == 1) /* debug mode is on */
@@ -81,6 +83,7 @@ void createItems(void)
 	addItems(&iD, "ID Card", "Smartcard ID", NULL, NULL, NULL, &printer);
 }
 
+/* prints items/characteristics to the console */
 void printItems(struct helpDesk item)
 {
 	printf("\nItem: %s\n", item.name);
