@@ -84,30 +84,30 @@ void createItems(void)
 }
 
 /* prints items/characteristics to the console */
-void printItems(struct helpDesk item)
+void printItems(struct helpDesk *item)
 {
-	printf("\nItem: %s\n", item.name);
+	printf("\nItem: %s\n", item->name);
 	if (debugSetting == 1) /* debug mode on */
 	{
-		printf("Location in memory %i\n", item);
+		printf("Location in memory %p\n", &item);
 	}
-	printf("Type: %s\n\n", item.type);
+	printf("Type: %s\n\n", item->type);
 	printf("This item is related to:\n");
-	if (item.connectedTo1 != NULL) /* has 1st connection */
+	if (item->connectedTo1 != NULL) /* has 1st connection */
 	{
-		printf("    %s\n", item.connectedTo1->name);
+		printf("    %s\n", item->connectedTo1->name);
 	}
-	if (item.connectedTo2 != NULL) /* has 2nd connection */
+	if (item->connectedTo2 != NULL) /* has 2nd connection */
 	{
-		printf("    %s\n", item.connectedTo2->name);
+		printf("    %s\n", item->connectedTo2->name);
 	}
-	if (item.connectedTo3 != NULL) /* has 3rd connection */
+	if (item->connectedTo3 != NULL) /* has 3rd connection */
 	{
-		printf("    %s\n", item.connectedTo3->name);
+		printf("    %s\n", item->connectedTo3->name);
 	}
-	if (item.execute != NULL) /* has linked connection */
+	if (item->execute != NULL) /* has linked connection */
 	{
-		printf("This item is linked with this connection: \n    %s\n", item.execute->name);
+		printf("This item is linked with this connection: \n    %s\n", item->execute->name);
 	}
 }
 
@@ -122,12 +122,12 @@ void main (int argc, char *argv[])
 	createItems(); /* creates the network */
 	
 	/* prints the network layout */
-	printItems(human);
-	printItems(camera);
-	printItems(computer);
-	printItems(workStudyHuman);
-	printItems(printer);
-	printItems(iD);
+	printItems(&human);
+	printItems(&camera);
+	printItems(&computer);
+	printItems(&workStudyHuman);
+	printItems(&printer);
+	printItems(&iD);
 	
 	getchar(); /* stops program from exiting */
 }
