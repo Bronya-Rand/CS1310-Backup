@@ -29,7 +29,7 @@
  
 #include <stdio.h>
 
-void switchCase(void)
+void SwitchCase(void)
 {
 	char showExample = 'n'; /* stores user's input */
 	
@@ -43,6 +43,9 @@ void switchCase(void)
 	printf("The syntax of the switch statement is\n\n");
 	printf("    switch(variable)\n");
 	printf("    {\n");
+	printf("        case value:\n");
+	printf("            statement\n");
+	printf("            break;\n");
 	printf("        case value:\n");
 	printf("            statement\n");
 	printf("            break;\n");
@@ -80,7 +83,7 @@ void switchCase(void)
 		/* complex example */
 		printf("Here is a complex example of the switch statement using chars: \n\n");
 		printf("    char student_type = 's';\n\n");
-		printf("    printf(\"Type in the student type to list students in that category (i,r,y): \");\n");
+		printf("    printf(\"Type in the student type to list students in that category (Info-Chan: i, Rival: r, Yandere: y): \");\n");
 		printf("    scanf(\"%%c\", &student_type);\n");
 		printf("    printf(\"You typed in %%c.\", student_type);\n\n");
 		printf("    switch(student_type)\n");
