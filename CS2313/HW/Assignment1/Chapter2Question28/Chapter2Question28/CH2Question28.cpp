@@ -1,3 +1,7 @@
+/*
+Chapter 2 Question 28
+Author: Azariel Del Carmen
+*/
 
 #include <iostream>
 

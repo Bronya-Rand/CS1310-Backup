@@ -1,3 +1,7 @@
+/*
+Chapter 3 Question 12 Header File
+Author: Azariel Del Carmen
+*/
 
 #include <iostream>
 

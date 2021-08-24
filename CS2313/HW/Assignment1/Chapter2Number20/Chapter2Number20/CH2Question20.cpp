@@ -1,3 +1,7 @@
+/*
+Chapter 2 Question 20
+Author: Azariel Del Carmen
+*/
 
 #include <iostream>
 #define PI 3.14159
