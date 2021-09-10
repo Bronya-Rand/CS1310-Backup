@@ -4,8 +4,8 @@ C Programming Code from all programming classes at StMU from C to C++.
 Code so far comes from lectures, class assignments and C++ How to Program 10th Edition (Deitel) Textbook.
 
 ## Legend
-- CS1311 - Programming I (Intro to C)
-- CS1312 - Programming II (Advanced Intro to C)
+- CS1310 - Programming I (Intro to C)
+- CS1311 - Programming II (Advanced Intro to C)
 - CS2313 - Object Oriented Programming I (Intro to C++ [Deitel])
 - CS2315 - Algorithms (in C)
 
