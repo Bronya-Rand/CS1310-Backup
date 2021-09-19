@@ -105,7 +105,7 @@ int GCD3(const int m,const int n)
     FACTORIZATION mFactorization;
     FACTORIZATION nFactorization;
     int r,mi,ni;
-    int gcd = 01;
+    int gcd = 0;
     
     if (m == 0 || n == 0) {
     	return ( -1 );
