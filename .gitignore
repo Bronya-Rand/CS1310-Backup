@@ -7,11 +7,11 @@ AssignmentScreenshots
 dist
 build
 env
-.vscode
 *.win
 *.layout
 *.o
 *.obj
 *.spec
 *.txt
+out
 !requirements.txt
