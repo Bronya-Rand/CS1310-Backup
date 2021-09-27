@@ -1,40 +1,36 @@
 {
     "tasks": [
-        {
-            "type": "cppbuild",
-            "label": "Build C++ Project for Linux (g++)",
-            "command": "/usr/bin/g++",
-            "args": [
-                "-g",
-                "${file}",
-                "-o",
-                "${fileDirname}/out",
-                "-lm" //to compile with standard libraries
-            ],
-            "options": {
-                "cwd": "${fileDirname}"
-            },
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "detail": "Similar to building a project in Visual Studio."
-        },
-        {
+		{
+			"type": "cppbuild",
+			"label": "Build C++ Project for Linux (g++)",
+			"command": "/usr/bin/g++",
+			"args": [
+				"-g",
+				"${file}",
+				"-o",
+				"${fileDirname}/out",
+				"-lm"
+			],
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build",
+			"detail": "Similar to building a project in Visual Studio."
+		},
+		{
 			"type": "cppbuild",
 			"label": "Build C Project [with header files] (gcc)",
 			"command": "/usr/bin/gcc",
 			"args": [
 				"-g",
 				"${fileDirname}/**.c",
-				//"${fileDirname}/Random.c", for individual files, use this
 				"${fileDirname}/**.h",
 				"-o",
 				"${fileDirname}/out",
-                "-lm" //to compile with standard libraries
+				"-lm"
 			],
 			"options": {
 				"cwd": "${fileDirname}"
@@ -45,17 +41,16 @@
 			"group": "build",
 			"detail": "Similar to building a project in Dev-C++ with header files."
 		},
-        {
+		{
 			"type": "cppbuild",
 			"label": "Build C Project [without header files] (gcc)",
 			"command": "/usr/bin/gcc",
 			"args": [
 				"-g",
 				"${fileDirname}/**.c",
-				//"${fileDirname}/Random.c", for individual files, use this
 				"-o",
 				"${fileDirname}/out",
-                "-lm" //to compile with standard libraries
+				"-lm"
 			],
 			"options": {
 				"cwd": "${fileDirname}"
@@ -65,7 +60,51 @@
 			],
 			"group": "build",
 			"detail": "Similar to building a project in Dev-C++ without header files."
+		},
+		{
+			"type": "cppbuild",
+			"label": "C/C++ Build (cl.exe)",
+			"command": "cl.exe",
+			"args": [
+				"/Zi",
+				"/EHsc",
+				"/nologo",
+				"/Fe:",
+				"${fileDirname}\\out.exe",
+				"${file}"
+			],
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build",
+			"detail": "VS Building in VS Code."
+		},
+		{
+			"type": "cppbuild",
+			"label": "C/C++ Build (GCC Windows)",
+			"command": "F:\\msys64\\mingw64\\bin\\gcc.exe",
+			"args": [
+				"-g",
+				"${file}",
+				"-o",
+				"${fileDirname}/out.exe",
+				"-lm"
+			],
+			"options": {
+				"cwd": "F:\\msys64\\mingw64\\bin"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"detail": "compiler: F:\\msys64\\mingw64\\bin\\gcc.exe"
 		}
-    ],
+	],
     "version": "2.0.0"
 }
