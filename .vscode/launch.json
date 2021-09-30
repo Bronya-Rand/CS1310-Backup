@@ -8,7 +8,7 @@
             "name": "Windows Launch (Must be on Dev Console for VS 20XX)",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${fileDirname}/out.exe",
+            "program": "${fileDirname}\\out.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",

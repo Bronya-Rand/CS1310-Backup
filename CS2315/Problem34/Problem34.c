@@ -31,6 +31,7 @@ int main()
         *totalCalls = (int *)malloc(sizeof(int));
 
         printf(" 1) stdout           = %p, %8p\n", stdout, stdout);
+        printf(" 1) stdout 08x           = %p, %08x\n", stdout, stdout);
         printf(" 2) stdin            = 0X%08X\n", &*stdin);
         printf(" 3) sizeof(FILE)     = 0X%04X = %2d\n", sizeof(FILE), sizeof(FILE));
         printf(" 4) &main()          = 0X%08X\n", main);
@@ -48,6 +49,7 @@ int main()
         printf("16) &calls[n]        = 0X%08X\n", &calls[n]);
         printf("17) totalCalls       = 0X%08X\n", totalCalls);
         printf("18) *totalCalls      = 0X%08X\n", *totalCalls);
+        printf("%i\n", (calls == &calls[0]) && (&*calls == &calls[0]));
         printf("19) **totalCalls     = %10d\n", **totalCalls);
         printf("20) &\"\\nn? \"         = 0X%08X\n", "\nn? ");
         printf("21) &\"\\nn? \"         = 0X%08X\n", &"\nn? ");
