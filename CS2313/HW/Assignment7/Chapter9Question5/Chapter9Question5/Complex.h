@@ -7,8 +7,8 @@
 class Complex {
 public:
 	Complex(double realNum1, double realNum2, double imaginaryNum1, double imaginaryNum2);
-	double add();
-	double subtract();
+	std::string add();
+	std::string subtract();
 	std::string toString();
 private:
 	double value1;

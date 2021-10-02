@@ -1,6 +1,5 @@
 
 #include <sstream>
-#include <cmath>
 #include "Complex.h"
 
 Complex::Complex(double realNum1, double realNum2, double imaginaryNum1, double imaginaryNum2) :value1{ realNum1 }, value2{ realNum2 }, iValue1{ imaginaryNum1 }, iValue2{ imaginaryNum2 } {
@@ -10,12 +9,16 @@ Complex::Complex(double realNum1, double realNum2, double imaginaryNum1, double 
 	iValue2 = imaginaryNum2;
 }
 
-double Complex::add() {
-	return ((value1 + value2) + (iValue1 + iValue2));
+std::string Complex::add() {
+	std::ostringstream out;
+	out << "Adding (" << value1 << " + " << value2 << ") with (" << iValue1 << " + " << iValue2 << ") * i = " << (value1 + value2) << " + " << (iValue1 + iValue2) << "i\n";
+	return out.str();
 }
 
-double Complex::subtract() {
-	return ((value2 - value1) - (iValue2 - iValue1));
+std::string Complex::subtract() {
+	std::ostringstream out;
+	out << "Subtracting (" << value2 << " - " << value1 << ") with (" << iValue2 << " - " << iValue1 << ") * i = " << (value2 - value1) << " - " << (iValue2 - iValue1) << "i\n";
+	return out.str();
 }
 
 std::string Complex::toString() {
