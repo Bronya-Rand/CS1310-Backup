@@ -33,8 +33,6 @@ int main()
         }
 
         ways = 0;
-        int y = LengthOfClimb(climb, n);
-        printf("%d\n", y);
         ClimbNStairs(climb,0,n,&ways);
 
 #ifndef SHOWCLIMB
@@ -59,9 +57,9 @@ void ClimbNStairs(int climb[],int steps,const int n,int *ways)
    {
       (*ways)++;
 
-// #ifdef SHOWCLIMB
-//       ShowClimb(climb,steps,*ways);
-// #endif
+#ifdef SHOWCLIMB
+	ShowClimb(climb,steps,*ways);
+#endif
 
     }
     else
@@ -71,7 +69,7 @@ void ClimbNStairs(int climb[],int steps,const int n,int *ways)
         for (stepSize = 1; stepSize <= LARGEST_STEPSIZE; stepSize++) {
             if (LengthOfClimb(climb, steps)+stepSize <= n) {
                 climb[++steps] = stepSize;
-                ClimbNStairs(climb, steps, n, *ways);
+                ClimbNStairs(climb, steps, n, ways);
                 steps--;
             }
         }
@@ -86,15 +84,15 @@ int LengthOfClimb(const int climb[], const int steps)
     int temp = 0;
     for (int i = 1; i <= steps; i++)
     {
-        temp += climb[i - 1];
+        temp += climb[i];
     }
     return temp;
 }
 
 // //--------------------------------------------------
-// void ShowClimb(const int climb[],const int steps,const int ways)
+void ShowClimb(const int climb[],const int steps,const int ways)
 // //--------------------------------------------------
-// {
+{
 
 //    Student provides missing code to display the climb[] using the required format
 
@@ -105,5 +103,10 @@ int LengthOfClimb(const int climb[], const int steps)
 //    where WWWWW is the value of the formal parameter ways,
 //          XXX is the value of the formal parameter steps, and
 //          SSS...SSS are the step-sizes of each individual step taken recorded in the formal parameter climb[]
-
-// }
+	printf("%5d (%3d): ",ways,steps);
+	for (int i = 1; i <= steps; i++)
+    {
+	    printf("%d", climb[i]);
+	}
+    printf("\n");
+}
