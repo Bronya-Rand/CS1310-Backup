@@ -78,6 +78,7 @@
     "typeinfo": "cpp",
     "variant": "cpp",
     "stdio.h": "c",
-    "assert.h": "c"
+    "assert.h": "c",
+    "ios": "cpp"
   }
 }
