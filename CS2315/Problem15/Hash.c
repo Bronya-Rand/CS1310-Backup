@@ -100,6 +100,7 @@ void AddToHash(HASH *hash, const void *key, const void *record)
 
    p->FLink = hash->hashTable[h].head;
    hash->hashTable[h].head = p;
+   hash->N++;
    hash->hashTable[h].length++;
 }
 //--------------------------------------------------
@@ -109,6 +110,7 @@ bool IsInHash(const HASH *hash, const void *key, void **record)
    int h;
    HASHNODE *p;
    bool found = false;
+   
    h = hash->HashFunction(hash, key);
    p = hash->hashTable[h].head;
 
