@@ -20,6 +20,7 @@ int main()
    bool EQ(const void *LHS, const void *RHS);
    void DisplayHash(const HASH *hash);
    void DestructElement(const void *key, const void *record);
+   //int MyHashFunction(const HASH *hash,const void *key);
 
    char alphabet[] = "ABCDEFGHIJKLM"
                      "NOPQRSTUVWXYZ";
@@ -39,6 +40,7 @@ int main()
    scanf("%d", &UB);
    SetRandomSeed();
    ConstructHash(&hash, M, DestructElement, EQ, HashFunction_string);
+   //ConstructHash(&hash,50,DestructElement,EQ,HashFunction_int);
    for (int i = 1; i <= N; i++)
    {
       key = (char *)malloc(sizeof(char) * (5 + 1));
@@ -49,6 +51,9 @@ int main()
       *record = RandomInt(LB, UB);
       AddToHash(&hash, key, record);
    }
+   //char *ke;
+   //ke = "ABC";
+   //printf("%d", MyHashFunction(&hash, ke));
    DisplayHash(&hash);
    key = (char *)malloc(sizeof(char) * (5 + 1));
    tries = 0;
@@ -98,3 +103,9 @@ void DisplayHash(const HASH *hash)
    printf("M = %5d\n", GetHashM(hash));
    TraverseHash((HASH *)hash, DisplayElement);
 }
+
+/*int MyHashFunction(const HASH *hash,const void *key)
+{
+   return( ((char *) key)[0] % ((HASH *) hash)->M ); 
+}
+*/
