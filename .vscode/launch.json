@@ -6,9 +6,9 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Launch {fileDirname}",
+            "name": "Launch Chapter2Question25",
             "request": "launch",
-            "mainClass": "src.{fileDirname}",
+            "mainClass": "Chapter2Question25",
             "projectName": "CS1310-Backup_44570728"
         },
         {
