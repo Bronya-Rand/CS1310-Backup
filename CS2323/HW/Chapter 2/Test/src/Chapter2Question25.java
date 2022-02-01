@@ -10,10 +10,12 @@ public class Chapter2Question25 {
 
     public static void main(String[] args) {
         Scanner intInput = new Scanner(System.in);
-
+        
+        //prompt user for a integer
         System.out.print("Please enter a integer to check: ");
         int a = intInput.nextInt();
 
+        //compares whether the number is even or odd
         if (a % 2 == 0) {
             System.out.printf("%d is a even number.", a);
         } else {

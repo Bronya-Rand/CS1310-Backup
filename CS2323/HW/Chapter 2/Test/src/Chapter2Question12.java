@@ -10,7 +10,7 @@ public class Chapter2Question12 {
         int a = 2;
         int x = 5;
         
-        // result should be 257
+        //display results of 2 and 5. result should be 257
         System.out.printf("a * x * x * x + 7 = %d%n", a*x*x*x+7);
         System.out.printf("a * x * x * (x + 7) = %d%n", a*x*x*(x+7));
         System.out.printf("(a * x) * x * (x + 7) = %d%n", (a*x)*x*(x+7));

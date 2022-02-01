@@ -12,9 +12,11 @@ public class Chapter2Question30 {
     public static void main(String[] args) {
         Scanner intInput = new Scanner(System.in);
 
+        //prompt the user for a 5 digit integer
         System.out.print("Please enter a 5 digit integer: ");
         int a = intInput.nextInt();
 
+        //checks whether the number is 5 digits long to continue program, else error
         if (a > 99999) {
             System.out.println("Error: Your number is more than 5 digits long.");
         } else if (a < 10000) {

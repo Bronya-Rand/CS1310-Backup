@@ -12,9 +12,11 @@ public class Chapter2Question28 {
     public static void main(String[] args) {
         Scanner radiusInput = new Scanner(System.in);
         
+        //prompt user for a integer
         System.out.print("Please enter a whole number for your radius: ");
         int radius = radiusInput.nextInt();
 
+        //display results of math equations using given int
         System.out.printf("The results of a circle with a radius of %d is:%n", radius);
         System.out.printf("Diameter: %d%n", 2*radius);
         System.out.printf("Circumference: %.2f%n", 2*Math.PI*radius);
