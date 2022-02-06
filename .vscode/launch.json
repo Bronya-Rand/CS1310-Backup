@@ -5,41 +5,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "java",
-            "name": "Launch DateTest",
-            "request": "launch",
-            "mainClass": "DateTest",
-            "projectName": "CS1310-Backup_44570728"
-        },
-        {
-            "type": "java",
-            "name": "Launch EmployeeTest",
-            "request": "launch",
-            "mainClass": "EmployeeTest",
-            "projectName": "CS1310-Backup_44570728"
-        },
-        {
-            "type": "java",
-            "name": "Launch InvoiceTest",
-            "request": "launch",
-            "mainClass": "InvoiceTest",
-            "projectName": "CS1310-Backup_44570728"
-        },
-        {
-            "type": "java",
-            "name": "Launch AccountTest",
-            "request": "launch",
-            "mainClass": "AccountTest",
-            "projectName": "CS1310-Backup_44570728"
-        },
-        {
-            "type": "java",
-            "name": "Launch Chapter2Question25",
-            "request": "launch",
-            "mainClass": "Chapter2Question25",
-            "projectName": "CS1310-Backup_44570728"
-        },
-        {
             "name": "Windows Launch (Must be on Dev Console for VS 20XX)",
             "type": "cppvsdbg",
             "request": "launch",
