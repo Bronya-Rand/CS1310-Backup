@@ -80,5 +80,11 @@
     "stdio.h": "c",
     "assert.h": "c",
     "ios": "cpp"
-  }
+  },
+  "java.project.sourcePaths": [
+    "CS2323/Chapter 6/spring22-chapter6/src",
+    "CS2323/Chapter 4-5/src",
+    "CS2323/Chapter 3/spring22-chapter3/src",
+    "CS2323/Chapter 2/src"
+  ]
 }

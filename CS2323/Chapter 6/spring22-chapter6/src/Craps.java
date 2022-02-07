@@ -38,7 +38,23 @@ public class Craps {
         }
         else {
             this.currentStatus = Status.CONTINUE;
-            
+            continueMethod();
+        }
+    }
+
+    private void continueMethod() {
+        int currentPoint = rollDice();
+
+        if (currentPoint == this.point) {
+            this.currentStatus = Status.WIN;
+            System.out.println("You won!");
+        }
+        else if (currentPoint == 7) {
+            this.currentStatus = Status.LOSE;
+            System.out.println("You lost!");
+        }
+        else {
+            continueMethod();
         }
     }
 }
