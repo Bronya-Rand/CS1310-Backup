@@ -5,6 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "java",
+            "name": "Launch CrapsApp",
+            "request": "launch",
+            "mainClass": "CrapsApp",
+            "projectName": "CS1310-Backup_44570728"
+        },
+        {
             "name": "Windows Launch (Must be on Dev Console for VS 20XX)",
             "type": "cppvsdbg",
             "request": "launch",
