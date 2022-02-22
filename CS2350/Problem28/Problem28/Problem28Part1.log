@@ -1,0 +1,82 @@
+Page    1
+
+Line Source Line
+---- ----------------------------------------------------------------------
+   1 $-----------------------------------------------------------
+   2 $ Azariel Del Carmen
+   3 $ Problem #28, Part 1
+   4 $ Problem28Part1.sdl
+   5 $-----------------------------------------------------------
+   6 COMPONENTS
+   7    XOR g1
+   8    XOR g2
+   9    XOR g3
+  10    XOR g4
+  11    AND*4 g5
+  12    NOT g6
+  13    NOT g7
+  14    NOT g8
+  15    NOT g9
+  16    NOT g10
+  17 
+  18 ALIASES
+  19    A0 = IN#1
+  20    B0 = IN#2
+  21    A1 = IN#3
+  22    B1 = IN#4
+  23    A2 = IN#5
+  24    B2 = IN#6
+  25    A3 = IN#7
+  26    B3 = IN#8
+  27    EQ = OUT#1
+  28    NE = OUT#2
+  29 
+  30 CONNECTIONS
+  31 
+  32    $XOR0
+  33    g1#1 - A0
+  34    g1#2 - B0
+  35 
+  36    $XOR1
+  37    g2#1 - A1
+  38    g2#2 - B1
+  39 
+  40    $XOR2
+  41    g3#1 - A2
+  42    g3#2 - B2
+  43 
+  44    $XOR3
+  45    g4#1 - A3
+  46    g4#2 - B3
+  47 
+  48    $NOT XOR0
+  49    g6#1 - g1#3
+  50 
+Page    2
+
+Line Source Line
+---- ----------------------------------------------------------------------
+  51    $NOT XOR0
+  52    g7#1 - g2#3
+  53 
+  54    $NOT XOR0
+  55    g8#1 - g3#3
+  56 
+  57    $NOT XOR0
+  58    g9#1 - g4#3
+  59 
+  60    $ANDEQ
+  61    g5#1 - g6#2
+  62    g5#2 - g7#2
+  63    g5#3 - g8#2
+  64    g5#4 - g9#2
+  65    g5#5 - EQ
+  66 
+  67    $NOT ANDEQ
+  68    g10#1 - g5#5
+  69    g10#2 - NE
+  70 
+  71 END
+ 848 characters,  71 lines
+  10 components (g1...g10)
+  19 connections

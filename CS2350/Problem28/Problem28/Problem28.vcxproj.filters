@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Figure3-3.cpp">
+    <ClCompile Include="Problem28Part1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -25,7 +25,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Figure3-3.sdl">
+    <None Include="Problem28Part1.sdl">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

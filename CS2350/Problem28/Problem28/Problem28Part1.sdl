@@ -1,0 +1,71 @@
+$-----------------------------------------------------------
+$ Azariel Del Carmen
+$ Problem #28, Part 1
+$ Problem28Part1.sdl
+$-----------------------------------------------------------
+COMPONENTS
+   XOR g1
+   XOR g2
+   XOR g3
+   XOR g4
+   AND*4 g5
+   NOT g6
+   NOT g7
+   NOT g8
+   NOT g9
+   NOT g10
+
+ALIASES
+   A0 = IN#1
+   B0 = IN#2
+   A1 = IN#3
+   B1 = IN#4
+   A2 = IN#5
+   B2 = IN#6
+   A3 = IN#7
+   B3 = IN#8
+   EQ = OUT#1
+   NE = OUT#2
+
+CONNECTIONS
+
+   $XOR0
+   g1#1 - A0
+   g1#2 - B0
+
+   $XOR1
+   g2#1 - A1
+   g2#2 - B1
+
+   $XOR2
+   g3#1 - A2
+   g3#2 - B2
+
+   $XOR3
+   g4#1 - A3
+   g4#2 - B3
+
+   $NOT XOR0
+   g6#1 - g1#3
+
+   $NOT XOR0
+   g7#1 - g2#3
+
+   $NOT XOR0
+   g8#1 - g3#3
+
+   $NOT XOR0
+   g9#1 - g4#3
+
+   $ANDEQ
+   g5#1 - g6#2
+   g5#2 - g7#2
+   g5#3 - g8#2
+   g5#4 - g9#2
+   g5#5 - EQ
+
+   $NOT ANDEQ
+   g10#1 - g5#5
+   g10#2 - NE
+
+END
