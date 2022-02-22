@@ -6,6 +6,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Launch KnightPartC",
+            "request": "launch",
+            "mainClass": "KnightPartC",
+            "projectName": "Chapter 7_65de98da"
+        },
+        {
+            "type": "java",
+            "name": "Launch KnightPartB",
+            "request": "launch",
+            "mainClass": "KnightPartB",
+            "projectName": "Chapter 7_65de98da"
+        },
+        {
+            "type": "java",
             "name": "Launch Current File",
             "request": "launch",
             "mainClass": "${file}"
