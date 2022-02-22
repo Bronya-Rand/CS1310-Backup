@@ -22,8 +22,8 @@ public class KnightPartC {
         board = new int[8][8];
         int currentMove = 0;
 
-        int currentRow = 0;// random.nextInt(8);
-        int currentColumn = 0;// random.nextInt(8);
+        int currentRow = random.nextInt(8);
+        int currentColumn = random.nextInt(8);
         board[currentRow][currentColumn] = ++currentMove;
 
         // boolean flag that shows end of the moves
@@ -34,6 +34,8 @@ public class KnightPartC {
             int minAccess = 100;
             int minRow = -1;
             int minColumn = -1;
+            int minAccessTest = 100;
+            int minAccessAccess = 100;
 
             // check all possible moves
             // find the first valid one and move the knight
@@ -47,13 +49,22 @@ public class KnightPartC {
                         minRow = testRowIndex;
                         minColumn = testColumnIndex;
                         possibleMove = true;
-                    } // else if (access[testRowIndex][testColumnIndex] == minAccess) {
-                      // call a method pass testRow and testColumn and return minAccess
-                      // call a method pass minRow and minColumn and return minAccess
-                      // compare minAccesses from the two method calls
-                      // Update the minAccess and minRow & minColumn
-
-                    // }
+                    } else if (access[testRowIndex][testColumnIndex] == minAccess) {
+                        // call a method pass testRow and testColumn and return minAccess
+                        // call a method pass minRow and minColumn and return minAccess
+                        // compare minAccesses from the two method calls
+                        // Update the minAccess and minRow & minColumn
+                        minAccessTest = resolveTie(testRowIndex, testColumnIndex);
+                        minAccessAccess = resolveTie(minRow, minColumn);
+                        if (minAccessTest < minAccessAccess) {
+                            minAccess = minAccessTest;
+                            minRow = testRowIndex;
+                            minColumn = testColumnIndex;
+                        } else {
+                            minAccess = minAccessAccess;
+                        }
+                        possibleMove = true;
+                    }
                 }
             }
 
@@ -96,7 +107,15 @@ public class KnightPartC {
     }
 
     private static int resolveTie(int row, int column) {
-        // return the min access from this position
-        return 1;
+        int accessMin = -1;
+        for (int i = 0; i < 8; i++) {
+            int rowIndex = row + vertical[i];
+            int columnIndex = column + horizontal[i];
+            if (valid(rowIndex, columnIndex)) {
+                accessMin = access[rowIndex][columnIndex];
+                break;
+            }
+        }
+        return accessMin;
     }
 }
