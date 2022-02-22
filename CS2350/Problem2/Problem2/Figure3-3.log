@@ -1,0 +1,26 @@
+Page    1
+
+Line Source Line
+---- ----------------------------------------------------------------------
+   1 $-----------------------------------------------------------
+   2 $ Dr. Art Hanna
+   3 $ Figure 3-3 (2-input version)
+   4 $ Figure3-3.sdl
+   5 $-----------------------------------------------------------
+   6 COMPONENTS
+   7    OR   g1
+   8 
+   9 ALIASES
+  10    A = IN#1
+  11    B = IN#2
+  12    M = OUT#1
+  13    
+  14 CONNECTIONS
+  15    g1#1 - A
+  16    g1#2 - B
+  17    g1#3 - M
+  18 
+  19 END
+ 310 characters,  19 lines
+   1 components (g1...g1)
+   3 connections
