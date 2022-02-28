@@ -1,7 +1,7 @@
 # CS1310-Backup (now CSX-Backup)
-C Programming Code from all programming classes at StMU from C to C++.
+Programming Code from all programming classes at StMU from C to C++/Java.
 
-Code so far comes from lectures, class assignments and C++ How to Program 10th Edition (Deitel) Textbook.
+Code so far comes from lectures, class assignments and textbooks.
 
 ## Legend
 - CS1310 - Programming I (Intro to C)
@@ -9,6 +9,7 @@ Code so far comes from lectures, class assignments and C++ How to Program 10th E
 - CS2313 - Object Oriented Programming I (Intro to C++ [Deitel])
 - CS2315 - Algorithms (in C)
 - CS2323 - Object Oriented Programming II (Java How to Program [Deitel])
+- CS2350 - Computer Architecture (C/C++)
 
 ## Main Focus Files
 - `requirements.txt` - Used to build `HWSourceCopy.py` as a executable.
@@ -17,3 +18,4 @@ Code so far comes from lectures, class assignments and C++ How to Program 10th E
 - `Base.cpp` - A small template to get started coding C++ files.
 - `CS2313 Template.zip` - A small template with pre-coded simple C++ files.
 - `VS Code C Configuration.zip` - A collection of Visual Studio Code JSON files to run C/C++ code in Visual Studio Code.
+- `settings.json` - A copy of Java settings for Adoptium OpenJDK use.
