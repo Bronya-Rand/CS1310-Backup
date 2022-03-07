@@ -1,7 +1,7 @@
 import java.util.Scanner;
 
 public class TictactoeApp {
-    
+
     public static void main(String[] args) {
         Tictactoe gameOne = new Tictactoe();
         int player, pos;
