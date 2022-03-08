@@ -1,0 +1,137 @@
+$-----------------------------------------------------------
+$ Azariel Del Carmen
+$ Problem #9
+$ Problem9.sdl
+$-----------------------------------------------------------
+COMPONENTS
+   XOR g1
+   XOR g2
+   XOR g3
+   XOR g4
+
+   NOT g5
+   NOT g6
+   NOT g7
+   NOT g8
+
+   AND*4 g9
+
+   NOT g10
+   NOT g11
+   NOT g12
+
+   AND g13
+   AND*3 g14
+   AND*4 g15
+   OR*3 g16
+
+   AND g17
+   NOT g18
+   AND g19
+   OR g20
+
+   NOT g21
+   NOT g22
+   AND g23
+
+ALIASES
+   A3        =  IN#1
+   A2        =  IN#2
+   A1        =  IN#3
+   A0        =  IN#4
+   B3        =  IN#5
+   B2        =  IN#6
+   B1        =  IN#7
+   B0        =  IN#8
+   N         = OUT#1
+   Z         = OUT#2
+   P         = OUT#3
+
+CONNECTIONS
+
+   $XOR1
+   g1#1 - A0
+   g1#2 - B0
+
+   $XOR2
+   g2#1 - A1
+   g2#2 - B1
+
+   $XOR3
+   g3#1 - A2
+   g3#2 - B2
+
+   $XOR4
+   g4#1 - A3
+   g4#2 - B3
+
+   $NOT XOR1
+   g5#1 - g1#3
+
+   $NOT XOR2
+   g6#1 - g2#3
+
+   $NOT XOR3
+   g7#1 - g3#3
+
+   $NOT XOR4
+   g8#1 - g4#3
+
+   $Z
+   g9#1 - g5#2
+   g9#2 - g6#2
+   g9#3 - g7#2
+   g9#4 - g8#2
+   g9#5 - Z
+
+   $~B
+   g10#1 - B2
+   g11#1 - B1
+   g12#1 - B0
+
+   $AND AND*3 AND*4
+   g13#1 - g10#2
+   g13#2 - A2
+
+   g14#1 - g7#2
+   g14#2 - g11#2
+   g14#3 - A1
+
+   g15#1 - A0
+   g15#2 - g12#2
+   g15#3 - g7#2
+   g15#4 - g6#2
+
+   $GT3 OR
+   g16#1 - g13#3
+   g16#2 - g14#4
+   g16#3 - g15#5
+
+   $AND GT3 x3
+   g17#1 - g8#2
+   g17#2 - g16#4
+
+   $ NOT x3
+   g18#1 - g8#2
+
+   $NOT x3 compare to B3
+   g19#1 - g18#2
+   g19#2 - B3
+
+   $OR for GT(p)
+   g20#1 - g17#3
+   g20#2 - g19#3
+   g20#3 - P
+
+   $NOT GT(p)
+   g21#1 - g20#3
+
+   $NOT Z
+   g22#1 - g9#5
+
+   $NOT GT(p) AND NOT Z
+   g23#1 - g21#2
+   g23#2 - g22#2
+   g23#3 - N
+
+END
