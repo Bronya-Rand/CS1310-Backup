@@ -9,7 +9,7 @@ public abstract class Employee {
     }
 
     public String toString() {
-        return String.format("%s %s", name, ssn);
+        return String.format("%s %s %f%n", name, ssn, earnings());
     }
 
     public abstract double earnings();
