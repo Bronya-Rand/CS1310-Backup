@@ -1,0 +1,320 @@
+|--------------------------------------------------------------
+| Dr. Art Hanna
+| Microassembly language file for complete Mic1 ISA
+| Problem52.mal
+|--------------------------------------------------------------
+| *Notes*
+|  1. SP register *ALWAYS* contains the address-of (points-to) the
+|        top-of-stack WORD32
+|  2. The run-time stack "grows" from lower memory to higher memory; therefore,
+|        a "PUSH" of WORD32 consists of two steps (1) SP=SP+4 and (2) memory[SP] = WORD32
+|        a "POP" of WORD32 into ADDRESS consists of two steps (1) memory[ADDRESS] = memory[SP]
+|           and (2) SP=SP-4
+|  3. Care is taken to ensure that the TOS register *ALWAYS* contains the actual 
+|        top-of-stack WORD32; that is, memory[SP] == top-of-stack WORD32.
+|        Question: In the end, will this "care" be worth the effort?
+|  4. When the run-time stack is empty, the SP register contains the address-of 
+|        the WORD32 that is immediately below the "bottom" of the run-time
+|        stack, so the WORD32 stored in the TOS register is a "ghost" value
+|  5. The T1 register is the *ONLY* one of the temporary registers, namely
+|        { T0,T1,T2,T3 }, that is used by the microinstruction sequences below.
+|  6. The microprogrammer *MUST* ensure that a legal opCode has been fetch-ed into MBR
+|        *BEFORE* the "main1" microinstruction is executed.
+|--------------------------------------------------------------
+
+|==============================================================
+| *************** fetch byte1 of O32 (when it exists) for the opCode in MBR *OR* fetch the
+| *  main-loop  *    next opCode (when opCode in MBR has no O32 operand); then
+| ***************    make multi-way branch to first microinstruction of opCode microcode sequence
+|==============================================================
+0X100: main1       set PC = PC+1; fetch; jmpc 0X000
+|==============================================================
+
+|--------------------------------------------------------------
+| 0X00    NOOP                OpCode              Do nothing
+|--------------------------------------------------------------
+0X000: noop1       donothing; goto main1              | next opCode already fetched by main-loop
+
+|--------------------------------------------------------------
+| 0X01    PUSH    memory      OpCode:O32:mode     Push 32-bit word memory[EA] on run-time stack
+|--------------------------------------------------------------
+0X001: push1       set PC  = PC+1
+                   set H   = MBRU;      sl8; fetch    | MBR = byte1 of O32; fetch byte2
+                   set PC  = PC+1
+                   set H   = H or MBRU; sl8; fetch    | MBR = byte2 of O32; fetch byte3
+                   set PC  = PC+1
+                   set H   = H or MBRU; sl8; fetch    | MBR = byte3 of O32; fetch byte4
+                   set PC  = PC+1
+                   set H   = H or MBRU;      fetch    | MBR = byte4 of O32, H = O32; fetch mode
+                   set PC  = PC+1                     | PC = address-of next opCode
+                   donothing; jmpc 0X040              | MBR = mode; make multi-way branch to EA computation
+                   
+| Compute EA (depending on mode); TOS = memory[EA]    *------- MODE -------*
+
+0X040:             set TOS = H; goto pushx            | memory immediate       TOS = O32
+0X041:             set MAR = H; read                  | memory direct          TOS = memory[O32]
+                   donothing
+                   set TOS = MDR;
+
+0X042:             error;                             | memory indirect        *NOT SUPPORTED*
+0X045:             error;                             | SP-relative direct     *NOT SUPPORTED*
+0X046:             error;                             | SP-relative indirect   *NOT SUPPORTED*
+0X049:             error;                             | LV-relative direct     *NOT SUPPORTED*
+0X04A:             error;                             | LV-relative indirect   *NOT SUPPORTED*
+0X04D:             error;                             | CPP-relative direct    *NOT SUPPORTED*
+0X04E:             error;                             | CPP-relative indirect  *NOT SUPPORTED*
+
+       pushx       set MDR = TOS                      | "push" TOS on run-time stack
+                   set MAR,SP = SP+4; write, fetch    | fetch next opCode
+                   donothing; goto main1
+
+|--------------------------------------------------------------
+| 0X02    PUSHA   memory      OpCode:O32:mode     Push 32-bit EA on run-time stack (mode 0X00 not allowed)
+|--------------------------------------------------------------
+0X002: pusha1      set PC  = PC+1
+                   set H   = MBRU;      sl8; fetch    | MBR = byte1 of O32; fetch byte2
+                   set PC  = PC+1
+                   set H   = H or MBRU; sl8; fetch    | MBR = byte2 of O32; fetch byte3
+                   set PC  = PC+1
+                   set H   = H or MBRU; sl8; fetch    | MBR = byte3 of O32; fetch byte4
+                   set PC  = PC+1
+                   set H   = H or MBRU;      fetch    | MBR = byte4 of O32, H = O32; fetch mode
+                   set PC  = PC+1                     | PC = address-of next opCode
+                   donothing; jmpc 0X050              | MBR = mode; make multi-way branch to EA computation
+
+| Compute EA (depending on mode); TOS = EA            *------- MODE -------*
+0X050:             error;                             | memory immediate       (*NOT ALLOWED*)
+0X051:             set TOS = H; goto pushx            | memory direct          TOS = O32
+0X052:             error;                             | memory indirect        *NOT SUPPORTED*
+0X055:             error;                             | SP-relative direct     *NOT SUPPORTED*
+0X056:             error;                             | SP-relative indirect   *NOT SUPPORTED*
+0X059:             error;                             | LV-relative direct     *NOT SUPPORTED*
+0X05A:             error;                             | LV-relative indirect   *NOT SUPPORTED*
+0X05D:             error;                             | CPP-relative direct    *NOT SUPPORTED*
+0X05E:             error;                             | CPP-relative indirect  *NOT SUPPORTED*
+
+       pushax      set MDR = TOS                      | "push" TOS on run-time stack
+                   set MAR,SP = SP+4; write, fetch    | fetch next opCode
+                   donothing; goto main1
+
+|--------------------------------------------------------------
+| 0X03    POP     memory      OpCode:O32:mode     Pop run-time stack and store 32-bit word in memory[EA] (mode 0X00 not allowed)
+|--------------------------------------------------------------
+0X003: pop1        set PC  = PC+1                     
+                   set H   = MBRU;      sl8; fetch    | MBR = byte1 of O32; fetch byte2
+                   set PC  = PC+1
+                   set H   = H or MBRU; sl8; fetch    | MBR = byte2 of O32; fetch byte3
+                   set PC  = PC+1
+                   set H   = H or MBRU; sl8; fetch    | MBR = byte3 of O32; fetch byte4
+                   set PC  = PC+1
+                   set H   = H or MBRU;      fetch    | MBR = byte4 of O32, H = O32; fetch mode
+                   set PC  = PC+1                     | PC = address-of next opCode
+                   donothing; jmpc 0X060              | MBR = mode; make multi-way branch to EA computation
+
+| Compute MAR = EA (depending on mode)                *------- MODE -------*
+0X060:             error;                             | memory immediate       *NOT ALLOWED*
+0X061:             error;                             | memory direct          *NOT SUPPORTED*
+0X062:             error;                             | memory indirect        *NOT SUPPORTED*
+0X065:             error;                             | SP-relative direct     *NOT SUPPORTED*
+0X066:             error;                             | SP-relative indirect   *NOT SUPPORTED*
+0X069:             error;                             | LV-relative direct     *NOT SUPPORTED*
+0X06A:             error;                             | LV-relative indirect   *NOT SUPPORTED*
+0X06D:             error;                             | CPP-relative direct    *NOT SUPPORTED*
+0X06E:             error;                             | CPP-relative indirect  *NOT SUPPORTED*
+
+       popx        set MDR = TOS; write               | memory[EA] = TOS
+                   set MAR, SP = SP-4; read           | SP = SP-4; TOS = memory[SP]
+                   donothing;                fetch    | fetch next opCode
+                   set TOS = MDR; goto main1
+
+|--------------------------------------------------------------
+| 0X04    DISCARD #O32        OpCode:O32          Discard O32 32-bit words from top of run-time stack
+|--------------------------------------------------------------
+0X004: discard1    set PC  = PC+1                     
+                   set H   = MBRU;      sl8; fetch    | MBR = byte1 of O32; fetch byte2
+                   set PC  = PC+1
+                   set H   = H or MBRU; sl8; fetch    | MBR = byte2 of O32; fetch byte3
+                   set PC  = PC+1
+                   set H   = H or MBRU; sl8; fetch    | MBR = byte3 of O32; fetch byte4
+                   set PC  = PC+1                     | PC = address-of next opCode
+                   set T1  = H or MBRU;               | MBR = byte4 of O32, T1 = O32;
+       discardT    set SP  = SP-4                     | discard T1 top-of-stacks
+                   set T1  = T1-1
+                   T1; if not Z then goto discardT else goto discardF
+       discardF    set MAR = SP;       read, fetch    | TOS = memory[SP]; fetch next opCode
+                   donothing                          | wait for read to complete
+                   set TOS = MDR; goto main1
+
+|--------------------------------------------------------------
+| 0X05    SWAP                OpCode              Pop 32-bit RHS,32-bit LHS; push RHS, LHS (that is, swap LHS and RHS on run-time stack)
+|--------------------------------------------------------------
+0X005: swap1       error;                             | *NOT SUPPORTED*
+
+|--------------------------------------------------------------
+| 0X06    MAKEDUP             OpCode              Push duplicate of top-of-stack 32-bit word
+|--------------------------------------------------------------
+0X006: makedup1    error;                             | *NOT SUPPORTED*
+
+|--------------------------------------------------------------
+| 0X07    PUSHLV              OpCode              Push LV on run-time stack
+|--------------------------------------------------------------
+0X007: pushlv1     error;                             | *NOT SUPPORTED*
+
+|--------------------------------------------------------------
+| 0X08    POPLV               OpCode              Pop LV
+|--------------------------------------------------------------
+0X008: poplv1      error;                             | *NOT SUPPORTED*
+
+|--------------------------------------------------------------
+| 0X09    PUSHSP              OpCode              Push SP on run-time stack
+|--------------------------------------------------------------
+0X009: pushsp1     error;                             | *NOT SUPPORTED*
+
+|--------------------------------------------------------------
+| 0X0A    POPSP               OpCode              Pop SP
+|--------------------------------------------------------------
+0X00A: popsp1      error;                             | *NOT SUPPORTED*
+
+|--------------------------------------------------------------
+| 0X0B    PUSHCPP             OpCode              Push CPP on run-time stack
+|--------------------------------------------------------------
+0X00B: pushcpp1    error;                             | *NOT SUPPORTED*
+
+|--------------------------------------------------------------
+| 0X0C    POPCPP              OpCode              Pop CPP
+|--------------------------------------------------------------
+0X00C: popcpp1     error;                             | *NOT SUPPORTED*
+
+|--------------------------------------------------------------
+| 0X10    ADD                 OpCode              Pop RHS,LHS; push ( LHS+RHS )
+|--------------------------------------------------------------
+0X010: add1        set MAR, SP = SP - 4; read
+                   donothing
+                   set H = MDR
+                   set MDR, TOS = H + TOS; write
+                   donothing; goto main1
+
+|--------------------------------------------------------------
+| 0X11    SUB                 OpCode              Pop RHS,LHS; push ( LHS-RHS )
+|--------------------------------------------------------------
+0X011:  sub1       error;                             | *NOT SUPPORTED*
+
+|--------------------------------------------------------------
+| 0X12    NEG                 OpCode              Pop RHS;     push -RHS
+|--------------------------------------------------------------
+0X012: neg1        error;                             | *NOT SUPPORTED*
+
+|--------------------------------------------------------------
+| 0X13    AND                 OpCode              Pop RHS,LHS; push ( LHS and  RHS )
+|--------------------------------------------------------------
+0X013: and1        error;                             | *NOT SUPPORTED*
+
+|--------------------------------------------------------------
+| 0X14    OR                  OpCode              Pop RHS,LHS; push ( LHS or   RHS )
+|--------------------------------------------------------------
+0X014: or1         error;                             | *NOT SUPPORTED*
+
+|--------------------------------------------------------------
+| 0X15    NOT                 OpCode              Pop RHS;     push (     not  RHS )
+|--------------------------------------------------------------
+0X015: not1        error;                             | *NOT SUPPORTED*
+
+|--------------------------------------------------------------
+| 0X16    CMP                 OpCode              Pop RHS,LHS; push ( LHS cmp  RHS )
+|--------------------------------------------------------------
+0X016: cmp1        error;                             | *NOT SUPPORTED*
+
+|--------------------------------------------------------------
+| 0X17    CMPU                OpCode              Pop RHS,LHS; push ( LHS cmpu RHS )
+|--------------------------------------------------------------
+0X017: cmpu1       error;                             | *NOT SUPPORTED*
+
+|--------------------------------------------------------------
+| 0X18    SRA1                OpCode              Pop RHS; push ( RHS shift-right (arithmetic) 1 bit )
+|--------------------------------------------------------------
+0X018: sra11       set MDR, TOS = TOS; SRA1           | TOS = TOS >> 1 (RHS already in TOS)
+                   set MAR = SP; write                | update top-of-stack with "new" TOS
+                   donothing; goto main1
+
+|--------------------------------------------------------------
+| 0X19    SL1                 OpCode              Pop RHS; push ( RHS shift-left 1 bit )
+|--------------------------------------------------------------
+0X019: sl11        set MDR, TOS = TOS; sl1
+                   set MAR = SP; write                | update top-of-stack with "new" TOS
+                   donothing; goto main1
+
+|--------------------------------------------------------------
+| 0X30    JMP     O32         OpCode:O32          PC <- O32
+|--------------------------------------------------------------
+0X030: jmp1        set PC  = PC+1
+                   set H   = MBRU;      sl8; fetch    | MBR = byte1 of O32; fetch byte2
+                   set PC  = PC+1
+                   set H   = H or MBRU; sl8; fetch    | MBR = byte2 of O32; fetch byte3
+                   set PC  = PC+1
+                   set H   = H or MBRU; sl8; fetch    | MBR = byte3 of O32; fetch byte4
+                   donothing
+                   set PC  = H or MBRU;      fetch    | MBR = byte4 of O32, PC = O32; fetch next opCode
+                   donothing; goto main1
+
+|--------------------------------------------------------------
+| 0X31    JMPL    O32         OpCode:O32          Peek LHS; if ( LHS <  0 ) PC <- O32
+|--------------------------------------------------------------
+0X031: jmpl1       error;                             | *NOT SUPPORTED*
+
+|--------------------------------------------------------------
+| 0X32    JMPE    O32         OpCode:O32          Peek LHS; if ( LHS =  0 ) PC <- O32
+|--------------------------------------------------------------
+0X032: jmpe1       error;                             | *NOT SUPPORTED*
+
+|--------------------------------------------------------------
+| 0X33    JMPG    O32         OpCode:O32          Peek LHS; if ( LHS >  0 ) PC <- O32
+|--------------------------------------------------------------
+0X033: jmpg1       error;                             | *NOT SUPPORTED*
+
+|--------------------------------------------------------------
+| 0X34    JMPLE   O32         OpCode:O32          Peek LHS; if ( LHS <= 0 ) PC <- O32
+|--------------------------------------------------------------
+0X034: jmple1      error;                             | *NOT SUPPORTED*
+
+|--------------------------------------------------------------
+| 0X35    JMPGE   O32         OpCode:O32          Peek LHS; if ( LHS >= 0 ) PC <- O32
+|--------------------------------------------------------------
+0X035: jmpge1      error;                             | *NOT SUPPORTED*
+
+|--------------------------------------------------------------
+| 0X36    JMPNE   O32         OpCode:O32          Peek LHS; if ( LHS != 0 ) PC <- O32
+|--------------------------------------------------------------
+0X036: jmpne1      error;                             | *NOT SUPPORTED*
+
+|--------------------------------------------------------------
+| 0X37    JMPT    O32          OpCode:O32         Pop LHS; if ( LHS != 0 ) PC <- O32 ***could be an alias for JMPNE (JMPNZ)
+|--------------------------------------------------------------
+0X037: jmpt1       error;                             | *NOT SUPPORTED*
+
+|--------------------------------------------------------------
+| 0X38    JMPF    O32          OpCode:O32         Pop LHS; if ( LHS =  0 ) PC <- O32 ***could be an alias for JMPE  (JMPZ)
+|--------------------------------------------------------------
+0X038: jmpf1       error;                             | *NOT SUPPORTED*
+
+|--------------------------------------------------------------
+| 0X3D    CALL    O32         OpCode:O32          Push PC; PC <- O32
+|--------------------------------------------------------------
+0X03D: call1       error;                             | *NOT SUPPORTED*
+
+|--------------------------------------------------------------
+| 0X3E    RETURN              OpCode              Pop PC
+|--------------------------------------------------------------
+0X03E: return1     error;                             | *NOT SUPPORTED*
+
+|--------------------------------------------------------------
+| 0X3F    SVC     #O32        OpCode:O32          Make system service request #O32 (single parameter passed on run-time stack)
+|--------------------------------------------------------------
+0X03F: svc1        set PC  = PC+1
+                   set H   = MBRU;      sl8; fetch    | MBR = byte1 of O32; fetch byte2
+                   set PC  = PC+1
+                   set H   = H or MBRU; sl8; fetch    | MBR = byte2 of O32; fetch byte3
+                   set PC  = PC+1
+                   set H   = H or MBRU; sl8; fetch    | MBR = byte3 of O32; fetch byte4
+                   set PC  = PC+1                     | PC = address-of next opCode
+                   set T1  = H or MBRU;    ; fetch    | MBR = byte4 of O32, T1 = O32; fetch next opCode
+                   svc; goto main1
