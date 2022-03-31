@@ -13,7 +13,8 @@ public class TipCalculatorApplication extends Application {
     public void start(Stage arg0) throws Exception {
         // Get the root of the scene which was our GridPane
 
-        Parent root = FXMLLoader.load(getClass().getResource("TipCalculator.fxml"));
+        Parent root = FXMLLoader
+                .load(getClass().getResource("tipcalculator.fxml"));
         Scene scene = new Scene(root);
         arg0.setScene(scene);
         arg0.setTitle("Tip Calculator");
