@@ -20,7 +20,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Problem51.mal">
+    <None Include="Problem52.mal">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

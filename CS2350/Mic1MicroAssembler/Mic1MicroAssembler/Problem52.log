@@ -1,0 +1,392 @@
+Page   1  "Problem52.mal"
+
+  MLC B-Bus Mem        C-Bus Shift    ALU  JAM nextAddress Line  Source Line
+----- ----- --- ------------ ----- ------ ---- ----------- ----  --------------------------------------------------------------------------
+                                                              1  |--------------------------------------------------------------
+                                                              2  | Dr. Art Hanna
+                                                              3  | Microassembly language file for complete Mic1 ISA
+                                                              4  | Problem52.mal
+                                                              5  |--------------------------------------------------------------
+                                                              6  | *Notes*
+                                                              7  |  1. SP register *ALWAYS* contains the address-of (points-to) the
+                                                              8  |        top-of-stack WORD32
+                                                              9  |  2. The run-time stack "grows" from lower memory to higher memory; therefore,
+                                                             10  |        a "PUSH" of WORD32 consists of two steps (1) SP=SP+4 and (2) memory[SP] = WORD32
+                                                             11  |        a "POP" of WORD32 into ADDRESS consists of two steps (1) memory[ADDRESS] = memory[SP]
+                                                             12  |           and (2) SP=SP-4
+                                                             13  |  3. Care is taken to ensure that the TOS register *ALWAYS* contains the actual 
+                                                             14  |        top-of-stack WORD32; that is, memory[SP] == top-of-stack WORD32.
+                                                             15  |        Question: In the end, will this "care" be worth the effort?
+                                                             16  |  4. When the run-time stack is empty, the SP register contains the address-of 
+                                                             17  |        the WORD32 that is immediately below the "bottom" of the run-time
+                                                             18  |        stack, so the WORD32 stored in the TOS register is a "ghost" value
+                                                             19  |  5. The T1 register is the *ONLY* one of the temporary registers, namely
+                                                             20  |        { T0,T1,T2,T3 }, that is used by the microinstruction sequences below.
+                                                             21  |  6. The microprogrammer *MUST* ensure that a legal opCode has been fetch-ed into MBR
+                                                             22  |        *BEFORE* the "main1" microinstruction is executed.
+                                                             23  |--------------------------------------------------------------
+                                                             24  
+                                                             25  |==============================================================
+                                                             26  | *************** fetch byte1 of O32 (when it exists) for the opCode in MBR *OR* fetch the
+                                                             27  | *  main-loop  *    next opCode (when opCode in MBR has no O32 operand); then
+                                                             28  | ***************    make multi-way branch to first microinstruction of opCode microcode sequence
+                                                             29  |==============================================================
+0X100  0001 100 000000100000  0000 110101 1000   000000000   30  0X100: main1       set PC = PC+1; fetch; jmpc 0X000
+                                                             31  |==============================================================
+                                                             32  
+                                                             33  |--------------------------------------------------------------
+                                                             34  | 0X00    NOOP                OpCode              Do nothing
+                                                             35  |--------------------------------------------------------------
+0X000  0000 000 000000000000  0000 010000 0000   100000000   36  0X000: noop1       donothing; goto main1              | next opCode already fetched by main-loop
+                                                             37  
+                                                             38  |--------------------------------------------------------------
+                                                             39  | 0X01    PUSH    memory      OpCode:O32:mode     Push 32-bit word memory[EA] on run-time stack
+                                                             40  |--------------------------------------------------------------
+0X001  0001 000 000000100000  0000 110101 0000   001000100   41  0X001: push1       set PC  = PC+1
+0X044  0011 100 100000000000  1000 010100 0000   001000111   42                     set H   = MBRU;      sl8; fetch    | MBR = byte1 of O32; fetch byte2
+0X047  0001 000 000000100000  0000 110101 0000   001001000   43                     set PC  = PC+1
+0X048  0011 100 100000000000  1000 011100 0000   001001011   44                     set H   = H or MBRU; sl8; fetch    | MBR = byte2 of O32; fetch byte3
+0X04B  0001 000 000000100000  0000 110101 0000   001001100   45                     set PC  = PC+1
+0X04C  0011 100 100000000000  1000 011100 0000   001001111   46                     set H   = H or MBRU; sl8; fetch    | MBR = byte3 of O32; fetch byte4
+0X04F  0001 000 000000100000  0000 110101 0000   001010011   47                     set PC  = PC+1
+0X053  0011 100 100000000000  0000 011100 0000   001010100   48                     set H   = H or MBRU;      fetch    | MBR = byte4 of O32, H = O32; fetch mode
+0X054  0001 000 000000100000  0000 110101 0000   001010111   49                     set PC  = PC+1                     | PC = address-of next opCode
+0X057  0000 000 000000000000  0000 010000 1000   001000000   50                     donothing; jmpc 0X040              | MBR = mode; make multi-way branch to EA computation
+Page   2  "Problem52.mal"
+
+  MLC B-Bus Mem        C-Bus Shift    ALU  JAM nextAddress Line  Source Line
+----- ----- --- ------------ ----- ------ ---- ----------- ----  --------------------------------------------------------------------------
+                                                             51                     
+                                                             52  | Compute EA (depending on mode); TOS = memory[EA]    *------- MODE -------*
+                                                             53  
+0X040  0000 000 001000000000  0000 011000 0000   001011100   54  0X040:             set TOS = H; goto pushx            | memory immediate       TOS = O32
+0X041  0000 010 000000001000  0000 011000 0000   001011000   55  0X041:             set MAR = H; read                  | memory direct          TOS = memory[O32]
+0X058  0000 000 000000000000  0000 010000 0000   001011011   56                     donothing
+0X05B  0000 000 001000000000  0000 010100 0000   001000010   57                     set TOS = MDR;
+                                                             58  
+0X042  0000 000 000000000000  0000 000100 0000   001000101   59  0X042:             error;                             | memory indirect        *NOT SUPPORTED*
+0X045  0000 000 000000000000  0000 000100 0000   001000110   60  0X045:             error;                             | SP-relative direct     *NOT SUPPORTED*
+0X046  0000 000 000000000000  0000 000100 0000   001001001   61  0X046:             error;                             | SP-relative indirect   *NOT SUPPORTED*
+0X049  0000 000 000000000000  0000 000100 0000   001001010   62  0X049:             error;                             | LV-relative direct     *NOT SUPPORTED*
+0X04A  0000 000 000000000000  0000 000100 0000   001001101   63  0X04A:             error;                             | LV-relative indirect   *NOT SUPPORTED*
+0X04D  0000 000 000000000000  0000 000100 0000   001001110   64  0X04D:             error;                             | CPP-relative direct    *NOT SUPPORTED*
+0X04E  0000 000 000000000000  0000 000100 0000   001011100   65  0X04E:             error;                             | CPP-relative indirect  *NOT SUPPORTED*
+                                                             66  
+0X05C  0111 000 000000010000  0000 010100 0000   001011111   67         pushx       set MDR = TOS                      | "push" TOS on run-time stack
+0X05F  0100 101 000001001000  0000 000101 0000   001100011   68                     set MAR,SP = SP+4; write, fetch    | fetch next opCode
+0X063  0000 000 000000000000  0000 010000 0000   100000000   69                     donothing; goto main1
+                                                             70  
+                                                             71  |--------------------------------------------------------------
+                                                             72  | 0X02    PUSHA   memory      OpCode:O32:mode     Push 32-bit EA on run-time stack (mode 0X00 not allowed)
+                                                             73  |--------------------------------------------------------------
+0X002  0001 000 000000100000  0000 110101 0000   001100100   74  0X002: pusha1      set PC  = PC+1
+0X064  0011 100 100000000000  1000 010100 0000   001100111   75                     set H   = MBRU;      sl8; fetch    | MBR = byte1 of O32; fetch byte2
+0X067  0001 000 000000100000  0000 110101 0000   001101000   76                     set PC  = PC+1
+0X068  0011 100 100000000000  1000 011100 0000   001101011   77                     set H   = H or MBRU; sl8; fetch    | MBR = byte2 of O32; fetch byte3
+0X06B  0001 000 000000100000  0000 110101 0000   001101100   78                     set PC  = PC+1
+0X06C  0011 100 100000000000  1000 011100 0000   001101111   79                     set H   = H or MBRU; sl8; fetch    | MBR = byte3 of O32; fetch byte4
+0X06F  0001 000 000000100000  0000 110101 0000   001110000   80                     set PC  = PC+1
+0X070  0011 100 100000000000  0000 011100 0000   001110001   81                     set H   = H or MBRU;      fetch    | MBR = byte4 of O32, H = O32; fetch mode
+0X071  0001 000 000000100000  0000 110101 0000   001110010   82                     set PC  = PC+1                     | PC = address-of next opCode
+0X072  0000 000 000000000000  0000 010000 1000   001010000   83                     donothing; jmpc 0X050              | MBR = mode; make multi-way branch to EA computation
+                                                             84  
+                                                             85  | Compute EA (depending on mode); TOS = EA            *------- MODE -------*
+0X050  0000 000 000000000000  0000 000100 0000   001010001   86  0X050:             error;                             | memory immediate       (*NOT ALLOWED*)
+0X051  0000 000 001000000000  0000 011000 0000   001011100   87  0X051:             set TOS = H; goto pushx            | memory direct          TOS = O32
+0X052  0000 000 000000000000  0000 000100 0000   001010101   88  0X052:             error;                             | memory indirect        *NOT SUPPORTED*
+0X055  0000 000 000000000000  0000 000100 0000   001010110   89  0X055:             error;                             | SP-relative direct     *NOT SUPPORTED*
+0X056  0000 000 000000000000  0000 000100 0000   001011001   90  0X056:             error;                             | SP-relative indirect   *NOT SUPPORTED*
+0X059  0000 000 000000000000  0000 000100 0000   001011010   91  0X059:             error;                             | LV-relative direct     *NOT SUPPORTED*
+0X05A  0000 000 000000000000  0000 000100 0000   001011101   92  0X05A:             error;                             | LV-relative indirect   *NOT SUPPORTED*
+0X05D  0000 000 000000000000  0000 000100 0000   001011110   93  0X05D:             error;                             | CPP-relative direct    *NOT SUPPORTED*
+0X05E  0000 000 000000000000  0000 000100 0000   001110011   94  0X05E:             error;                             | CPP-relative indirect  *NOT SUPPORTED*
+                                                             95  
+0X073  0111 000 000000010000  0000 010100 0000   001110100   96         pushax      set MDR = TOS                      | "push" TOS on run-time stack
+0X074  0100 101 000001001000  0000 000101 0000   001110101   97                     set MAR,SP = SP+4; write, fetch    | fetch next opCode
+0X075  0000 000 000000000000  0000 010000 0000   100000000   98                     donothing; goto main1
+                                                             99  
+                                                            100  |--------------------------------------------------------------
+Page   3  "Problem52.mal"
+
+  MLC B-Bus Mem        C-Bus Shift    ALU  JAM nextAddress Line  Source Line
+----- ----- --- ------------ ----- ------ ---- ----------- ----  --------------------------------------------------------------------------
+                                                            101  | 0X03    POP     memory      OpCode:O32:mode     Pop run-time stack and store 32-bit word in memory[EA] (mode 0X00 not allowed)
+                                                            102  |--------------------------------------------------------------
+0X003  0001 000 000000100000  0000 110101 0000   001110110  103  0X003: pop1        set PC  = PC+1                     
+0X076  0011 100 100000000000  1000 010100 0000   001110111  104                     set H   = MBRU;      sl8; fetch    | MBR = byte1 of O32; fetch byte2
+0X077  0001 000 000000100000  0000 110101 0000   001111000  105                     set PC  = PC+1
+0X078  0011 100 100000000000  1000 011100 0000   001111001  106                     set H   = H or MBRU; sl8; fetch    | MBR = byte2 of O32; fetch byte3
+0X079  0001 000 000000100000  0000 110101 0000   001111010  107                     set PC  = PC+1
+0X07A  0011 100 100000000000  1000 011100 0000   001111011  108                     set H   = H or MBRU; sl8; fetch    | MBR = byte3 of O32; fetch byte4
+0X07B  0001 000 000000100000  0000 110101 0000   001111100  109                     set PC  = PC+1
+0X07C  0011 100 100000000000  0000 011100 0000   001111101  110                     set H   = H or MBRU;      fetch    | MBR = byte4 of O32, H = O32; fetch mode
+0X07D  0001 000 000000100000  0000 110101 0000   001111110  111                     set PC  = PC+1                     | PC = address-of next opCode
+0X07E  0000 000 000000000000  0000 010000 1000   001100000  112                     donothing; jmpc 0X060              | MBR = mode; make multi-way branch to EA computation
+                                                            113  
+                                                            114  | Compute MAR = EA (depending on mode)                *------- MODE -------*
+0X060  0000 000 000000000000  0000 000100 0000   001100001  115  0X060:             error;                             | memory immediate       *NOT ALLOWED*
+0X061  0000 000 000000000000  0000 000100 0000   001100010  116  0X061:             error;                             | memory direct          *NOT SUPPORTED*
+0X062  0000 000 000000000000  0000 000100 0000   001100101  117  0X062:             error;                             | memory indirect        *NOT SUPPORTED*
+0X065  0000 000 000000000000  0000 000100 0000   001100110  118  0X065:             error;                             | SP-relative direct     *NOT SUPPORTED*
+0X066  0000 000 000000000000  0000 000100 0000   001101001  119  0X066:             error;                             | SP-relative indirect   *NOT SUPPORTED*
+0X069  0000 000 000000000000  0000 000100 0000   001101010  120  0X069:             error;                             | LV-relative direct     *NOT SUPPORTED*
+0X06A  0000 000 000000000000  0000 000100 0000   001101101  121  0X06A:             error;                             | LV-relative indirect   *NOT SUPPORTED*
+0X06D  0000 000 000000000000  0000 000100 0000   001101110  122  0X06D:             error;                             | CPP-relative direct    *NOT SUPPORTED*
+0X06E  0000 000 000000000000  0000 000100 0000   001111111  123  0X06E:             error;                             | CPP-relative indirect  *NOT SUPPORTED*
+                                                            124  
+0X07F  0111 001 000000010000  0000 010100 0000   010000000  125         popx        set MDR = TOS; write               | memory[EA] = TOS
+0X080  0100 010 000001001000  0000 000110 0000   010000001  126                     set MAR, SP = SP-4; read           | SP = SP-4; TOS = memory[SP]
+0X081  0000 100 000000000000  0000 010000 0000   010000010  127                     donothing;                fetch    | fetch next opCode
+0X082  0000 000 001000000000  0000 010100 0000   100000000  128                     set TOS = MDR; goto main1
+                                                            129  
+                                                            130  |--------------------------------------------------------------
+                                                            131  | 0X04    DISCARD #O32        OpCode:O32          Discard O32 32-bit words from top of run-time stack
+                                                            132  |--------------------------------------------------------------
+0X004  0001 000 000000100000  0000 110101 0000   010000011  133  0X004: discard1    set PC  = PC+1                     
+0X083  0011 100 100000000000  1000 010100 0000   010000100  134                     set H   = MBRU;      sl8; fetch    | MBR = byte1 of O32; fetch byte2
+0X084  0001 000 000000100000  0000 110101 0000   010000101  135                     set PC  = PC+1
+0X085  0011 100 100000000000  1000 011100 0000   010000110  136                     set H   = H or MBRU; sl8; fetch    | MBR = byte2 of O32; fetch byte3
+0X086  0001 000 000000100000  0000 110101 0000   010000111  137                     set PC  = PC+1
+0X087  0011 100 100000000000  1000 011100 0000   010001000  138                     set H   = H or MBRU; sl8; fetch    | MBR = byte3 of O32; fetch byte4
+0X088  0001 000 000000100000  0000 110101 0000   010001001  139                     set PC  = PC+1                     | PC = address-of next opCode
+0X089  0011 000 000000000100  0000 011100 0000   101000011  140                     set T1  = H or MBRU;               | MBR = byte4 of O32, T1 = O32;
+0X143  0100 000 000001000000  0000 000110 0000   010001010  141         discardT    set SP  = SP-4                     | discard T1 top-of-stacks
+0X08A  1001 000 000000000100  0000 110110 0000   010001011  142                     set T1  = T1-1
+0X08B  1001 000 000000000000  0000 010100 0101   001000011  143                     T1; if not Z then goto discardT else goto discardF
+0X043  0100 110 000000001000  0000 010100 0000   010001100  144         discardF    set MAR = SP;       read, fetch    | TOS = memory[SP]; fetch next opCode
+0X08C  0000 000 000000000000  0000 010000 0000   010001101  145                     donothing                          | wait for read to complete
+0X08D  0000 000 001000000000  0000 010100 0000   100000000  146                     set TOS = MDR; goto main1
+                                                            147  
+                                                            148  |--------------------------------------------------------------
+                                                            149  | 0X05    SWAP                OpCode              Pop 32-bit RHS,32-bit LHS; push RHS, LHS (that is, swap LHS and RHS on run-time stack)
+                                                            150  |--------------------------------------------------------------
+Page   4  "Problem52.mal"
+
+  MLC B-Bus Mem        C-Bus Shift    ALU  JAM nextAddress Line  Source Line
+----- ----- --- ------------ ----- ------ ---- ----------- ----  --------------------------------------------------------------------------
+0X005  0000 000 000000000000  0000 000100 0000   000000110  151  0X005: swap1       error;                             | *NOT SUPPORTED*
+                                                            152  
+                                                            153  |--------------------------------------------------------------
+                                                            154  | 0X06    MAKEDUP             OpCode              Push duplicate of top-of-stack 32-bit word
+                                                            155  |--------------------------------------------------------------
+0X006  0000 000 000000000000  0000 000100 0000   000000111  156  0X006: makedup1    error;                             | *NOT SUPPORTED*
+                                                            157  
+                                                            158  |--------------------------------------------------------------
+                                                            159  | 0X07    PUSHLV              OpCode              Push LV on run-time stack
+                                                            160  |--------------------------------------------------------------
+0X007  0000 000 000000000000  0000 000100 0000   000001000  161  0X007: pushlv1     error;                             | *NOT SUPPORTED*
+                                                            162  
+                                                            163  |--------------------------------------------------------------
+                                                            164  | 0X08    POPLV               OpCode              Pop LV
+                                                            165  |--------------------------------------------------------------
+0X008  0000 000 000000000000  0000 000100 0000   000001001  166  0X008: poplv1      error;                             | *NOT SUPPORTED*
+                                                            167  
+                                                            168  |--------------------------------------------------------------
+                                                            169  | 0X09    PUSHSP              OpCode              Push SP on run-time stack
+                                                            170  |--------------------------------------------------------------
+0X009  0000 000 000000000000  0000 000100 0000   000001010  171  0X009: pushsp1     error;                             | *NOT SUPPORTED*
+                                                            172  
+                                                            173  |--------------------------------------------------------------
+                                                            174  | 0X0A    POPSP               OpCode              Pop SP
+                                                            175  |--------------------------------------------------------------
+0X00A  0000 000 000000000000  0000 000100 0000   000001011  176  0X00A: popsp1      error;                             | *NOT SUPPORTED*
+                                                            177  
+                                                            178  |--------------------------------------------------------------
+                                                            179  | 0X0B    PUSHCPP             OpCode              Push CPP on run-time stack
+                                                            180  |--------------------------------------------------------------
+0X00B  0000 000 000000000000  0000 000100 0000   000001100  181  0X00B: pushcpp1    error;                             | *NOT SUPPORTED*
+                                                            182  
+                                                            183  |--------------------------------------------------------------
+                                                            184  | 0X0C    POPCPP              OpCode              Pop CPP
+                                                            185  |--------------------------------------------------------------
+0X00C  0000 000 000000000000  0000 000100 0000   000010000  186  0X00C: popcpp1     error;                             | *NOT SUPPORTED*
+                                                            187  
+                                                            188  |--------------------------------------------------------------
+                                                            189  | 0X10    ADD                 OpCode              Pop RHS,LHS; push ( LHS+RHS )
+                                                            190  |--------------------------------------------------------------
+0X010  0100 010 000001001000  0000 000110 0000   010001110  191  0X010: add1        set MAR, SP = SP - 4; read
+0X08E  0000 000 000000000000  0000 010000 0000   010001111  192                     donothing
+0X08F  0000 000 100000000000  0000 010100 0000   010010000  193                     set H = MDR;
+0X090  0111 001 001000010000  0000 111100 0000   010010001  194                     set MDR, TOS = H + TOS; write
+0X091  0000 000 000000000000  0000 010000 0000   100000000  195                     donothing; goto main1
+                                                            196  
+                                                            197  |--------------------------------------------------------------
+                                                            198  | 0X11    SUB                 OpCode              Pop RHS,LHS; push ( LHS-RHS )
+                                                            199  |--------------------------------------------------------------
+0X011  0100 010 000001001000  0000 000110 0000   010010010  200  0X011:  sub1       set MAR, SP = SP - 4; read
+Page   5  "Problem52.mal"
+
+  MLC B-Bus Mem        C-Bus Shift    ALU  JAM nextAddress Line  Source Line
+----- ----- --- ------------ ----- ------ ---- ----------- ----  --------------------------------------------------------------------------
+0X092  0000 000 000000000000  0000 010000 0000   010010011  201                     donothing
+0X093  0000 000 100000000000  0000 010100 0000   010010100  202                     set H = MDR;
+0X094  0111 001 001000010000  0000 111111 0000   010010101  203                     set MDR, TOS = TOS - H; write
+0X095  0000 000 000000000000  0000 010000 0000   100000000  204                     donothing; goto main1
+                                                            205  
+                                                            206  |--------------------------------------------------------------
+                                                            207  | 0X12    NEG                 OpCode              Pop RHS;     push -RHS
+                                                            208  |--------------------------------------------------------------
+0X012  0111 000 100000000000  0000 010100 0000   010010110  209  0X012: neg1        set H = TOS;      
+0X096  0100 000 000000001000  0000 010100 0000   010010111  210                     set MAR = SP;
+0X097  0000 001 001000010000  0000 111011 0000   010011000  211                     set MDR, TOS = -H; write
+0X098  0000 000 000000000000  0000 010000 0000   100000000  212                     donothing; goto main1
+                                                            213  
+                                                            214  |--------------------------------------------------------------
+                                                            215  | 0X13    AND                 OpCode              Pop RHS,LHS; push ( LHS and  RHS )
+                                                            216  |--------------------------------------------------------------
+0X013  0000 000 000000000000  0000 000100 0000   000010100  217  0X013: and1        error;                             | *NOT SUPPORTED*
+                                                            218  
+                                                            219  |--------------------------------------------------------------
+                                                            220  | 0X14    OR                  OpCode              Pop RHS,LHS; push ( LHS or   RHS )
+                                                            221  |--------------------------------------------------------------
+0X014  0000 000 000000000000  0000 000100 0000   000010101  222  0X014: or1         error;                             | *NOT SUPPORTED*
+                                                            223  
+                                                            224  |--------------------------------------------------------------
+                                                            225  | 0X15    NOT                 OpCode              Pop RHS;     push (     not  RHS )
+                                                            226  |--------------------------------------------------------------
+0X015  0000 000 000000000000  0000 000100 0000   000010110  227  0X015: not1        error;                             | *NOT SUPPORTED*
+                                                            228  
+                                                            229  |--------------------------------------------------------------
+                                                            230  | 0X16    CMP                 OpCode              Pop RHS,LHS; push ( LHS cmp  RHS )
+                                                            231  |--------------------------------------------------------------
+0X016  0000 000 000000000000  0000 000100 0000   000010111  232  0X016: cmp1        error;                             | *NOT SUPPORTED*
+                                                            233  
+                                                            234  |--------------------------------------------------------------
+                                                            235  | 0X17    CMPU                OpCode              Pop RHS,LHS; push ( LHS cmpu RHS )
+                                                            236  |--------------------------------------------------------------
+0X017  0000 000 000000000000  0000 000100 0000   000011000  237  0X017: cmpu1       error;                             | *NOT SUPPORTED*
+                                                            238  
+                                                            239  |--------------------------------------------------------------
+                                                            240  | 0X18    SRA1                OpCode              Pop RHS; push ( RHS shift-right (arithmetic) 1 bit )
+                                                            241  |--------------------------------------------------------------
+0X018  0111 000 001000010000  0100 010100 0000   010011001  242  0X018: sra11       set MDR, TOS = TOS; SRA1           | TOS = TOS >> 1 (RHS already in TOS)
+0X099  0100 001 000000001000  0000 010100 0000   010011010  243                     set MAR = SP; write                | update top-of-stack with "new" TOS
+0X09A  0000 000 000000000000  0000 010000 0000   100000000  244                     donothing; goto main1
+                                                            245  
+                                                            246  |--------------------------------------------------------------
+                                                            247  | 0X19    SL1                 OpCode              Pop RHS; push ( RHS shift-left 1 bit )
+                                                            248  |--------------------------------------------------------------
+0X019  0111 000 001000010000  0001 010100 0000   010011011  249  0X019: sl11        set MDR, TOS = TOS; sl1
+0X09B  0100 001 000000001000  0000 010100 0000   010011100  250                     set MAR = SP; write                | update top-of-stack with "new" TOS
+Page   6  "Problem52.mal"
+
+  MLC B-Bus Mem        C-Bus Shift    ALU  JAM nextAddress Line  Source Line
+----- ----- --- ------------ ----- ------ ---- ----------- ----  --------------------------------------------------------------------------
+0X09C  0000 000 000000000000  0000 010000 0000   100000000  251                     donothing; goto main1
+                                                            252  
+                                                            253  |--------------------------------------------------------------
+                                                            254  | 0X30    JMP     O32         OpCode:O32          PC <- O32
+                                                            255  |--------------------------------------------------------------
+0X030  0001 000 000000100000  0000 110101 0000   010011101  256  0X030: jmp1        set PC  = PC+1
+0X09D  0011 100 100000000000  1000 010100 0000   010011110  257                     set H   = MBRU;      sl8; fetch    | MBR = byte1 of O32; fetch byte2
+0X09E  0001 000 000000100000  0000 110101 0000   010011111  258                     set PC  = PC+1
+0X09F  0011 100 100000000000  1000 011100 0000   010100000  259                     set H   = H or MBRU; sl8; fetch    | MBR = byte2 of O32; fetch byte3
+0X0A0  0001 000 000000100000  0000 110101 0000   010100001  260                     set PC  = PC+1
+0X0A1  0011 100 100000000000  1000 011100 0000   010100010  261                     set H   = H or MBRU; sl8; fetch    | MBR = byte3 of O32; fetch byte4
+0X0A2  0000 000 000000000000  0000 010000 0000   010100011  262                     donothing
+0X0A3  0011 100 000000100000  0000 011100 0000   010100100  263                     set PC  = H or MBRU;      fetch    | MBR = byte4 of O32, PC = O32; fetch next opCode
+0X0A4  0000 000 000000000000  0000 010000 0000   100000000  264                     donothing; goto main1
+                                                            265  
+                                                            266  |--------------------------------------------------------------
+                                                            267  | 0X31    JMPL    O32         OpCode:O32          Peek LHS; if ( LHS <  0 ) PC <- O32
+                                                            268  |--------------------------------------------------------------
+0X031  0000 000 000000000000  0000 000100 0000   000110010  269  0X031: jmpl1       error;                             | *NOT SUPPORTED*
+                                                            270  
+                                                            271  |--------------------------------------------------------------
+                                                            272  | 0X32    JMPE    O32         OpCode:O32          Peek LHS; if ( LHS =  0 ) PC <- O32
+                                                            273  |--------------------------------------------------------------
+0X032  0000 000 000000000000  0000 000100 0000   000110011  274  0X032: jmpe1       error;                             | *NOT SUPPORTED*
+                                                            275  
+                                                            276  |--------------------------------------------------------------
+                                                            277  | 0X33    JMPG    O32         OpCode:O32          Peek LHS; if ( LHS >  0 ) PC <- O32
+                                                            278  |--------------------------------------------------------------
+0X033  0000 000 000000000000  0000 000100 0000   000110100  279  0X033: jmpg1       error;                             | *NOT SUPPORTED*
+                                                            280  
+                                                            281  |--------------------------------------------------------------
+                                                            282  | 0X34    JMPLE   O32         OpCode:O32          Peek LHS; if ( LHS <= 0 ) PC <- O32
+                                                            283  |--------------------------------------------------------------
+0X034  0000 000 000000000000  0000 000100 0000   000110101  284  0X034: jmple1      error;                             | *NOT SUPPORTED*
+                                                            285  
+                                                            286  |--------------------------------------------------------------
+                                                            287  | 0X35    JMPGE   O32         OpCode:O32          Peek LHS; if ( LHS >= 0 ) PC <- O32
+                                                            288  |--------------------------------------------------------------
+0X035  0000 000 000000000000  0000 000100 0000   000110110  289  0X035: jmpge1      error;                             | *NOT SUPPORTED*
+                                                            290  
+                                                            291  |--------------------------------------------------------------
+                                                            292  | 0X36    JMPNE   O32         OpCode:O32          Peek LHS; if ( LHS != 0 ) PC <- O32
+                                                            293  |--------------------------------------------------------------
+0X036  0000 000 000000000000  0000 000100 0000   000110111  294  0X036: jmpne1      error;                             | *NOT SUPPORTED*
+                                                            295  
+                                                            296  |--------------------------------------------------------------
+                                                            297  | 0X37    JMPT    O32          OpCode:O32         Pop LHS; if ( LHS != 0 ) PC <- O32 ***could be an alias for JMPNE (JMPNZ)
+                                                            298  |--------------------------------------------------------------
+0X037  0000 000 000000000000  0000 000100 0000   000111000  299  0X037: jmpt1       error;                             | *NOT SUPPORTED*
+                                                            300  
+Page   7  "Problem52.mal"
+
+  MLC B-Bus Mem        C-Bus Shift    ALU  JAM nextAddress Line  Source Line
+----- ----- --- ------------ ----- ------ ---- ----------- ----  --------------------------------------------------------------------------
+                                                            301  |--------------------------------------------------------------
+                                                            302  | 0X38    JMPF    O32          OpCode:O32         Pop LHS; if ( LHS =  0 ) PC <- O32 ***could be an alias for JMPE  (JMPZ)
+                                                            303  |--------------------------------------------------------------
+0X038  0000 000 000000000000  0000 000100 0000   000111101  304  0X038: jmpf1       error;                             | *NOT SUPPORTED*
+                                                            305  
+                                                            306  |--------------------------------------------------------------
+                                                            307  | 0X3D    CALL    O32         OpCode:O32          Push PC; PC <- O32
+                                                            308  |--------------------------------------------------------------
+0X03D  0000 000 000000000000  0000 000100 0000   000111110  309  0X03D: call1       error;                             | *NOT SUPPORTED*
+                                                            310  
+                                                            311  |--------------------------------------------------------------
+                                                            312  | 0X3E    RETURN              OpCode              Pop PC
+                                                            313  |--------------------------------------------------------------
+0X03E  0000 000 000000000000  0000 000100 0000   000111111  314  0X03E: return1     error;                             | *NOT SUPPORTED*
+                                                            315  
+                                                            316  |--------------------------------------------------------------
+                                                            317  | 0X3F    SVC     #O32        OpCode:O32          Make system service request #O32 (single parameter passed on run-time stack)
+                                                            318  |--------------------------------------------------------------
+0X03F  0001 000 000000100000  0000 110101 0000   010100101  319  0X03F: svc1        set PC  = PC+1
+0X0A5  0011 100 100000000000  1000 010100 0000   010100110  320                     set H   = MBRU;      sl8; fetch    | MBR = byte1 of O32; fetch byte2
+0X0A6  0001 000 000000100000  0000 110101 0000   010100111  321                     set PC  = PC+1
+0X0A7  0011 100 100000000000  1000 011100 0000   010101000  322                     set H   = H or MBRU; sl8; fetch    | MBR = byte2 of O32; fetch byte3
+0X0A8  0001 000 000000100000  0000 110101 0000   010101001  323                     set PC  = PC+1
+0X0A9  0011 100 100000000000  1000 011100 0000   010101010  324                     set H   = H or MBRU; sl8; fetch    | MBR = byte3 of O32; fetch byte4
+0X0AA  0001 000 000000100000  0000 110101 0000   010101011  325                     set PC  = PC+1                     | PC = address-of next opCode
+0X0AB  0011 100 000000000100  0000 011100 0000   010101100  326                     set T1  = H or MBRU;    ; fetch    | MBR = byte4 of O32, T1 = O32; fetch next opCode
+0X0AC  0000 000 000000000000  0000 000001 0000   100000000  327                     svc; goto main1
+Page   8  "Problem52.mal"
+
+Address          0         1         2         3         4         5         6         7         8         9         A         B         C         D         E         F
+  0X000:     NOOP1     PUSH1    PUSHA1      POP1  DISCARD1     SWAP1  MAKEDUP1   PUSHLV1    POPLV1   PUSHSP1    POPSP1  PUSHCPP1   POPCPP1                              
+  0X010:      ADD1      SUB1      NEG1      AND1       OR1      NOT1      CMP1     CMPU1     SRA11      SL11                                                            
+  0X020:                                                                                                                                                                
+  0X030:      JMP1     JMPL1     JMPE1     JMPG1    JMPLE1    JMPGE1    JMPNE1     JMPT1     JMPF1                                             CALL1   RETURN1      SVC1
+  0X040: --------- --------- ---------  DISCARDF --------- --------- --------- --------- --------- --------- --------- --------- --------- --------- --------- ---------
+  0X050: --------- --------- --------- --------- --------- --------- --------- --------- --------- --------- --------- ---------     PUSHX --------- --------- ---------
+  0X060: --------- --------- --------- --------- --------- --------- --------- --------- --------- --------- --------- --------- --------- --------- --------- ---------
+  0X070: --------- --------- ---------    PUSHAX --------- --------- --------- --------- --------- --------- --------- --------- --------- --------- ---------      POPX
+  0X080: --------- --------- --------- --------- --------- --------- --------- --------- --------- --------- --------- --------- --------- --------- --------- ---------
+  0X090: --------- --------- --------- --------- --------- --------- --------- --------- --------- --------- --------- --------- --------- --------- --------- ---------
+  0X0A0: --------- --------- --------- --------- --------- --------- --------- --------- --------- --------- --------- --------- ---------                              
+  0X0B0:                                                                                                                                                                
+  0X0C0:                                                                                                                                                                
+  0X0D0:                                                                                                                                                                
+  0X0E0:                                                                                                                                                                
+  0X0F0:                                                                                                                                                                
+  0X100:     MAIN1                                                                                                                                                      
+  0X110:                                                                                                                                                                
+  0X120:                                                                                                                                                                
+  0X130:                                                                                                                                                                
+  0X140:                                DISCARDT                                                                                                                        
+  0X150:                                                                                                                                                                
+  0X160:                                                                                                                                                                
+  0X170:                                                                                                                                                                
+  0X180:                                                                                                                                                                
+  0X190:                                                                                                                                                                
+  0X1A0:                                                                                                                                                                
+  0X1B0:                                                                                                                                                                
+  0X1C0:                                                                                                                                                                
+  0X1D0:                                                                                                                                                                
+  0X1E0:                                                                                                                                                                
+  0X1F0:                                                                                                                                                                
+
+146 microinstructions assembled

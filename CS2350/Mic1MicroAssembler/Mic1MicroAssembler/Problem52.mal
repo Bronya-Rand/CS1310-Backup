@@ -190,19 +190,26 @@
 |--------------------------------------------------------------
 0X010: add1        set MAR, SP = SP - 4; read
                    donothing
-                   set H = MDR
+                   set H = MDR;
                    set MDR, TOS = H + TOS; write
                    donothing; goto main1
 
 |--------------------------------------------------------------
 | 0X11    SUB                 OpCode              Pop RHS,LHS; push ( LHS-RHS )
 |--------------------------------------------------------------
-0X011:  sub1       error;                             | *NOT SUPPORTED*
+0X011:  sub1       set MAR, SP = SP - 4; read
+                   donothing
+                   set H = MDR;
+                   set MDR, TOS = TOS - H; write
+                   donothing; goto main1
 
 |--------------------------------------------------------------
 | 0X12    NEG                 OpCode              Pop RHS;     push -RHS
 |--------------------------------------------------------------
-0X012: neg1        error;                             | *NOT SUPPORTED*
+0X012: neg1        set H = TOS;      
+                   set MAR = SP;
+                   set MDR, TOS = -H; write
+                   donothing; goto main1
 
 |--------------------------------------------------------------
 | 0X13    AND                 OpCode              Pop RHS,LHS; push ( LHS and  RHS )

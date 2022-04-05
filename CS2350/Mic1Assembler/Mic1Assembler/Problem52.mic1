@@ -1,0 +1,67 @@
+;--------------------------------------------------------------
+; Dr. Art Hanna
+; Problem #52
+; Problem52.mic1
+;--------------------------------------------------------------
+                       ORG      0X00000000
+
+Main                   NOOP                      ; NOOP for fun!
+; PRINT "x? "
+                       PUSH     #xPrompt
+                       SVC      #6
+                       DISCARD  #1
+; INPUT x
+                       PUSH     #x
+                       SVC      #2
+                       DISCARD  #1
+; PRINT "x+7 = ",x+7,ENDL
+                       PUSH     x                ; *NOTE*
+                       PUSH     #7
+                       ADD                       ; *NOTE*
+                       PUSHA    xResult1         ; *NOTE*
+                       SVC      #6
+                       DISCARD  #1
+                       SVC      #3
+                       DISCARD  #1
+                       SVC      #7
+;--------------------------------------------------------------
+; JMP for fun (part 1)!
+;--------------------------------------------------------------
+                       JMP      JMPForFun
+;--------------------------------------------------------------
+; PRINT "x >> 1 = ",x >> 1,ENDL
+result2                PUSHA    xResult2         ; *NOTE*
+                       SVC      #6
+                       DISCARD  #1
+                       PUSH     x                ; *NOTE*
+                       SRA1                      ; *NOTE*
+                       SVC      #3
+                       DISCARD  #1
+                       SVC      #7
+;--------------------------------------------------------------
+; JMP for fun (part 2)!
+;--------------------------------------------------------------
+                       JMP      result3
+JMPForFun              JMP      result2
+;--------------------------------------------------------------
+; PRINT "x << 1 = ",x << 1,ENDL
+result3                PUSHA    xResult3         ; *NOTE*
+                       SVC      #6
+                       DISCARD  #1
+                       PUSH     x                ; *NOTE*
+                       SL1                       ; *NOTE*
+                       SVC      #3
+                       DISCARD  #1
+                       SVC      #7
+; STOP
+                       SVC      #1
+
+;--------------------------------------------------------------
+; data definitions in static, non-based memory
+;--------------------------------------------------------------
+                        ORG     0X00001000
+xPrompt                 DS      "x? "
+xResult1                DS      "x+7 = "
+xResult2                DS      "x >> 1 = "
+xResult3                DS      "x << 1 = "
+x                       RW

@@ -144,7 +144,7 @@
     <ClCompile Include="Mic1MicroAssembler.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Problem51.mal" />
+    <None Include="Problem52.mal" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
