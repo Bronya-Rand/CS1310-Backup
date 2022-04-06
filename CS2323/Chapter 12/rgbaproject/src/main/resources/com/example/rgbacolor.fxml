@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Rectangle?>
+
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="134.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17">
+  <columnConstraints>
+    <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" />
+    <ColumnConstraints hgrow="SOMETIMES" maxWidth="278.0" minWidth="10.0" prefWidth="278.0" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="125.0" minWidth="10.0" prefWidth="83.0" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="177.0" minWidth="10.0" prefWidth="177.0" />
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="32.0" minHeight="27.0" prefHeight="27.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="38.0" minHeight="26.0" prefHeight="30.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="29.0" minHeight="15.0" prefHeight="28.0" vgrow="SOMETIMES" />
+  </rowConstraints>
+   <children>
+      <Label text="Red" />
+      <Label text="Green" GridPane.rowIndex="1" />
+      <Label text="Blue" GridPane.rowIndex="2" />
+      <Label text="Alpha" GridPane.rowIndex="3" />
+      <Slider fx:id="redSlider" max="255.0" minorTickCount="5" GridPane.columnIndex="1" />
+      <Slider fx:id="greenSlider" max="255.0" minorTickCount="5" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <Slider fx:id="blueSlider" max="255.0" minorTickCount="5" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <Slider fx:id="alphaSlider" blockIncrement="0.1" majorTickUnit="0.5" max="1.0" minorTickCount="0" value="1.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+      <TextField fx:id="redTextField" maxHeight="-Infinity" maxWidth="-Infinity" prefWidth="70.0" GridPane.columnIndex="2" />
+      <TextField fx:id="greenTextField" maxHeight="-Infinity" maxWidth="-Infinity" prefWidth="70.0" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+      <TextField fx:id="blueTextField" maxHeight="-Infinity" maxWidth="-Infinity" prefWidth="70.0" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+      <TextField fx:id="alphaTextField" maxHeight="-Infinity" maxWidth="-Infinity" prefWidth="70.0" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+      <Circle fill="#4d4d4d" radius="40.0" stroke="BLACK" strokeType="INSIDE" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowSpan="2147483647" />
+      <Rectangle fx:id="colorRectangle" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="100.0" stroke="BLACK" strokeType="INSIDE" width="100.0" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowSpan="2147483647" />
+   </children>
+</GridPane>

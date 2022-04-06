@@ -28,15 +28,28 @@ public class PainterController {
     }
 
     /// instance variables associated with GUI controls
+    @FXML
     private RadioButton blackRadioButton;
+
+    @FXML
     private RadioButton redRadioButton;
+
+    @FXML
     private RadioButton greenRadioButton;
+
+    @FXML
     private RadioButton blueRadioButton;
 
+    @FXML
     private RadioButton smallRadioButton;
+
+    @FXML
     private RadioButton mediumRadioButton;
+
+    @FXML
     private RadioButton largeRadioButton;
 
+    @FXML
     private Pane drawingPane;
 
     @FXML
