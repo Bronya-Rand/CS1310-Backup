@@ -1,0 +1,65 @@
+;----------------------------------------------------------
+; Problem #58, Problem #1
+;----------------------------------------------------------
+                   ORG      0X00000000
+Main               NOOP
+; INPUT "x? " x
+                   PUSH      #message1
+                   SVC       #6
+                   PUSHA     x
+                   SVC       #4
+                   DISCARD   #2
+; PRINT x,ENDL
+                   PUSH      #result1 ; x
+                   SVC       #6
+                   DISCARD   #1
+                   PUSH      x
+                   SVC       #3
+                   SVC       #7
+                   DISCARD   #1
+; PRINT -x,ENDL
+                   PUSH      #result2 ; -x
+                   SVC       #6
+                   DISCARD   #1
+                   PUSH      x ; x
+                   NEG         ; -x
+                   SVC       #3
+                   SVC       #7
+; PRINT x-1,ENDL
+                   PUSH      #result3 ; x-1
+                   SVC       #6
+                   DISCARD   #1
+                   PUSH      x ; x
+                   PUSH      #1 ; x,1
+                   SUB         ; x-1
+                   SVC       #3
+                   SVC       #7
+; PRINT 4*x,ENDL
+                   PUSH      #result4 ; 4*x
+                   SVC       #6
+                   DISCARD   #1
+                   PUSH      x ; x
+                   SL1         ; 2*x
+                   SL1         ; 4*x
+                   SVC       #3
+                   SVC       #7
+; PRINT x/4,ENDL
+                   PUSH      #result5 ; x/4
+                   SVC       #6
+                   DISCARD   #1
+                   PUSH      x ; x
+                   SRA1        ; x/2
+                   SRA1        ; x/4
+                   SVC       #3
+                   SVC       #7
+; STOP
+                   SVC       #1
+
+
+message1           DS      "x? "
+x                  RW
+result1            DS      "x: "
+result2            DS      "-x: "
+result3            DS      "x-1: "
+result4            DS      "4*x: "
+result5            DS      "x/4: "

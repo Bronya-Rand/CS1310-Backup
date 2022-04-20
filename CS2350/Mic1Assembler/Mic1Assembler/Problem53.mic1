@@ -1,0 +1,101 @@
+;--------------------------------------------------------------
+; Dr. Art Hanna
+; Problem #53
+; Problem53.mic1
+;--------------------------------------------------------------
+                       ORG      0X00000000
+
+Main                   NOOP
+; PRINT "---------------------------------------"
+; PRINT "All input and output is in hexadecimal!"
+; PRINT "---------------------------------------"
+                       PUSHA    message2
+                       SVC      #6
+                       SVC      #7
+                       PUSHA    message1
+                       SVC      #6
+                       SVC      #7
+                       PUSHA    message2
+                       SVC      #6
+                       SVC      #7
+                       DISCARD  #3               ; DISCARD 3 words at the same time!
+; INPUT "x? " x
+                       PUSH     #xPrompt
+                       SVC      #6
+                       PUSH     #x
+                       SVC      #4
+                       DISCARD  #2               ; DISCARD 2 words at the same time!
+; INPUT "y? " y
+                       PUSH     #yPrompt
+                       SVC      #6
+                       PUSH     #y
+                       SVC      #4
+                       DISCARD  #2
+; PRINT "-x      = ",-x,ENDL
+                       PUSH     #result1
+                       SVC      #6
+                       DISCARD  #1
+                       PUSH     x
+                       NEG                       ; *NOTE*
+                       SVC      #5
+                       DISCARD  #1               ; DISCARD 1 word!
+                       SVC      #7
+; PRINT "NOT y   = ",NOT y,ENDL
+                       PUSH     #result2
+                       SVC      #6
+                       DISCARD  #1
+                       PUSH     y
+                       NOT                       ; *NOTE*
+                       SVC      #5
+                       DISCARD  #1
+                       SVC      #7
+; PRINT "x-y     = ",x-y,ENDL
+                       PUSH     #result3
+                       SVC      #6
+                       DISCARD  #1
+                       PUSH     x
+                       PUSH     y
+                       SUB                       ; *NOTE*
+                       SVC      #5
+                       DISCARD  #1
+                       SVC      #7
+; PRINT "x AND y = ",x AND y,ENDL
+                       PUSH     #result4
+                       SVC      #6
+                       DISCARD  #1
+                       PUSH     x
+                       PUSH     y
+                       AND                       ; *NOTE*
+                       SVC      #5
+                       DISCARD  #1
+                       SVC      #7
+; PRINT "x OR y  = ",x OR y,ENDL
+                       PUSH     #result5
+                       SVC      #6
+                       DISCARD  #1
+                       PUSH     x
+                       PUSH     y
+                       OR                        ; *NOTE*
+                       SVC      #5
+                       DISCARD  #1
+                       SVC      #7
+; STOP
+                       SVC      #1
+
+;--------------------------------------------------------------
+; data definitions
+;--------------------------------------------------------------
+                        ORG     0X00001000
+message1                DS      "All input and output is in hexadecimal!"
+message2                DS      "---------------------------------------"
+
+xPrompt                 DS      "x? "
+x                       RW
+yPrompt                 DS      "y? "
+y                       RW
+
+result1                 DS      "-x      = "
+result2                 DS      "NOT y   = "
+result3                 DS      "x-y     = "
+result4                 DS      "x AND y = "
+result5                 DS      "x OR y  = "

@@ -1,0 +1,41 @@
+
+    TOS0     TOS1     TOS2     TOS3        SP       PC Assembly instruction
+-------- -------- -------- --------  -------- -------- ----------------------------------------
+ (empty)                             0007FFFC 00000000                 PUSH     #0X00000075
+00000075                             00080000 00000006                 SVC      #6
+00000075                             00080000 0000000B                 PUSHA    message1
+0000008D 00000075                    00080004 00000011                 SVC      #4
+**********
+x? FFFFFFFB
+**********
+0000008D 00000075                    00080004 00000016                 DISCARD  #2
+ (empty)                             0007FFFC 0000001B                 PUSH     #message2
+00000079                             00080000 00000021                 SVC      #6
+00000079                             00080000 00000026                 PUSHA    result1
+00000091 00000079                    00080004 0000002C                 SVC      #4
+**********
+y? FFFFFFF0
+**********
+00000091 00000079                    00080004 00000031                 DISCARD  #2
+ (empty)                             0007FFFC 00000036                 PUSH     message1
+FFFFFFFB                             00080000 0000003C                 PUSH     #0X00000000
+00000000 FFFFFFFB                    00080004 00000042 endif1          CMP      
+FFFFFFFF                             00080000 00000043                 JMPGE    endif1
+ (empty)                             0007FFFC 00000048                 PUSH     result1
+
+    TOS0     TOS1     TOS2     TOS3        SP       PC Assembly instruction
+-------- -------- -------- --------  -------- -------- ----------------------------------------
+FFFFFFF0                             00080000 0000004E                 PUSH     #0X00000000
+00000000 FFFFFFF0                    00080004 00000054                 CMP      
+FFFFFFFF                             00080000 00000055                 JMPGE    endif1
+ (empty)                             0007FFFC 0000005A                 PUSH     #result1
+0000007D                             00080000 00000060                 SVC      #6
+0000007D                             00080000 00000065                 DISCARD  #1
+ (empty)                             0007FFFC 0000006A                 SVC      #7
+**********
+x < 0 AND y < 0
+**********
+ (empty)                             0007FFFC 0000006F endif1          NOOP     
+ (empty)                             0007FFFC 00000070                 SVC      #1
+
+SVC_STOP_PROGRAM_EXECUTION: Mic1 stopped

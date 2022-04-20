@@ -1,0 +1,21 @@
+;----------------------------------------------------------
+; Dr. Art Hanna
+; Problem #57A
+; Problem57A.mic1
+;----------------------------------------------------------
+                   ORG       0X00000000
+main               NOOP
+; PRINT "Howdy, "
+                   PUSHA     message1A
+                   SVC       #6
+                   DISCARD   #1
+; PRINT "world!",ENDL
+                   PUSHA     message1B
+                   SVC       #6
+                   DISCARD   #1
+                   SVC       #7
+; STOP
+                   SVC       #1
+
+message1A          DS        "Howdy, "
+message1B          DS        "world!"

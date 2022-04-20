@@ -1,0 +1,37 @@
+;----------------------------------------------------------
+; Azariel Del Carmen
+; Problem #57C
+; Problem57C.mic1
+;----------------------------------------------------------
+                   ORG       0X00000000
+main               NOOP
+; INPUT x
+                   PUSHA     x
+                   SVC       #2
+                   DISCARD   #1
+; INPUT y
+                   PUSHA     y
+                   SVC       #2
+                   DISCARD   #1
+; r := -4*(x+1)–y
+                   PUSH      x  ; x
+                   PUSH      #1  ; x,1
+                   ADD          ; x + 1
+                   SL1          ; 2(x+1)
+                   SL1          ; 4(x+1)
+                   NEG          ; -4(x+1)
+                   PUSH      y  ; -4(x+1),y
+                   SUB          ; -4(x+1)-y
+                   POP       r  ; (empty)
+                   
+; PRINT r,ENDL
+                   PUSH      r
+                   SVC       #3
+                   SVC       #7
+                   DISCARD   #1
+; STOP
+                   SVC       #1
+
+x                  RW
+y                  RW
+r                  RW

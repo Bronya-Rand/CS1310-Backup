@@ -1,0 +1,29 @@
+;----------------------------------------------------------
+; Problem #58, Problem #2
+;----------------------------------------------------------
+; INPUT "x? " x
+                   PUSH      #message1
+                   SVC       #6
+                   PUSHA     x
+                   SVC       #4
+                   DISCARD   #2
+; IF ( x < 0 ) THEN
+                   PUSH      x
+                   PUSH      #0
+                   CMP       ;-1 when x < 0 | 0 when x = 0 | 1 if x > 0
+                   JMPGE     endif1
+;    PRINT "x < 0",ENDL
+                   PUSH      #result1
+                   SVC       #6
+                   DISCARD   #1
+                   PUSH      x
+                   SVC       #3
+                   SVC       #7
+; END
+endif1             NOOP
+; STOP
+                   SVC       #1
+
+message1           DS      "x? "
+result1            DS      "x < 0: "
+x                  RW

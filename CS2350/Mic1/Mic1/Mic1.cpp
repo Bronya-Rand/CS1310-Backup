@@ -5,9 +5,12 @@
 //    4/24/2018 1.1 added aliases for conditional JMPs
 //                  added JMPT, JMPF to ISA
 //    3/11/2020 1.2 corrected for "deprecated conversion from string constant" warnings
+//    4/19/2022 1.3 added support to run multiple simulation .listing files via input
+//                  and use try/catch using invalid_argurment exceptions
+//                  (by Azariel Del Carmen)
 // Mic1.cpp
 //----------------------------------------------------
-#define MIC1_VERSION "1.2 3/11/2020"
+#define MIC1_VERSION "1.3 4/19/2022"
 
 #include <iostream>
 #include <iomanip>
@@ -337,49 +340,58 @@ int main()
 
    MICROINSTRUCTION controlStore[512];
    char fileName[80+1];
+   char cont = 'n';
 
-   cout << "Mic-1 version " << MIC1_VERSION << "\n\n";
+   char OUTPUTFileName[80 + 1];
+   char objectFileName[80 + 1];
+   ifstream OBJECT;
 
-   cout << "Object fileName? ";
-   while ( cin >> fileName )
+   cout << "Mic1 Simulation - Version " << MIC1_VERSION << "\n\n";
+   do
    {
-      char OUTPUTFileName[80+1];
-      char objectFileName[80+1];
-      ifstream OBJECT;
+      try {
+          cout << "Object fileName? ";
+          cin >> fileName;
 
-      strcpy(objectFileName,fileName);
-      strcat(objectFileName,".object");
-      OBJECT.open(objectFileName,ios::in);
-      if ( !OBJECT.is_open() )
-         cout << "Unable to open " << "\"" << objectFileName << "\"" << endl;
-      else
-      {
-         cout << "Using object file \"" << objectFileName << "\"" << endl;
-         LoadObjectFile(OBJECT);
-         OBJECT.close();
+          strcpy(objectFileName,fileName);
+          strcat(objectFileName,".object");
+          OBJECT.open(objectFileName,ios::in);
+          if (!OBJECT.is_open())
+              throw invalid_argument("Error opening given file name's object file.");
+          else
+          {
+              cout << "Using object file \"" << objectFileName << "\"" << endl;
+              LoadObjectFile(OBJECT);
+              OBJECT.close();
 
-         strcpy(OUTPUTFileName,fileName);
-         strcat(OUTPUTFileName,".output");
-         OUTPUT.open(OUTPUTFileName,ios::out);
-         cout << "Using output file \"" << OUTPUTFileName << "\"" << endl;
+              strcpy(OUTPUTFileName, fileName);
+              strcat(OUTPUTFileName, ".output");
+              OUTPUT.open(OUTPUTFileName, ios::out);
+              cout << "Using output file \"" << OUTPUTFileName << "\"" << endl;
 
-         LoadControlStore(controlStore,fileName);
-         
-         char YOrN;
-         do
-         {
-            cout << "TRACE_MICROINSTRUCTIONS [Y,N]? ";
-            cin >> YOrN;
-         } while ( !((toupper(YOrN) == 'Y') || (toupper(YOrN) == 'N')) );
-         TRACE_MICROINSTRUCTIONS = (toupper(YOrN) == 'Y');
+              LoadControlStore(controlStore, fileName);
 
-         ExecuteObjectProgram(controlStore);
-         OUTPUT.close();
+              char YOrN;
+              do
+              {
+                  cout << "Trace Microinstructions? (y/n): ";
+                  cin >> YOrN;
+              } while (!((toupper(YOrN) == 'Y') || (toupper(YOrN) == 'N')));
+              TRACE_MICROINSTRUCTIONS = (toupper(YOrN) == 'Y');
+
+              ExecuteObjectProgram(controlStore);
+              OUTPUT.close();
+          }
       }
-      cout << "\nObject fileName? ";
-   }
-
-   system("PAUSE");
+      catch (const std::invalid_argument &e) {
+           cout << "A invalid argurment exception has occurred: '" << e.what() << "'." << endl;
+      }
+      catch (const std::exception& e) {
+          cout << "A unhandled exception has occurred: '" << e.what() << "'." << endl;
+      }
+      cout << "\nContinue Simulation? (y/n): "; cin >> cont;
+   } while (tolower(cont) == 'y');
+   cout << "Exiting Simulation." << endl;
    return( 0 );
 }
 
@@ -481,8 +493,8 @@ void LoadControlStore(MICROINSTRUCTION controlStore[],char fileName[])
       file names--when not found prompt user for control store file name.
 */
 
-   strcpy(CSFileName,"Mic1.cs");
-   CS.open(CSFileName,ios::in);
+   //strcpy(CSFileName,"Mic1.cs");
+   //CS.open(CSFileName,ios::in);
    if ( !CS.is_open() )
    {
       strcpy(CSFileName,fileName);

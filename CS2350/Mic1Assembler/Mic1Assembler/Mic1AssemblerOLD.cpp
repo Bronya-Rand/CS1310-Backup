@@ -1,19 +1,16 @@
 //----------------------------------------------------
 // Dr. Art Hanna
 // Mic1 Assembler
-//    8/15/2017 1.0
+//    8/15/2017 1.0 
 //    4/24/2018 1.1 added aliases for conditional JMPs
 //                  added JMPT, JMPF to ISA
-//    3/11/2020 1.2 changed "LineIsLabeled" typo found in DoPass2()
+//    3/11/2020 1.2 changed "LineIsLabeled" typo found in DoPass2() 
 //                  to "lineIsLabeled" (found by Joel Trejo (Spring, 2020))
 //    4/15/2021 1.2 added SL1 for Exam over Chapter #7
-//    4/12/2022 1.3 added support to compile multiple .mic1 files via input
-//                  and use try/catch using invalid_argurment exceptions
-//                  (by Azariel Del Carmen)
-//
+//                  
 // Mic1Assembler.cpp
 //----------------------------------------------------
-#define MIC1_VERSION "1.3 4/12/2022"
+#define MIC1_VERSION "1.2 3/11/2020"
 
 #include <iostream>
 #include <iomanip>
@@ -26,30 +23,30 @@
 using namespace std;
 
 typedef unsigned char BYTE;
-typedef int WORD32;
+typedef int           WORD32;
 
-#define LINELENGTH 255
-#define LINESPERPAGE 55
-#define EOFCHARACTER (1)
-#define EOLCHARACTER (2)
+#define LINELENGTH               255
+#define LINESPERPAGE              55
+#define EOFCHARACTER             (1)
+#define EOLCHARACTER             (2)
 
-const WORD32 MINMEMORYADDRESS = 0X00000000; // minimum usable memory address
-const WORD32 MAXMEMORYADDRESS = 0X000FFFFF; // maximum usable memory address
+const WORD32 MINMEMORYADDRESS = 0X00000000;  // minimum usable memory address
+const WORD32 MAXMEMORYADDRESS = 0X000FFFFF;  // maximum usable memory address
 
 #define RECORDSYNTAXERROR(syntaxError)                       \
-   {                                                         \
-      if (numberOfSyntaxErrors <= 4)                         \
-         syntaxErrors[++numberOfSyntaxErrors] = syntaxError; \
-   }
+{                                                            \
+   if ( numberOfSyntaxErrors <= 4 )                          \
+      syntaxErrors[++numberOfSyntaxErrors] = syntaxError;    \
+}
 
 #define BYTE1(word) ((0XFF000000 & word) >> 24)
 #define BYTE2(word) ((0X00FF0000 & word) >> 16)
-#define BYTE3(word) ((0X0000FF00 & word) >> 8)
-#define BYTE4(word) (0X000000FF & word)
+#define BYTE3(word) ((0X0000FF00 & word) >>  8)
+#define BYTE4(word) ( 0X000000FF & word)
 
 //========================================
 enum TOKEN
-//========================================
+    //========================================
 {
     // assembler mnemonics
     ORG,
@@ -84,19 +81,13 @@ enum TOKEN
     CMPU,
     SRA1,
     SL1,
-    JMP, // aliases for conditional JMPs
-    JMPL,
-    JMPN,
-    JMPE,
-    JMPZ,
-    JMPG,
-    JMPP,
-    JMPLE,
-    JMPNP,
-    JMPGE,
-    JMPNN,
-    JMPNE,
-    JMPNZ,
+    JMP, //aliases for conditional JMPs
+    JMPL, JMPN,
+    JMPE, JMPZ,
+    JMPG, JMPP,
+    JMPLE, JMPNP,
+    JMPGE, JMPNN,
+    JMPNE, JMPNZ,
     JMPT,
     JMPF,
     CALL,
@@ -117,7 +108,7 @@ enum TOKEN
 
 //========================================
 enum SYNTAXERROR
-//========================================
+    //========================================
 {
     ORG_MAY_NOT_BE_LABELED,
     MNEMONIC_MISSING,
@@ -141,21 +132,22 @@ const char syntaxErrorMessages[][50 + 1] =
 //========================================
 {
     //  12345678901234567890123456789012345678901234567890
-    "ORG may not be labeled",
-    "Labeled line must contain a mnemonic",
-    "Unrecognizable instruction",
-    "Invalid RW operand",
-    "Invalid DW operand",
-    "Invalid DS operand",
-    "Multiply defined identifier",
-    "Undefined identifier",
-    "Integer is missing",
-    "Integer or identifier is missing",
-    "'#' missing",
-    "':' missing",
-    "Immediate mode not allowed for PUSHA or POP",
-    "End of source line expected",
-    "Location counter overflow" };
+       "ORG may not be labeled",
+       "Labeled line must contain a mnemonic",
+       "Unrecognizable instruction",
+       "Invalid RW operand",
+       "Invalid DW operand",
+       "Invalid DS operand",
+       "Multiply defined identifier",
+       "Undefined identifier",
+       "Integer is missing",
+       "Integer or identifier is missing",
+       "'#' missing",
+       "':' missing",
+       "Immediate mode not allowed for PUSHA or POP",
+       "End of source line expected",
+       "Location counter overflow"
+};
 
 enum OPERANDTYPE
 {
@@ -170,11 +162,11 @@ enum OPERANDTYPE
 
 //========================================
 struct HWOPERATIONRECORD
-//========================================
+    //========================================
 {
     int opCode;
     int sizeInBytes;
-    char mnemonic[8 + 1]; // *CUIDADO* increase size for longer-than-8-character mnemonics
+    char mnemonic[8 + 1];    // *CUIDADO* increase size for longer-than-8-character mnemonics
     TOKEN token;
     OPERANDTYPE operandType;
 };
@@ -183,52 +175,53 @@ struct HWOPERATIONRECORD
 const HWOPERATIONRECORD HWOperationTable[] =
 //========================================
 {
-    {0X00, 1, "NOOP", NOOP, NONE},
-    {0X01, 6, "PUSH", PUSH, MEMORY},
-    {0X02, 6, "PUSHA", PUSHA, MEMORY},
-    {0X03, 6, "POP", POP, MEMORY},
-    {0X04, 5, "DISCARD", DISCARD, IMMO32},
-    {0X05, 1, "SWAP", SWAP, NONE},
-    {0X06, 1, "MAKEDUP", MAKEDUP, NONE},
-    {0X07, 1, "PUSHLV", PUSHLV, NONE},
-    {0X08, 1, "POPLV", POPLV, NONE},
-    {0X09, 1, "PUSHSP", PUSHSP, NONE},
-    {0X0A, 1, "POPSP", POPSP, NONE},
-    {0X0B, 1, "PUSHCPP", PUSHCPP, NONE},
-    {0X0C, 1, "POPCPP", POPCPP, NONE},
-    {0X10, 1, "ADD", ADD, NONE},
-    {0X11, 1, "SUB", SUB, NONE},
-    {0X12, 1, "NEG", NEG, NONE},
-    {0X13, 1, "AND", AND, NONE},
-    {0X14, 1, "OR", OR, NONE},
-    {0X15, 1, "NOT", NOT, NONE},
-    {0X16, 1, "CMP", CMP, NONE},
-    {0X17, 1, "CMPU", CMPU, NONE},
-    {0X18, 1, "SRA1", SRA1, NONE},
-    {0X19, 1, "SL1", SL1, NONE},
-    {0X30, 5, "JMP", JMP, DIRO32},
-    {0X31, 5, "JMPL", JMPL, DIRO32},
-    {0X31, 5, "JMPN", JMPL, DIRO32}, // alias for JMPL
-    {0X32, 5, "JMPE", JMPE, DIRO32},
-    {0X32, 5, "JMPZ", JMPE, DIRO32}, // alias for JMPE
-    {0X33, 5, "JMPG", JMPG, DIRO32},
-    {0X33, 5, "JMPP", JMPG, DIRO32}, // alias for JMPG
-    {0X34, 5, "JMPLE", JMPLE, DIRO32},
-    {0X34, 5, "JMPNP", JMPLE, DIRO32}, // alias for JMPLE
-    {0X35, 5, "JMPGE", JMPGE, DIRO32},
-    {0X35, 5, "JMPNN", JMPGE, DIRO32}, // alias for JMPGE
-    {0X36, 5, "JMPNE", JMPNE, DIRO32},
-    {0X36, 5, "JMPNZ", JMPNE, DIRO32}, // alias for JMPNE
-    {0X37, 5, "JMPT", JMPT, DIRO32},
-    {0X38, 5, "JMPF", JMPF, DIRO32},
-    {0X3D, 5, "CALL", CALL, DIRO32},
-    {0X3E, 1, "RETURN", RETURN, NONE},
-    {0X3F, 5, "SVC", SVC, IMMO32} };
+   { 0X00,1,"NOOP"    ,NOOP    ,NONE   },
+   { 0X01,6,"PUSH"    ,PUSH    ,MEMORY },
+   { 0X02,6,"PUSHA"   ,PUSHA   ,MEMORY },
+   { 0X03,6,"POP"     ,POP     ,MEMORY },
+   { 0X04,5,"DISCARD" ,DISCARD ,IMMO32 },
+   { 0X05,1,"SWAP"    ,SWAP    ,NONE   },
+   { 0X06,1,"MAKEDUP" ,MAKEDUP ,NONE   },
+   { 0X07,1,"PUSHLV"  ,PUSHLV  ,NONE   },
+   { 0X08,1,"POPLV"   ,POPLV   ,NONE   },
+   { 0X09,1,"PUSHSP"  ,PUSHSP  ,NONE   },
+   { 0X0A,1,"POPSP"   ,POPSP   ,NONE   },
+   { 0X0B,1,"PUSHCPP" ,PUSHCPP ,NONE   },
+   { 0X0C,1,"POPCPP"  ,POPCPP  ,NONE   },
+   { 0X10,1,"ADD"     ,ADD     ,NONE   },
+   { 0X11,1,"SUB"     ,SUB     ,NONE   },
+   { 0X12,1,"NEG"     ,NEG     ,NONE   },
+   { 0X13,1,"AND"     ,AND     ,NONE   },
+   { 0X14,1,"OR"      ,OR      ,NONE   },
+   { 0X15,1,"NOT"     ,NOT     ,NONE   },
+   { 0X16,1,"CMP"     ,CMP     ,NONE   },
+   { 0X17,1,"CMPU"    ,CMPU    ,NONE   },
+   { 0X18,1,"SRA1"    ,SRA1    ,NONE   },
+   { 0X19,1,"SL1"     ,SL1     ,NONE   },
+   { 0X30,5,"JMP"     ,JMP     ,DIRO32 },
+   { 0X31,5,"JMPL"    ,JMPL    ,DIRO32 },
+   { 0X31,5,"JMPN"    ,JMPL    ,DIRO32 }, //alias for JMPL
+   { 0X32,5,"JMPE"    ,JMPE    ,DIRO32 },
+   { 0X32,5,"JMPZ"    ,JMPE    ,DIRO32 }, //alias for JMPE
+   { 0X33,5,"JMPG"    ,JMPG    ,DIRO32 },
+   { 0X33,5,"JMPP"    ,JMPG    ,DIRO32 }, //alias for JMPG
+   { 0X34,5,"JMPLE"   ,JMPLE   ,DIRO32 },
+   { 0X34,5,"JMPNP"   ,JMPLE   ,DIRO32 }, //alias for JMPLE
+   { 0X35,5,"JMPGE"   ,JMPGE   ,DIRO32 },
+   { 0X35,5,"JMPNN"   ,JMPGE   ,DIRO32 }, //alias for JMPGE
+   { 0X36,5,"JMPNE"   ,JMPNE   ,DIRO32 },
+   { 0X36,5,"JMPNZ"   ,JMPNE   ,DIRO32 }, //alias for JMPNE
+   { 0X37,5,"JMPT"    ,JMPT    ,DIRO32 },
+   { 0X38,5,"JMPF"    ,JMPF    ,DIRO32 },
+   { 0X3D,5,"CALL"    ,CALL    ,DIRO32 },
+   { 0X3E,1,"RETURN"  ,RETURN  ,NONE   },
+   { 0X3F,5,"SVC"     ,SVC     ,IMMO32 }
+};
 
 //====================================================
 template <int SIZEOFTABLE, int MAXIMUMLENGTHIDENTIFIER>
 struct IDENTIFIERTABLE
-//====================================================
+    //====================================================
 {
 public:
     int size;
@@ -238,14 +231,14 @@ public:
 
     //----------------------------------------------------
     IDENTIFIERTABLE()
-    //----------------------------------------------------
+        //----------------------------------------------------
     {
         size = 0;
     }
 
     //----------------------------------------------------
     void AddToTable(char lexeme[], WORD32 address, bool isHWInstructionLabel)
-    //----------------------------------------------------
+        //----------------------------------------------------
     {
         void DisplayScreenMessage(char runTimeMessage[], bool abort);
 
@@ -262,7 +255,7 @@ public:
 
     //----------------------------------------------------
     bool IsInTable(char lexeme[])
-    //----------------------------------------------------
+        //----------------------------------------------------
     {
         bool inTable;
         char uLexeme[LINELENGTH + 1];
@@ -283,12 +276,12 @@ public:
             else
                 index++;
         }
-        return (inTable);
+        return(inTable);
     }
 
     //----------------------------------------------------
     int IndexInTable(char lexeme[])
-    //----------------------------------------------------
+        //----------------------------------------------------
     {
         void DisplayScreenMessage(char runTimeMessage[], bool abort);
 
@@ -319,12 +312,12 @@ public:
             sprintf(message, "\"%s\" not found in table\n", lexeme);
             DisplayScreenMessage(message, true);
         }
-        return (index);
+        return(index);
     }
 
     //----------------------------------------------------
     int IndexInTable(WORD32 address)
-    //----------------------------------------------------
+        //----------------------------------------------------
     {
         void DisplayScreenMessage(char runTimeMessage[], bool abort);
 
@@ -349,12 +342,12 @@ public:
             DisplayScreenMessage(message, true);
         }
 
-        return (index);
+        return(index);
     }
 
     //----------------------------------------------------
     bool IsInTable(WORD32 address)
-    //----------------------------------------------------
+        //----------------------------------------------------
     {
         bool inTable;
         int index;
@@ -368,7 +361,7 @@ public:
             else
                 index++;
         }
-        return (inTable);
+        return(inTable);
     }
 };
 
@@ -395,62 +388,52 @@ int main()
     void BuildObjectFile();
 
     char sourceFilename[LINELENGTH + 1], fullFilename[LINELENGTH + 1];
-    char cont = 'n';
 
-    cout << "Mic1 version " << MIC1_VERSION << "\n\n";
-    do
+    cout << "Mic-1 version " << MIC1_VERSION << "\n\n";
+
+    cout << "Source filename? "; cin >> sourceFilename;
+    strcpy(fullFilename, sourceFilename);
+    strcat(fullFilename, ".mic1");
+    if ((SOURCE = fopen(fullFilename, "r")) == NULL)
     {
-        try
-        {
-            cout << "Source filename? "; cin >> sourceFilename;
-            strcpy(fullFilename, sourceFilename);
-            strcat(fullFilename, ".mic1");
-            if ((SOURCE = fopen(fullFilename, "r")) == NULL)
-            {
-                //cout << "Error opening source file " << fullFilename << endl;
-                throw invalid_argument("Cannot open given file name's MIC1 file.");
-            }
+        cout << "Error opening source file " << fullFilename << endl;
+        system("PAUSE");
+        exit(1);
+    }
 
-            strcpy(title, fullFilename);
-            strcpy(fullFilename, sourceFilename);
-            strcat(fullFilename, ".listing");
-            if ((LISTING = fopen(fullFilename, "w")) == NULL)
-            {
-                //cout << "Error opening listing file " << fullFilename << endl;
-                throw invalid_argument("Cannot create given file name's listing file.");
-            }
+    strcpy(title, fullFilename);
+    strcpy(fullFilename, sourceFilename);
+    strcat(fullFilename, ".listing");
+    if ((LISTING = fopen(fullFilename, "w")) == NULL)
+    {
+        cout << "Error opening listing file " << fullFilename << endl;
+        system("PAUSE");
+        exit(1);
+    }
 
-            cout << "Listing file is " << fullFilename << endl;
-            strcpy(fullFilename, sourceFilename);
-            strcat(fullFilename, ".object");
-            if ((OBJECT = fopen(fullFilename, "w")) == NULL)
-            {
-                //cout << "Error opening object file " << fullFilename << endl;
-                throw invalid_argument("Cannot create given file name's object file.");
-            }
+    cout << "Listing file is " << fullFilename << endl;
+    strcpy(fullFilename, sourceFilename);
+    strcat(fullFilename, ".object");
+    if ((OBJECT = fopen(fullFilename, "w")) == NULL)
+    {
+        cout << "Error opening object file " << fullFilename << endl;
+        system("PAUSE");
+        exit(1);
+    }
 
-            cout << "Object file is " << fullFilename << endl;
+    cout << "Object  file is " << fullFilename << endl;
 
-            InitializeMainMemory();
-            DoPass1();
-            rewind(SOURCE);
-            DoPass2();
-            BuildObjectFile();
+    InitializeMainMemory();
+    DoPass1();
+    rewind(SOURCE);
+    DoPass2();
+    BuildObjectFile();
 
-            fclose(SOURCE);
-            fclose(LISTING);
-            fclose(OBJECT);
-        }
-        catch (const std::invalid_argument& e) {
-            cout << "A invalid argurment exception has occurred: '" << e.what() << "'." << endl;
-        }
-        catch (const std::exception& e) {
-            cout << "A unhandled exception has occurred: '" << e.what() << "'." << endl;
-        }
-        cout << "\nContinue Assembling? (y/n): ";
-        cin >> cont;
-    } while (tolower(cont) == 'y');
-    cout << "Exiting Assembler." << endl;
+    fclose(SOURCE);
+    fclose(LISTING);
+    fclose(OBJECT);
+
+    system("PAUSE");
     return(0);
 }
 
@@ -563,8 +546,7 @@ void DoPass2()
     PrintTopOfPageHeader(pageNumber, lines);
 
     // Each statement is wholly contained on 1 source line
-    GetNextSourceLine();
-    lineNumber++;
+    GetNextSourceLine(); lineNumber++;
     while (!atEOF)
     {
         oldLC = LC;
@@ -588,16 +570,14 @@ void DoPass2()
         // Is line a blank line or a comment-only line?
         if (token == EOLTOKEN)
         {
-            if (lineIsLabeled)
-                RECORDSYNTAXERROR(MNEMONIC_MISSING);
+            if (lineIsLabeled) RECORDSYNTAXERROR(MNEMONIC_MISSING);
             objectBytes = 0;
         }
-        else if (token == ORG)
+        else      if (token == ORG)
         {
-            if (lineIsLabeled)
-                RECORDSYNTAXERROR(ORG_MAY_NOT_BE_LABELED);
-            // BUGFIX "LineIsLabeled" typo changed to "lineIsLabeled"
-            //  bug discovered by Joel Trejo (Spring, 2020)
+            if (lineIsLabeled) RECORDSYNTAXERROR(ORG_MAY_NOT_BE_LABELED);
+            //BUGFIX "LineIsLabeled" typo changed to "lineIsLabeled"
+            // bug discovered by Joel Trejo (Spring, 2020)
             objectBytes = 0;
             GetNextToken(token, lexeme);
             if (token == INTEGER)
@@ -676,7 +656,7 @@ void DoPass2()
             objectCode[1] = HWOperationTable[opCodeIndex].opCode;
             switch (HWOperationTable[opCodeIndex].operandType)
             {
-            case NONE:
+            case   NONE:
                 GetNextToken(token, lexeme);
                 objectBytes = 1;
                 break;
@@ -828,8 +808,7 @@ void DoPass2()
             else
                 fprintf(LISTING, "  ");
         }
-        fprintf(LISTING, "  %4d  %s\n", lineNumber, sourceLine);
-        fflush(LISTING);
+        fprintf(LISTING, "  %4d  %s\n", lineNumber, sourceLine); fflush(LISTING);
         lines++;
         i = 7;
         while (i <= objectBytes)
@@ -844,8 +823,7 @@ void DoPass2()
                 else
                     fprintf(LISTING, "  ");
             }
-            fprintf(LISTING, "\n");
-            fflush(LISTING);
+            fprintf(LISTING, "\n"); fflush(LISTING);
             lines++;
             i = i + 6;
         }
@@ -860,16 +838,14 @@ void DoPass2()
             if (lines > LINESPERPAGE)
                 PrintTopOfPageHeader(pageNumber, lines);
             fprintf(LISTING, "   ***Error (%4d) %s\n", syntaxErrors[i],
-                syntaxErrorMessages[syntaxErrors[i]]);
-            fflush(LISTING);
+                syntaxErrorMessages[syntaxErrors[i]]); fflush(LISTING);
             lines++;
             cout << "***Error (" << setw(4) << syntaxErrors[i] << ") "
                 << syntaxErrorMessages[syntaxErrors[i]] << endl;
         }
         for (i = 1; i <= objectBytes; i++)
             WriteMainMemoryByte((WORD32)(oldLC + i - 1), objectCode[i]);
-        GetNextSourceLine();
-        lineNumber++;
+        GetNextSourceLine(); lineNumber++;
     }
 }
 
@@ -977,7 +953,7 @@ WORD32 ATOI(char string[])
         sscanf(string, "%X", &r);
     else
         sscanf(string, "%d", &r);
-    return (r);
+    return(r);
 }
 
 //----------------------------------------------------
@@ -998,8 +974,7 @@ void PrintTopOfPageHeader(int& pageNumber, int& lines)
     lines = 0;
     fprintf(LISTING, "%cPage %3d  %s\n\n", FF, pageNumber, title);
     fprintf(LISTING, "        LC  Object        Line  Source Line\n");
-    fprintf(LISTING, "----------  ------------  ----  -------------------------------------------------------------\n");
-    fflush(LISTING);
+    fprintf(LISTING, "----------  ------------  ----  -------------------------------------------------------------\n"); fflush(LISTING);
 }
 
 //----------------------------------------------------
@@ -1060,12 +1035,15 @@ void GetNextToken(TOKEN& token, char lexeme[])
                     token = HWOperationTable[i].token;
         }
     }
-    else if (isdigit(nextCharacter) || (nextCharacter == '+') || (nextCharacter == '-'))
+    else if (isdigit(nextCharacter)
+        || (nextCharacter == '+')
+        || (nextCharacter == '-'))
     {
         bool hexDigitsAllowed;
 
         i = 0;
-        if ((nextCharacter == '+') || (nextCharacter == '-'))
+        if ((nextCharacter == '+')
+            || (nextCharacter == '-'))
         {
             lexeme[i++] = nextCharacter;
             GetNextCharacter();
@@ -1111,20 +1089,17 @@ void GetNextToken(TOKEN& token, char lexeme[])
             break;
         case '@':
             token = ATSIGN;
-            lexeme[0] = nextCharacter;
-            lexeme[1] = '\0';
+            lexeme[0] = nextCharacter; lexeme[1] = '\0';
             GetNextCharacter();
             break;
         case '#':
             token = POUNDSIGN;
-            lexeme[0] = nextCharacter;
-            lexeme[1] = '\0';
+            lexeme[0] = nextCharacter; lexeme[1] = '\0';
             GetNextCharacter();
             break;
         case ':':
             token = COLON;
-            lexeme[0] = nextCharacter;
-            lexeme[1] = '\0';
+            lexeme[0] = nextCharacter; lexeme[1] = '\0';
             GetNextCharacter();
             break;
         case EOLCHARACTER:
@@ -1137,8 +1112,7 @@ void GetNextToken(TOKEN& token, char lexeme[])
             break;
         default:
             token = UNKNOWN;
-            lexeme[0] = nextCharacter;
-            lexeme[1] = '\0';
+            lexeme[0] = nextCharacter; lexeme[1] = '\0';
             GetNextCharacter();
             break;
         }
@@ -1226,7 +1200,7 @@ void ReadMainMemoryByte(WORD32 address, BYTE& byte)
 bool MainMemoryByteIsDirty(int address)
 //----------------------------------------------------
 {
-    return (dirtyByte[address]);
+    return(dirtyByte[address]);
 }
 
 //--------------------------------------------------
@@ -1240,3 +1214,4 @@ void DisplayScreenMessage(char runTimeMessage[], bool abort)
         exit(0);
     }
 }
+

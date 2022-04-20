@@ -1,0 +1,25 @@
+;----------------------------------------------------------
+; Dr. Art Hanna
+; Problem #57B
+; Problem57B.mic1
+;----------------------------------------------------------
+                   ORG       0X00000000
+main               NOOP
+; INPUT x
+                   PUSHA     x
+                   SVC       #2
+                   DISCARD   #1
+; PRINT "x = ",x,ENDL
+                   PUSHA     message
+                   SVC       #6
+                   DISCARD   #1
+                   PUSH      x
+                   SVC       #3
+                   SVC       #7
+                   DISCARD   #1
+; STOP
+                   SVC       #1
+
+message            DS        "x = "
+x                  RW
+
