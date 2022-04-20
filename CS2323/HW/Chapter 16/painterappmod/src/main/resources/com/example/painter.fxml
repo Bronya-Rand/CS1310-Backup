@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="362.0" prefWidth="738.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.PainterRBGAController">
+  <columnConstraints>
+    <ColumnConstraints hgrow="SOMETIMES" maxWidth="420.0" minWidth="10.0" prefWidth="115.0" />
+    <ColumnConstraints hgrow="SOMETIMES" maxWidth="699.0" minWidth="10.0" prefWidth="623.0" />
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints maxHeight="203.0" minHeight="10.0" prefHeight="185.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="154.0" minHeight="10.0" prefHeight="102.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="153.0" minHeight="10.0" prefHeight="75.0" vgrow="SOMETIMES" />
+  </rowConstraints>
+   <children>
+      <Pane fx:id="drawingPane" onMouseDragged="#drawingAreaMouseDragged" prefHeight="121.0" prefWidth="566.0" GridPane.columnIndex="1" />
+      <VBox prefHeight="200.0" prefWidth="100.0">
+         <children>
+            <TitledPane animated="false" text="Drawing Color">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="172.0" prefWidth="298.0">
+                     <children>
+                        <ScrollPane hbarPolicy="NEVER" layoutX="-1.0" prefHeight="159.0" prefWidth="115.0">
+                          <content>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="268.0" prefWidth="114.0">
+                                 <children>
+                                    <VBox prefHeight="150.0" prefWidth="110.0" spacing="3.0">
+                                       <padding>
+                                          <Insets left="5.0" top="7.0" />
+                                       </padding>
+                                       <children>
+                                          <RadioButton fx:id="redRadioButton" mnemonicParsing="false" onAction="#colorRadioButtonSelected" text="Red">
+                                             <toggleGroup>
+                                                <ToggleGroup fx:id="colorToggleGroup" />
+                                             </toggleGroup>
+                                          </RadioButton>
+                                          <RadioButton fx:id="orangeRadioButton" mnemonicParsing="false" onAction="#colorRadioButtonSelected" text="Orange" toggleGroup="$colorToggleGroup" />
+                                          <RadioButton fx:id="yellowRadioButton" mnemonicParsing="false" onAction="#colorRadioButtonSelected" text="Yellow" toggleGroup="$colorToggleGroup" />
+                                          <RadioButton fx:id="greenRadioButton" mnemonicParsing="false" onAction="#colorRadioButtonSelected" text="Green" toggleGroup="$colorToggleGroup" />
+                                          <RadioButton fx:id="blueRadioButton" mnemonicParsing="false" onAction="#colorRadioButtonSelected" text="Blue" toggleGroup="$colorToggleGroup" />
+                                          <RadioButton fx:id="purpleRadioButton" mnemonicParsing="false" onAction="#colorRadioButtonSelected" text="Purple" toggleGroup="$colorToggleGroup" />
+                                          <RadioButton fx:id="blackRadioButton" mnemonicParsing="false" onAction="#colorRadioButtonSelected" selected="true" text="Black" toggleGroup="$colorToggleGroup" />
+                                          <RadioButton fx:id="grayRadioButton" mnemonicParsing="false" onAction="#colorRadioButtonSelected" text="Gray" toggleGroup="$colorToggleGroup" />
+                                          <RadioButton fx:id="magentaRadioButton" mnemonicParsing="false" onAction="#colorRadioButtonSelected" text="Magenta" toggleGroup="$colorToggleGroup" />
+                                          <RadioButton fx:id="cyanRadioButton" mnemonicParsing="false" onAction="#colorRadioButtonSelected" text="Cyan" toggleGroup="$colorToggleGroup" />
+                                          <RadioButton fx:id="pinkRadioButton" mnemonicParsing="false" onAction="#colorRadioButtonSelected" text="Pink" toggleGroup="$colorToggleGroup" />
+                                          <RadioButton fx:id="ivoryRadioButton" mnemonicParsing="false" onAction="#colorRadioButtonSelected" text="Ivory" toggleGroup="$colorToggleGroup" />
+                                          <RadioButton fx:id="goldRadioButton" mnemonicParsing="false" onAction="#colorRadioButtonSelected" text="Gold" toggleGroup="$colorToggleGroup" />
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </AnchorPane>
+                          </content>
+                        </ScrollPane>
+                     </children>
+                  </AnchorPane>
+              </content>
+            </TitledPane>
+         </children>
+      </VBox>
+      <TitledPane animated="false" prefHeight="127.0" prefWidth="110.0" text="Pen Size" GridPane.rowIndex="1">
+         <content>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="172.0" prefWidth="298.0">
+               <children>
+                  <VBox prefHeight="110.0" prefWidth="166.0" spacing="5.0">
+                     <children>
+                        <RadioButton fx:id="smallRadioButton" mnemonicParsing="false" onAction="#sizeRadioButtonSelected" text="Small">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="sizeToggleGroup" />
+                           </toggleGroup></RadioButton>
+                        <RadioButton fx:id="mediumRadioButton" mnemonicParsing="false" onAction="#sizeRadioButtonSelected" selected="true" text="Medium" toggleGroup="$sizeToggleGroup" />
+                        <RadioButton fx:id="largeRadioButton" mnemonicParsing="false" onAction="#sizeRadioButtonSelected" text="Large" toggleGroup="$sizeToggleGroup" />
+                     </children>
+                     <padding>
+                        <Insets left="5.0" top="7.0" />
+                     </padding>
+                  </VBox>
+               </children>
+            </AnchorPane>
+         </content>
+      </TitledPane>
+      <VBox alignment="CENTER" prefHeight="76.0" prefWidth="110.0" spacing="10.0" GridPane.rowIndex="2">
+         <children>
+            <Button alignment="CENTER" mnemonicParsing="false" onAction="#undoButtonPressed" prefHeight="25.0" prefWidth="132.0" text="Undo" />
+            <Button alignment="CENTER" mnemonicParsing="false" onAction="#clearButtonPressed" prefHeight="25.0" prefWidth="132.0" text="Clear" />
+         </children>
+         <padding>
+            <Insets left="5.0" top="3.0" />
+         </padding>
+      </VBox>
+   </children>
+</GridPane>
