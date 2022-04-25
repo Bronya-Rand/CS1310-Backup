@@ -22,9 +22,6 @@ public class WordTypeCount {
 
         // tokenize the input
         String[] tokens = input.replaceAll("\\s", "").trim().split("");
-        for (int i = 0; i < tokens.length; i++) {
-            System.out.println(tokens[i]);
-        }
 
         // processing input text
         for (String token : tokens) {
