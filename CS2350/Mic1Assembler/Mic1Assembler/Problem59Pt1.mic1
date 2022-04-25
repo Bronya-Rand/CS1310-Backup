@@ -1,4 +1,5 @@
-; Problem #58, Problem #5
+;----------------------------------------------------------
+; Problem #59, Problem #1
 ;----------------------------------------------------------
 ; INPUT "n? " n
                    PUSH      #message1
@@ -6,28 +7,36 @@
                    PUSHA     n
                    SVC       #2
                    DISCARD   #2
-; FOR i := 1 TO n BY 1
-                   PUSH      #1 ; i:=1
+; INPUT "inc? " inc
+                   PUSH      #message2
+                   SVC       #6
+                   PUSHA     inc
+                   SVC       #2
+                   DISCARD   #2
+; FOR i := n TO 1 BY -inc
+                   PUSH      n ; i:=n
                    POP       i
 
 forloop1           NOOP
                    PUSH      i
-                   PUSH      n
+                   PUSH      #1
                    CMP
-                   JMPG     endif1
+                   JMPL      endif1
 ;    PRINT i,ENDL
                    PUSH      i
                    SVC       #3
                    SVC       #7
-                   PUSH      #1
-                   ADD
+                   PUSH      inc
+                   SUB
                    POP       i
-                   JMP       forloop1
+                   JMP forloop1
 ; END
 endif1             NOOP
 ; STOP
                    SVC       #1
 
 n                  RW
+inc                RW
 i                  RW
 message1           DS        "n? "
+message2           DS        "inc? "

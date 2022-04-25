@@ -7,7 +7,7 @@ Main               NOOP
                    PUSH      #message1
                    SVC       #6
                    PUSHA     x
-                   SVC       #4
+                   SVC       #2
                    DISCARD   #2
 ; PRINT x,ENDL
                    PUSH      #result1 ; x

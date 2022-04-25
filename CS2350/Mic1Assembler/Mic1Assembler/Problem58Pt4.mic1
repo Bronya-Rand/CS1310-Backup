@@ -5,13 +5,13 @@
                    PUSH      #message1
                    SVC       #6
                    PUSHA     x
-                   SVC       #4
+                   SVC       #2
                    DISCARD   #2
 ; INPUT "y? " y
                    PUSH      #message2
                    SVC       #6
                    PUSHA     y
-                   SVC       #4
+                   SVC       #2
                    DISCARD   #2
 ; IF ( (x < 0) AND (y < 0) ) THEN
                    PUSH      x

@@ -1,0 +1,73 @@
+;----------------------------------------------------------
+; Problem #59, Problem #3
+;----------------------------------------------------------
+; INPUT "n? " n
+                   PUSH      #message1
+                   SVC       #6
+                   PUSHA     n
+                   SVC       #2
+                   DISCARD   #2
+; FOR i := 1 TO n BY 1
+                   PUSH      #1 ; i:=n
+                   POP       i
+
+forloop1           NOOP
+                   PUSH      i
+                   PUSH      n
+                   CMP
+                   JMPG      endif1
+;    FOR j := n TO 1 BY -1
+                   PUSH      n ; j:=n
+                   POP       j
+        
+forloop2           NOOP
+                   PUSH      j
+                   PUSH      #1
+                   CMP
+                   JMPL      endif2
+;       PRINT "(",i,",",j,")",ENDL
+                   PUSH      #result1
+                   SVC       #6
+                   DISCARD   #1
+
+                   PUSH      i
+                   SVC       #3
+                   DISCARD   #1
+
+                   PUSH      #result2
+                   SVC       #6
+                   DISCARD   #1
+
+                   PUSH      j
+                   SVC       #3
+                   DISCARD   #1
+
+                   PUSH      #result3
+                   SVC       #6
+                   SVC       #7
+                   DISCARD   #1
+                   
+                   PUSH      j
+                   PUSH      #1
+                   SUB
+                   POP       j
+                   JMP       forloop2
+;    END
+endif2             NOOP
+                   PUSH      i
+                   PUSH      #1
+                   ADD
+                   POP       i
+                   JMP       forloop1
+; END
+endif1             NOOP
+; STOP
+                   SVC       #1
+
+n                  RW
+i                  RW
+j                  RW
+message1           DS        "n? "
+result1            DS        "("
+result2            DS        ","
+result3            DS        ")"

@@ -1,0 +1,42 @@
+; Problem #59, Problem #4
+;----------------------------------------------------------
+; INPUT "limit? " limit
+                   PUSH      #message1
+                   SVC       #6
+                   PUSHA     limit
+                   SVC       #2
+                   DISCARD   #2
+; sum := 0
+                   PUSH      #0
+                   POP       sum
+; DO
+do1                NOOP
+;    INPUT "x? " x
+                   PUSH      #message2
+                   SVC       #6
+                   PUSHA     x
+                   SVC       #2
+                   DISCARD   #2
+;    sum := sum+x
+                   PUSH      sum
+                   PUSH      x
+                   ADD
+                   POP       sum
+;    PRINT sum,ENDL
+                   PUSH      sum
+                   SVC       #3
+                   SVC       #7
+                   DISCARD   #1
+; WHILE ( sum < limit )
+                   PUSH      sum
+                   PUSH      limit
+                   CMP
+                   JMPL      do1
+; STOP
+                   SVC       #1
+
+limit              RW
+sum                RW
+x                  RW
+message1           DS        "limit? "
+message2           DS        "x? "

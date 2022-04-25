@@ -1,0 +1,5 @@
+
+    TOS0     TOS1     TOS2     TOS3        SP       PC Assembly instruction
+-------- -------- -------- --------  -------- -------- ----------------------------------------
+ (empty)                             0007FFFC 00000000                 ????????
+***Illegal ALU operation...aborting

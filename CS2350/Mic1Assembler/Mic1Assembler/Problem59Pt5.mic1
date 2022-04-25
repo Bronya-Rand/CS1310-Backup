@@ -1,0 +1,38 @@
+;----------------------------------------------------------
+; Problem #59, Problem #5
+;----------------------------------------------------------
+; i := 0
+                   PUSH      #0
+                   POP       i
+; DO
+do1                NOOP
+;    INPUT "x? " x
+                   PUSH      #message1
+                   SVC       #6
+                   PUSHA     x
+                   SVC       #2
+                   DISCARD   #2
+
+; WHILE ( x != 0 )
+                   PUSH      x
+                   PUSH      #0
+                   CMP
+                   JMPE      endif1
+;    i := i+1
+                   PUSH      i
+                   PUSH      #1
+                   ADD
+                   POP       i
+;    PRINT i,ENDL
+                   PUSH      i
+                   SVC       #3
+                   SVC       #7
+                   JMP       do1
+; END
+endif1             NOOP
+; STOP
+                   SVC       #1
+
+i                  RW
+x                  RW
+message1           DS        "x? "

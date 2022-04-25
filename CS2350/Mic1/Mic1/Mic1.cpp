@@ -382,6 +382,7 @@ int main()
               ExecuteObjectProgram(controlStore);
               OUTPUT.close();
           }
+          OBJECT.close();
       }
       catch (const std::invalid_argument &e) {
            cout << "A invalid argurment exception has occurred: '" << e.what() << "'." << endl;
