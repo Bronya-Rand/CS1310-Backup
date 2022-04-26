@@ -1,0 +1,23 @@
+
+    TOS0     TOS1     TOS2     TOS3        SP       PC Assembly instruction
+-------- -------- -------- --------  -------- -------- ----------------------------------------
+ (empty)                             0007FFFC 00000000 main            NOOP     
+ (empty)                             0007FFFC 00000001                 PUSHA    x
+00000040                             00080000 00000007                 SVC      #2
+**********
+5
+**********
+00000040                             00080000 0000000C                 DISCARD  #1
+ (empty)                             0007FFFC 00000011                 PUSHA    message
+0000003B                             00080000 00000017                 SVC      #6
+0000003B                             00080000 0000001C                 DISCARD  #1
+ (empty)                             0007FFFC 00000021                 PUSH     x
+00000005                             00080000 00000027                 SVC      #3
+00000005                             00080000 0000002C                 SVC      #7
+**********
+x = 5
+**********
+00000005                             00080000 00000031                 DISCARD  #1
+ (empty)                             0007FFFC 00000036                 SVC      #1
+
+SVC_STOP_PROGRAM_EXECUTION: Mic1 stopped
