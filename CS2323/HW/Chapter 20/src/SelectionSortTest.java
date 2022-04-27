@@ -1,7 +1,5 @@
 import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class SelectionSortTest {
     public static <T extends Comparable<T>> void selectionSort(
