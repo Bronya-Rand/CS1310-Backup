@@ -1,0 +1,89 @@
+Page   1  Final.mic1
+
+        LC  Object        Line  Source Line
+----------  ------------  ----  -------------------------------------------------------------
+0X00000000                   1  ;-------------------------------------------------------------
+0X00000000                   2  ; The Collatz conjecture is named after Lothar Collatz, who first proposed it
+0X00000000                   3  ;    in 1937. The conjecture is also known as the "3n + 1" conjecture, the Ulam 
+0X00000000                   4  ;    conjecture (after Stanislaw Ulam), or the Syracuse problem. The sequence 
+0X00000000                   5  ;    of numbers involved is referred to as the "hailstone sequence" because the
+0X00000000                   6  ;    values are usually subject to multiple descents/ascents like hailstones in
+0X00000000                   7  ;    a cloud. n is a natural number; that is, n >= 1, so
+0X00000000                   8  ;    n can be treated as an unsigned integer.
+0X00000000                   9  ;-------------------------------------------------------------
+0X00000000                  10  ; INPUT "n? " n
+0X00000000  01000000D300    11                     PUSH      #message1
+0X00000006  3F00000006      12                     SVC       #6
+0X0000000B  02000000DC01    13                     PUSHA     n
+0X00000011  3F00000002      14                     SVC       #2
+0X00000016  0400000002      15                     DISCARD   #2
+0X0000001B                  16  ; x := 0
+0X0000001B  010000000000    17                     PUSH      #0
+0X00000021  03000000E001    18                     POP       x
+0X00000027                  19  
+0X00000027                  20  ; WHILE ( n != 1 )
+0X00000027  00              21  while1             NOOP
+0X00000028  01000000DC01    22                     PUSH      n
+0X0000002E  010000000100    23                     PUSH      #1
+0X00000034  16              24                     CMP
+0X00000035  32000000A8      25                     JMPE      endwhile1
+0X0000003A                  26  ;    x := x+1
+0X0000003A  01000000E001    27                     PUSH      x
+0X00000040  010000000100    28                     PUSH      #1
+0X00000046  10              29                     ADD
+0X00000047  03000000E001    30                     POP       x
+0X0000004D                  31  ;    IF ( n is even ) THEN               // Hints (1), (2)
+0X0000004D  01000000DC01    32                     PUSH     n
+0X00000053  010000000100    33                     PUSH     #1
+0X00000059  13              34                     AND
+0X0000005A  3600000071      35                     JMPNZ      else1
+0X0000005F                  36  ;       n := n/2                         // Hints (3)
+0X0000005F  01000000DC01    37                     PUSH      n
+0X00000065  18              38                     SRA1
+0X00000066  03000000DC01    39                     POP       n
+0X0000006C  300000008D      40                     JMP       endif1
+0X00000071                  41  ;    ELSE
+0X00000071  00              42  else1              NOOP
+0X00000072                  43  ;       n := 3*n+1                       // Hints (4), (5)
+0X00000072  01000000DC01    44                     PUSH      n
+0X00000078  19              45                     SL1
+0X00000079  01000000DC01    46                     PUSH      n
+0X0000007F  10              47                     ADD
+0X00000080  010000000100    48                     PUSH      #1
+0X00000086  10              49                     ADD
+0X00000087  03000000DC01    50                     POP       n
+0X0000008D                  51  
+0X0000008D                  52  ;    END
+0X0000008D  00              53  endif1             NOOP
+0X0000008E                  54  ;    PRINT n,ENDL
+0X0000008E  01000000DC01    55                     PUSH      n
+0X00000094  3F00000003      56                     SVC       #3
+Page   2  Final.mic1
+
+        LC  Object        Line  Source Line
+----------  ------------  ----  -------------------------------------------------------------
+0X00000099  3F00000007      57                     SVC       #7
+0X0000009E  0400000001      58                     DISCARD   #1
+0X000000A3  3000000027      59                     JMP       while1
+0X000000A8                  60  
+0X000000A8                  61  ; END
+0X000000A8  00              62  endwhile1          NOOP
+0X000000A9                  63  ; PRINT "x = ",x,ENDL
+0X000000A9  01000000D700    64                     PUSH      #result
+0X000000AF  3F00000006      65                     SVC       #6
+0X000000B4  0400000001      66                     DISCARD   #1
+0X000000B9  01000000E001    67                     PUSH      x
+0X000000BF  3F00000003      68                     SVC       #3
+0X000000C4  3F00000007      69                     SVC       #7
+0X000000C9  0400000001      70                     DISCARD   #1
+0X000000CE                  71  ; STOP
+0X000000CE  3F00000001      72                     SVC       #1
+0X000000D3                  73  
+0X000000D3                  74  ;-----------------------------------------------------------
+0X000000D3                  75  ; Data definitions
+0X000000D3                  76  ;-----------------------------------------------------------
+0X000000D3  6E3F2000        77  message1      DS        "n? "
+0X000000D7  78203D2000      78  result        DS        "x = "
+0X000000DC                  79  n             RW
+0X000000E0                  80  x             RW
+0X000000E4                  81  t             RW         

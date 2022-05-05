@@ -1,0 +1,81 @@
+;-------------------------------------------------------------
+; The Collatz conjecture is named after Lothar Collatz, who first proposed it
+;    in 1937. The conjecture is also known as the "3n + 1" conjecture, the Ulam 
+;    conjecture (after Stanislaw Ulam), or the Syracuse problem. The sequence 
+;    of numbers involved is referred to as the "hailstone sequence" because the
+;    values are usually subject to multiple descents/ascents like hailstones in
+;    a cloud. n is a natural number; that is, n >= 1, so
+;    n can be treated as an unsigned integer.
+;-------------------------------------------------------------
+; INPUT "n? " n
+                   PUSH      #message1
+                   SVC       #6
+                   PUSHA     n
+                   SVC       #2
+                   DISCARD   #2
+; x := 0
+                   PUSH      #0
+                   POP       x
+
+; WHILE ( n != 1 )
+while1             NOOP
+                   PUSH      n
+                   PUSH      #1
+                   CMP
+                   JMPE      endwhile1
+;    x := x+1
+                   PUSH      x
+                   PUSH      #1
+                   ADD
+                   POP       x
+;    IF ( n is even ) THEN               // Hints (1), (2)
+                   PUSH     n
+                   PUSH     #1
+                   AND
+                   JMPNZ      else1
+;       n := n/2                         // Hints (3)
+                   PUSH      n
+                   SRA1
+                   POP       n
+                   JMP       endif1
+;    ELSE
+else1              NOOP
+;       n := 3*n+1                       // Hints (4), (5)
+                   PUSH      n
+                   SL1
+                   PUSH      n
+                   ADD
+                   PUSH      #1
+                   ADD
+                   POP       n
+
+;    END
+endif1             NOOP
+;    PRINT n,ENDL
+                   PUSH      n
+                   SVC       #3
+                   SVC       #7
+                   DISCARD   #1
+                   JMP       while1
+
+; END
+endwhile1          NOOP
+; PRINT "x = ",x,ENDL
+                   PUSH      #result
+                   SVC       #6
+                   DISCARD   #1
+                   PUSH      x
+                   SVC       #3
+                   SVC       #7
+                   DISCARD   #1
+; STOP
+                   SVC       #1
+
+;-----------------------------------------------------------
+; Data definitions
+;-----------------------------------------------------------
+message1      DS        "n? "
+result        DS        "x = "
+n             RW
+x             RW
+t             RW         

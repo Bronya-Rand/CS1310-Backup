@@ -1,0 +1,18 @@
+                   PUSHA     n
+                   SVC       #2
+                   DISCARD   #2
+
+                   PUSHA     n
+                   PUSH      #0x00000001
+                   AND
+                   CMP
+                   POP       t
+
+                   PUSH      t
+                   SVC       #3
+                   SVC       #7
+                   DISCARD   #1
+                   SVC       #1
+
+n   RW
+t   RW
