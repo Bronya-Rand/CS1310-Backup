@@ -1,0 +1,66 @@
+<SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:clr="http://schemas.microsoft.com/soap/encoding/clr/1.0" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+<SOAP-ENV:Body>
+<SOAP-ENC:Array SOAP-ENC:arrayType="a1:Account[10]" xmlns:a1="http://schemas.microsoft.com/clr/nsassem/BankApp/BankApp%2C%20Version%3D1.0.0.0%2C%20Culture%3Dneutral%2C%20PublicKeyToken%3Dnull">
+<item href="#ref-3"/>
+<item href="#ref-4"/>
+<item href="#ref-5"/>
+<item href="#ref-6"/>
+<item href="#ref-7"/>
+<item href="#ref-8"/>
+<item href="#ref-9"/>
+<item href="#ref-10"/>
+<item href="#ref-11"/>
+<item href="#ref-12"/>
+</SOAP-ENC:Array>
+<a1:Account id="ref-3" xmlns:a1="http://schemas.microsoft.com/clr/nsassem/BankApp/BankApp%2C%20Version%3D1.0.0.0%2C%20Culture%3Dneutral%2C%20PublicKeyToken%3Dnull">
+<_x003C_AccountNo_x003E_k__BackingField id="ref-13">888100</_x003C_AccountNo_x003E_k__BackingField>
+<_x003C_HolderName_x003E_k__BackingField id="ref-14"> John B. Smith</_x003C_HolderName_x003E_k__BackingField>
+<_x003C_Balance_x003E_k__BackingField>15000.00</_x003C_Balance_x003E_k__BackingField>
+</a1:Account>
+<a1:Account id="ref-4" xmlns:a1="http://schemas.microsoft.com/clr/nsassem/BankApp/BankApp%2C%20Version%3D1.0.0.0%2C%20Culture%3Dneutral%2C%20PublicKeyToken%3Dnull">
+<_x003C_AccountNo_x003E_k__BackingField id="ref-15">888101</_x003C_AccountNo_x003E_k__BackingField>
+<_x003C_HolderName_x003E_k__BackingField id="ref-16"> Franklin T. Wong</_x003C_HolderName_x003E_k__BackingField>
+<_x003C_Balance_x003E_k__BackingField>17000.00</_x003C_Balance_x003E_k__BackingField>
+</a1:Account>
+<a1:Account id="ref-5" xmlns:a1="http://schemas.microsoft.com/clr/nsassem/BankApp/BankApp%2C%20Version%3D1.0.0.0%2C%20Culture%3Dneutral%2C%20PublicKeyToken%3Dnull">
+<_x003C_AccountNo_x003E_k__BackingField id="ref-17">888102</_x003C_AccountNo_x003E_k__BackingField>
+<_x003C_HolderName_x003E_k__BackingField id="ref-18"> Alicia J. Zelaya</_x003C_HolderName_x003E_k__BackingField>
+<_x003C_Balance_x003E_k__BackingField>13500.00</_x003C_Balance_x003E_k__BackingField>
+</a1:Account>
+<a1:Account id="ref-6" xmlns:a1="http://schemas.microsoft.com/clr/nsassem/BankApp/BankApp%2C%20Version%3D1.0.0.0%2C%20Culture%3Dneutral%2C%20PublicKeyToken%3Dnull">
+<_x003C_AccountNo_x003E_k__BackingField id="ref-19">888103</_x003C_AccountNo_x003E_k__BackingField>
+<_x003C_HolderName_x003E_k__BackingField id="ref-20"> Jennifer S. Wallace</_x003C_HolderName_x003E_k__BackingField>
+<_x003C_Balance_x003E_k__BackingField>22000.00</_x003C_Balance_x003E_k__BackingField>
+</a1:Account>
+<a1:Account id="ref-7" xmlns:a1="http://schemas.microsoft.com/clr/nsassem/BankApp/BankApp%2C%20Version%3D1.0.0.0%2C%20Culture%3Dneutral%2C%20PublicKeyToken%3Dnull">
+<_x003C_AccountNo_x003E_k__BackingField id="ref-21">888104</_x003C_AccountNo_x003E_k__BackingField>
+<_x003C_HolderName_x003E_k__BackingField id="ref-22"> Ramesh K. Narayan</_x003C_HolderName_x003E_k__BackingField>
+<_x003C_Balance_x003E_k__BackingField>18300.00</_x003C_Balance_x003E_k__BackingField>
+</a1:Account>
+<a1:Account id="ref-8" xmlns:a1="http://schemas.microsoft.com/clr/nsassem/BankApp/BankApp%2C%20Version%3D1.0.0.0%2C%20Culture%3Dneutral%2C%20PublicKeyToken%3Dnull">
+<_x003C_AccountNo_x003E_k__BackingField id="ref-23">888105</_x003C_AccountNo_x003E_k__BackingField>
+<_x003C_HolderName_x003E_k__BackingField id="ref-24"> Joyce A. English</_x003C_HolderName_x003E_k__BackingField>
+<_x003C_Balance_x003E_k__BackingField>16800.00</_x003C_Balance_x003E_k__BackingField>
+</a1:Account>
+<a1:Account id="ref-9" xmlns:a1="http://schemas.microsoft.com/clr/nsassem/BankApp/BankApp%2C%20Version%3D1.0.0.0%2C%20Culture%3Dneutral%2C%20PublicKeyToken%3Dnull">
+<_x003C_AccountNo_x003E_k__BackingField id="ref-25">888106</_x003C_AccountNo_x003E_k__BackingField>
+<_x003C_HolderName_x003E_k__BackingField id="ref-26"> James E. Borg</_x003C_HolderName_x003E_k__BackingField>
+<_x003C_Balance_x003E_k__BackingField>19000.00</_x003C_Balance_x003E_k__BackingField>
+</a1:Account>
+<a1:Account id="ref-10" xmlns:a1="http://schemas.microsoft.com/clr/nsassem/BankApp/BankApp%2C%20Version%3D1.0.0.0%2C%20Culture%3Dneutral%2C%20PublicKeyToken%3Dnull">
+<_x003C_AccountNo_x003E_k__BackingField id="ref-27">888107</_x003C_AccountNo_x003E_k__BackingField>
+<_x003C_HolderName_x003E_k__BackingField id="ref-28"> Daniel A. Matthew</_x003C_HolderName_x003E_k__BackingField>
+<_x003C_Balance_x003E_k__BackingField>16000.00</_x003C_Balance_x003E_k__BackingField>
+</a1:Account>
+<a1:Account id="ref-11" xmlns:a1="http://schemas.microsoft.com/clr/nsassem/BankApp/BankApp%2C%20Version%3D1.0.0.0%2C%20Culture%3Dneutral%2C%20PublicKeyToken%3Dnull">
+<_x003C_AccountNo_x003E_k__BackingField id="ref-29">888108</_x003C_AccountNo_x003E_k__BackingField>
+<_x003C_HolderName_x003E_k__BackingField id="ref-30"> Mark Jonathan</_x003C_HolderName_x003E_k__BackingField>
+<_x003C_Balance_x003E_k__BackingField>21000.00</_x003C_Balance_x003E_k__BackingField>
+</a1:Account>
+<a1:Account id="ref-12" xmlns:a1="http://schemas.microsoft.com/clr/nsassem/BankApp/BankApp%2C%20Version%3D1.0.0.0%2C%20Culture%3Dneutral%2C%20PublicKeyToken%3Dnull">
+<_x003C_AccountNo_x003E_k__BackingField id="ref-31">888109</_x003C_AccountNo_x003E_k__BackingField>
+<_x003C_HolderName_x003E_k__BackingField id="ref-32">Joyce Green</_x003C_HolderName_x003E_k__BackingField>
+<_x003C_Balance_x003E_k__BackingField>1100.52</_x003C_Balance_x003E_k__BackingField>
+</a1:Account>
+</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
