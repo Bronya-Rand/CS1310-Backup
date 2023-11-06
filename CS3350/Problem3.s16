@@ -1,0 +1,122 @@
+;--------------------------------------------------
+; Dr. Art Hanna
+; Problem #3
+; Problem3.s16
+;--------------------------------------------------
+   CODESEGMENT
+;----------------------------------------------------------
+; PROGRAM main()
+;    *Note* main() does not have an activation record because *ALL*
+;       main() local data is stored as static data
+;----------------------------------------------------------
+main               EQU       *
+
+; INPUT "n [1,20]? " n
+                   LDAR      R15,format1
+                   SVC       #SVC_READ_FROM_TERMINAL
+                   STR       R1,n
+
+                   ; n-1
+                   LDR R1,n
+                   DECR R1
+                   STR R1,n
+
+; FOR i := 0 TO n-1 BY 1
+                   LDR R1,#0
+                   STR R1,i
+
+FOR                EQU *
+                   LDR R1,i
+                   LDR R2,n
+
+                   CMPR R1,R2
+                   JMPP R1, endFOR
+
+                   ;    PRINT "xs[",i,"]? "
+                   ;    INPUT xs[i]
+
+                   LDR R1,i
+                   LDAR R3, xs
+                   LDAR R15, format2
+                   SVC #SVC_WRITE_TO_TERMINAL
+
+                   LDAR R15, format3
+                   SVC #SVC_READ_FROM_TERMINAL
+                   LDR R2, i
+                   ADDR R2, R2
+                   STR R3,xs,R2
+                
+                   LDR R1,i
+                   INCR R1
+                   STR R1,i
+                   JMP FOR
+
+; END
+endFOR             EQU *
+
+; FOR i := n-1 TO 0 BY -1
+                   LDR R2,n
+                   STR R2,i
+
+FORTWO             EQU *
+                   LDR R1,#0
+                   LDR R2,i
+                   CMPR R2,R1
+                   JMPN R2, endFORTWO
+
+                   ;    PRINT xs[i]
+                   LDR R2, i
+                   ADDR R2, R2
+                   LDR R3,xs,R2
+                   LDAR R15,format3
+                   SVC #SVC_WRITE_TO_TERMINAL
+
+                   LDR R1,i
+                   LDR R2,#0
+                   CMPR R1,R2
+                   JMPNZ R1, ELSE
+
+                   LDAR R15, format5
+                   SVC #SVC_WRITE_TO_TERMINAL
+                   JMP endIF
+
+ELSE               EQU * 
+                   LDAR R15, format4
+                   SVC #SVC_WRITE_TO_TERMINAL
+
+endIF              EQU *
+
+                   LDR R1,i
+                   DECR R1
+                   STR R1, i
+                   JMP FORTWO
+
+endFORTWO          EQU *
+
+                   SVC #SVC_TERMINATE_PROCESS
+; STOP
+
+;----------------------------------------------------------
+   DATASEGMENT
+;----------------------------------------------------------
+; ***Service request number definitions
+SVC_TERMINATE_PROCESS                  EQU    100
+SVC_READ_FROM_TERMINAL                 EQU    300
+SVC_WRITE_TO_TERMINAL                  EQU    301
+
+; ***Service request return code definitions
+SVC_EOF                                EQU    -1           ; Terminal input EOF
+SVC_OK                                 EQU     0           ; No error occurred
+
+; *** Static data
+format1            DS        "n [1,20]? %1i"
+format2            DS        "xs[%1i]? "
+format3            DS        "%3i"
+format4            DS        ","
+format5            DS        ".%n"
+
+n                  RW
+i                  RW
+xs                 RW        20
+
+   END

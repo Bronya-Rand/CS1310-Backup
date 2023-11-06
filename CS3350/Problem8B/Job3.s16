@@ -1,0 +1,108 @@
+;--------------------------------------------------
+; Dr. Art Hanna
+; Problem #8B "odd-n" slave deals with n := 3n+1 case
+; Job3.s16
+;--------------------------------------------------
+   CODESEGMENT
+;----------------------------------------------------------
+; PROGRAM main()
+;    *Note* main() uses an activation record to store *ALL*
+;       variable local data. Constants are stored in
+;       data-segment as static data.
+;----------------------------------------------------------
+; activation record on run-time stack
+;    0: MS1Handle
+;    1: address-of(n) in MS1
+;    2: address-of(iterates) in MS1
+;----------------------------------------------------------
+main               EQU       *
+
+; build activation record on run-time stack
+                   ADJSP     #6                            ; allocate local variables
+                   SETFB     #-6
+; address-of(n) = LBPageNumber*512
+                   LDR       R1,#LBPageNUmber
+                   LDR       R2,#512
+                   MULR      R1,R2
+                   STR       R1,FB:1
+; address-of(iterates) = (LBPageNumber*512)+2
+                   LDR       R1,#LBPageNumber
+                   LDR       R2,#512
+                   MULR      R1,R2
+                   LDR       R2,#2
+                   ADDR      R1,R2
+                   STR       R1,FB:2
+; get handle of memory-segment resource name = "MS1"
+                   LDAR      R15,MS1Name
+                   SVC       #SVC_WAIT_FOR_RESOURCE_HANDLE
+                   STR       R15,FB:0
+; share memory-segment resource name = "MS1"
+                   LDR       R15,FB:0
+                   SVC       #SVC_SHARE_MEMORY_SEGMENT
+; WHILE ( n != 1 )
+WHILE              EQU       *
+                   LDR       R1,#1
+                   LDR       R2,@FB:1
+                   CMPR      R1,R2
+                   JMPZ      R1,endWHILE
+
+;    IF ( n is odd ) THEN
+                   LDR       R1,@FB:1
+                   LSRR      R1
+                   SLR       R1
+                   LDR       R2,@FB:1
+                   CMPR      R1,R2
+                   JMPZ      R1,endIF
+
+;      n := 3n+1
+                   LDR       R1,@FB:1
+                   LDR       R3,@FB:1
+                   ADDR      R1,R1
+                   ADDR      R1,R3
+                   INCR      R1
+                   STR       R1,@FB:1
+
+;      iterates := iterates+1
+                   LDR       R1,@FB:2
+                   INCR      R1
+                   STR       R1,@FB:2
+
+;      PRINT "n = ",n,ENDL
+                   LDR       R1,@FB:1
+                   LDAR      R15,format1
+                   SVC       #SVC_WRITE_TO_TERMINAL
+;    END
+endIF              EQU       *
+                   SVC       #SVC_DO_NOTHING               ; forces context switch
+; END
+                   JMP       WHILE
+endWHILE           EQU       *
+; un-share memory-segment resource name = "MS1"
+                   LDR       R15,FB:0
+                   SVC       #SVC_UNSHARE_MEMORY_SEGMENT
+                   ADJSP     #-6                           ; deallocate local variables
+; STOP
+                   SVC       #SVC_TERMINATE_PROCESS
+
+;----------------------------------------------------------
+   DATASEGMENT
+;----------------------------------------------------------
+; ***Service request number definitions
+SVC_DO_NOTHING                         EQU      0
+SVC_TERMINATE_PROCESS                  EQU    100
+SVC_WAIT_FOR_RESOURCE_HANDLE           EQU    202
+SVC_READ_FROM_TERMINAL                 EQU    300
+SVC_WRITE_TO_TERMINAL                  EQU    301
+SVC_SHARE_MEMORY_SEGMENT               EQU    502
+SVC_UNSHARE_MEMORY_SEGMENT             EQU    503
+
+; ***Service request return code definitions
+SVC_EOF                                EQU     -1          ; Terminal input EOF
+SVC_OK                                 EQU      0          ; No error occurred
+
+; ***Static data
+LBPageNumber       EQU       5
+MS1Name            DS        "MS1"
+format1            DS        "n = %1I%n"
+
+   END

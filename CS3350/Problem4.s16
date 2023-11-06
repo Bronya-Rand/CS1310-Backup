@@ -1,0 +1,316 @@
+;----------------------------------------------------------
+; Dr. Art Hanna
+; Problem #4 
+; Problem4.s16
+;----------------------------------------------------------
+   CODESEGMENT
+;----------------------------------------------------------
+; PROGRAM main()
+;    *Note* main() does not have an activation record because *ALL*
+;       main() local data is stored as static data
+;----------------------------------------------------------
+main               EQU       *
+
+; n = GetInteger(prompt1)
+; (*Note* Protocol dictates that function return value is passed as first parameter.)
+                   PUSHR     R1                            ; make room on run-time stack for function return value
+                   LDAR      R1,prompt1                    ; pass address-of(prompt1)
+                   PUSHR     R1
+                   CALL      GetInteger
+                   POPR      R1                            ; discard actual parameter, address-of(format1)
+                   POPR      R1                            ; pop and store function return value in n
+                   STR       R1,n
+; FOR i := 0 TO n-1
+                   ZEROR     R1
+                   STR       R1,i
+FOR1               EQU       *
+                   LDR       R1,i
+                   LDR       R2,n
+                   DECR      R2
+                   CMPR      R1,R2
+                   JMPP      R1,endFOR1
+                   
+;    y = GetInteger(prompt2)
+;    (*Note* Protocol dictates that function return value is passed as first parameter.)
+
+                   PUSHR     R2                            ; make room on run-time stack for function return value
+                   LDAR      R2,prompt2                    ; pass address-of(prompt1)
+                   PUSHR     R2
+                   CALL      GetInteger
+                   POPR      R2                            ; discard actual parameter, address-of(format1)
+                   POPR      R2                            ; pop and store function return value in y
+                   STR       R2,y
+
+;    CALL SetXToY(y,xs[i])
+;    (*Note* Protocol dictates that parameters are stacked from left-to-right; that IN scalar 
+;       parameter values are passed-by-value; OUT and IO scalar parameter values are passed-by-reference.)
+                   LDR       R1,y                          ; push y
+                   PUSHR     R1
+                   LDAR      R1,xs                         ; push &xs[i]
+                   LDR       R2,i
+                   ADDR      R2,R2
+                   ADDR      R1,R2
+                   PUSHR     R1
+                   CALL      SetXToY
+                   POPR      R1                            ; discard actual parameter
+                   POPR      R1                            ; discard actual parameter
+; END
+                   LDR       R1,i
+                   INCR      R1
+                   STR       R1,i
+                   JMP       FOR1
+endFOR1            EQU       *
+
+; FOR i := 0 TO n-1
+                   ZEROR     R1
+                   STR       R1,i
+FOR2               EQU       *
+                   LDR       R1,i
+                   LDR       R2,n
+                   DECR      R2
+                   CMPR      R1,R2
+                   JMPP      R1,endFOR2
+;    CALL DoubleX(xs[i])
+                   
+                   LDAR R1, xs
+                   LDR R2, i
+                   ADDR R2, R2
+                   ADDR R1, R2
+                   PUSHR R1
+                   CALL DoubleX
+                   POPR R1
+
+; END
+                   LDR       R1,i
+                   INCR      R1
+                   STR       R1,i
+                   JMP       FOR2
+endFOR2            EQU       *
+
+; CALL DisplayXs1(xs[],n)
+; (*Note* Protocol dictates that parameters are stacked from left-to-right; that IN scalar 
+;    parameter values are passed-by-value; OUT and IO scalar parameter values are passed-by-reference.)
+                   LDAR      R1,xs                         ; push &xs[0]
+                   PUSHR     R1
+                   LDR       R1,n                          ; push n
+                   PUSHR     R1
+                   CALL      DisplayXs1
+                   POPR      R1                            ; discard actual parameter
+                   POPR      R1                            ; discard actual parameter
+; CALL DisplayXs2(xs[],n)
+; (*Note* Protocol dictates that parameters are stacked from left-to-right; that IN scalar 
+;    parameter values are passed-by-value; OUT and IO scalar parameter values are passed-by-reference.)
+
+                   LDAR      R1,xs                         ; push &xs[0]
+                   PUSHR     R1
+                   LDR       R1,n                          ; push n
+                   PUSHR     R1
+                   CALL      DisplayXs2
+                   POPR      R1                            ; discard actual parameter
+                   POPR      R1                            ; discard actual parameter
+
+; STOP
+                   SVC       #SVC_TERMINATE_PROCESS
+
+;--------------------------------------------------
+; FUNCTION GetInteger(INBYREF prompt: STR): INT
+;--------------------------------------------------
+GetInteger         EQU       *
+                   PUSHR     R1                            ; save registers on entry
+                   PUSHR     R15
+                   SETFB     #-10
+; activation record on run-time stack
+;    0: function return value (pass-by-result)
+;    1: address-of(prompt) (pass-by-reference)
+;    2: return-address
+;    3: R1 (saved)
+;    4: R15 (saved)
+
+;    PRINT prompt
+                   LDR       R15,FB:1
+                   SVC       #SVC_WRITE_TO_TERMINAL
+;    INPUT x
+                   LDAR      R15,format1
+                   SVC       #SVC_READ_FROM_TERMINAL
+;    RETURN( x )
+                   STR       R1,FB:0
+                   POPR      R15                           ; restore registers on exit
+                   POPR      R1
+                   RET
+; END
+
+;--------------------------------------------------
+; PROCEDURE SetXToY(IN y: INT,OUTBYREF x: INT)
+;--------------------------------------------------
+SetXToY            EQU       *
+                   PUSHR     R1                            ; save register on entry
+                   SETFB     #-8
+; activation record on run-time stack
+;    0: y (pass-by-value)
+;    1: address-of(x) (pass-by-reference)
+;    2: return-address
+;    3: R1 (saved)
+
+;    x := y
+                   LDR       R1,FB:0
+                   STR       R1,@FB:1
+;    RETURN
+                   POPR      R1                            ; restore register on exit
+                   RET
+; END
+
+;--------------------------------------------------
+; PROCEDURE DoubleX(IOBYREF x: INT)
+;--------------------------------------------------
+DoubleX            EQU       *
+                   PUSHR     R1                            ; save registers on entry
+                   PUSHR     R2
+                   SETFB     #-8
+; activation record on run-time stack
+;    0: address-of(x) (pass-by-reference)
+;    1: return-address
+;    2: R1 (saved)
+;    3: R2 (saved)
+
+;    x := 2*x
+                   LDR       R1,@FB:0
+                   ADDR      R1,R1
+                   STR       R1,@FB:0
+;    RETURN
+                   POPR      R2                            ; restore registers on exit
+                   POPR      R1
+                   RET
+; END
+
+;--------------------------------------------------
+; PROCEDURE DisplayXs1(INBYREF xs[]: INT,IN n: INT)
+;--------------------------------------------------
+DisplayXs1         EQU       *
+                   PUSHR     R1                            ; save registers on entry
+                   PUSHR     R2
+                   PUSHR     R3
+                   PUSHR     R15
+                   SETFB     #-14
+; activation record on run-time stack
+;    0: address-of(xs) (pass-by-reference)
+;    1: n (pass-by-value)
+;    2: return-address
+;    3: R1 (saved)
+;    4: R2 (saved)
+;    5: R3 (saved)
+;    6: R15 (saved)
+
+;    FOR i := 0 TO n-1
+                   ZEROR     R1                            ; R1 is the local variable i
+FOR3               EQU       *
+                   COPYR     R3,R1
+                   LDR       R2,FB:1
+                   DECR      R2
+                   CMPR      R3,R2
+                   JMPP      R3,endFOR3
+;       PRINT xs[i]," "
+                   LDR       R3,FB:0
+                   COPYR     R2,R1
+                   ADDR      R2,R2
+                   ADDR      R3,R2
+                   LDR       R2,@R3
+                   LDAR      R15,format2
+                   SVC       #SVC_WRITE_TO_TERMINAL
+;    END
+                   INCR      R1
+                   JMP       FOR3
+endFOR3            EQU       *
+;    PRINT ENDL
+                   LDAR      R15,format3
+                   SVC       #SVC_WRITE_TO_TERMINAL
+;    RETURN
+                   POPR      R15                           ; restore registers on exit
+                   POPR      R3
+                   POPR      R2
+                   POPR      R1
+                   RET
+; END
+
+;--------------------------------------------------
+; PROCEDURE DisplayXs2(INBYREF xs[]: INT,IN n: INT)
+;--------------------------------------------------
+DisplayXs2         EQU       *
+                   PUSHR     R1                            ; save registers on entry
+                   PUSHR     R2
+                   PUSHR     R3
+                   PUSHR     R15
+                   ADJSP     #2                            ; make room on run-time stack for local variable i
+                   SETFB     #-16
+; activation record on run-time stack
+;    0: address-of(xs) (passed-by-reference)
+;    1: n (pass-by-value)
+;    2: return-address
+;    3: R1 (saved)
+;    4: R2 (saved)
+;    5: R3 (saved)
+;    6: R15 (saved)
+;    7: i (local variable allocated in activation record)
+
+;    FOR i := 0 TO n-1
+                   ZEROR     R1
+                   STR       R1,FB:7
+FOR4               EQU       *
+                   LDR       R1,FB:7
+                   COPYR     R3,R1
+                   LDR       R2,FB:1
+                   DECR      R2
+                   CMPR      R3,R2
+                   JMPP      R3,endFOR4
+;       PRINT xs[i]," "
+                   LDR       R3,FB:0
+                   COPYR     R2,R1
+                   ADDR      R2,R2
+                   ADDR      R3,R2
+                   LDR       R2,@R3
+                   LDAR      R15,format2
+                   SVC       #SVC_WRITE_TO_TERMINAL
+;    END
+                   LDR       R1,FB:7
+                   INCR      R1
+                   STR       R1,FB:7
+                   JMP       FOR4
+endFOR4            EQU       *
+;    PRINT ENDL
+                   LDAR      R15,format3
+                   SVC       #SVC_WRITE_TO_TERMINAL
+;    RETURN
+                   ADJSP     #-2                           ; discard local variable i
+                   POPR      R15                           ; restore registers on exit
+                   POPR      R3
+                   POPR      R2
+                   POPR      R1
+                   RET
+; END
+
+;----------------------------------------------------------
+   DATASEGMENT
+;----------------------------------------------------------
+; ***Service request number definitions
+SVC_TERMINATE_PROCESS                  EQU    100
+SVC_GET_CURRENT_TIME                   EQU      1
+SVC_GET_RANDOM_INTEGER                 EQU      2
+SVC_READ_FROM_TERMINAL                 EQU    300
+SVC_WRITE_TO_TERMINAL                  EQU    301
+
+; ***Service request return code definitions
+SVC_EOF                                EQU     -1          ; Terminal input EOF
+SVC_OK                                 EQU      0          ; No error occurred
+
+; *** Static data
+prompt1            DS        "n [1,20]? "
+prompt2            DS        "y? "
+format1            DS        "%1I"
+format2            DS        "%2I "
+format3            DS        "%n"
+
+n                  RW
+i                  RW
+y                  RW
+xs                 RW        20
+
+   END

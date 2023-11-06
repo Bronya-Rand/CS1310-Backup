@@ -1,0 +1,49 @@
+"Problem1.honkai" Page    1
+Line Source Line
+---- -------------------------------------------------------------------------------
+   1 ;------------------------------------------------------------
+   2 ; Dr. Art Hanna
+   3 ; SPL Programming, Problem #1
+   4 ; Problem1.spl
+   5 ;------------------------------------------------------------
+   6 PROGRAM
+   7    VAR i: INT.
+===================================================================================================
+Contents of identifier table after compilation of global data definitions
+  # Scope Data type Dimensions Type                       Reference            Lexeme
+--- ----- --------- ---------- -------------------------- -------------------- --------------------
+===================================================================================================
+Begin nested scope #1, identifier table index = 0
+   8    VAR n: INT.
+Did not find identifier "i"
+Added identifier "i" at index = 1, reference = SB:0D28, identifier type = PROGRAMMODULE_VARIABLE, data type = INTEGER, dimensions = 0
+   9 
+  10    i := 0.
+Did not find identifier "n"
+Added identifier "n" at index = 2, reference = SB:0D29, identifier type = PROGRAMMODULE_VARIABLE, data type = INTEGER, dimensions = 0
+  11    
+Found identifier "i" at index = 1 (is in current scope)
+  12    INPUT "n? " n.
+  13    DO WHILE ( i < n )
+Found identifier "n" at index = 2 (is in current scope)
+  14       PRINT "Arthur Daryl Hanna",ENDL.
+Found identifier "i" at index = 1 (is in current scope)
+Found identifier "i" at index = 1 (is in current scope)
+Found identifier "n" at index = 2 (is in current scope)
+Found identifier "n" at index = 2 (is in current scope)
+  15       i := i+1.
+Found identifier "i" at index = 1 (is in current scope)
+  16    END
+Found identifier "i" at index = 1 (is in current scope)
+Found identifier "i" at index = 1 (is in current scope)
+  17 END
+  18 
+===================================================================================================
+Contents of identifier table at end of compilation of PROGRAM module definition
+  # Scope Data type Dimensions Type                       Reference            Lexeme
+--- ----- --------- ---------- -------------------------- -------------------- --------------------
+  1     1 INTEGER            0 PROGRAMMODULE_VARIABLE     SB:0D28              i
+  2     1 INTEGER            0 PROGRAMMODULE_VARIABLE     SB:0D29              n
+===================================================================================================
+End nested scope #1, identifier table index now = 0
+******* SPL compiler ending

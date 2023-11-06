@@ -1,0 +1,108 @@
+;--------------------------------------------------
+; Dr. Art Hanna
+; Problem #8B "master" process
+; Job1.s16
+;--------------------------------------------------
+   CODESEGMENT
+;----------------------------------------------------------
+; PROGRAM main()
+;    *Note* main() uses an activation record to store *ALL*
+;       variable local data. Constants are stored in
+;       data-segment as static data.
+;----------------------------------------------------------
+; activation record on run-time stack
+;    0: LBPageNumber         create MS1 parameter block
+;    1: UBPageNumber
+;    2: 'M'        
+;    3: 'S'
+;    4: '1'
+;    5: 0X0000
+;    6: MS1Handle
+;    7: address-of(n) in MS1
+;    8: address-of(iterates) in MS1
+;----------------------------------------------------------
+main               EQU       *
+
+; build activation record on run-time stack
+                   ADJSP     #18                           ; allocate local variables
+                   SETFB     #-18
+; create 1-page memory-segment LBPageNumber = 5 resource name = "MS1"
+                   LDR       R1,#LBPageNumber              ; LBPageNumber
+                   STR       R1,FB:0
+                   LDR       R1,#LBPageNumber              ; UBPageNumber
+                   STR       R1,FB:1
+                   LDR       R1,#'M'                       ; name = "MS1"
+                   STR       R1,FB:2
+                   LDR       R1,#'S'
+                   STR       R1,FB:3
+                   LDR       R1,#'1'
+                   STR       R1,FB:4
+                   LDR       R1,#0X0000
+                   STR       R1,FB:5
+                   LDAR      R15,FB:0
+                   SVC       #SVC_CREATE_MEMORY_SEGMENT
+                   STR       R15,FB:6
+; address-of(n) = LBPageNumber*512
+                   LDR       R1,#LBPageNumber
+                   LDR       R2,#512
+                   MULR      R1,R2
+                   STR       R1,FB:7
+; address-of(iterates) = (LBPageNumber*512)+2
+                   LDR       R1,#LBPageNumber
+                   LDR       R2,#512
+                   MULR      R1,R2
+                   LDR       R2,#2
+                   ADDR      R1,R2
+                   STR       R1,FB:8
+; INPUT "n? " n
+                   LDAR      R15,format1
+                   SVC       #SVC_READ_FROM_TERMINAL
+                   STR       R1,@FB:7
+; iterates := 0
+                   ZEROR     R0
+                   STR       R0,@FB:8
+; WHILE ( n != 1 )
+WHILE              EQU       *
+                   LDR       R1,#1
+                   LDR       R2,@FB:7
+                   CMPR      R1,R2
+                   JMPZ      R1,endWHILE
+
+                   SVC       #SVC_DO_NOTHING                ; forces context switch
+; END
+                   JMP       WHILE
+endWHILE           EQU       *
+; PRINT "iterates = ",iterates,ENDL
+                   LDAR      R15,format2
+                   LDR       R1,@FB:8
+                   SVC       #SVC_WRITE_TO_TERMINAL
+; *Note* "Forgetting" to destroy the shared memory-segment resource
+;    is a good example of a resource leak! Destroying the memory-segment
+;    before all other processes can UNSHARE is a synchronization problem!
+                   LDR       R15,FB:6
+                   SVC       #SVC_DESTROY_MEMORY_SEGMENT
+                   ADJSP     #-18                           ; deallocate local variables
+; STOP
+                   SVC       #SVC_TERMINATE_PROCESS
+
+;----------------------------------------------------------
+   DATASEGMENT
+;----------------------------------------------------------
+; ***Service request number definitions
+SVC_DO_NOTHING                         EQU      0
+SVC_TERMINATE_PROCESS                  EQU    100
+SVC_READ_FROM_TERMINAL                 EQU    300
+SVC_WRITE_TO_TERMINAL                  EQU    301
+SVC_CREATE_MEMORY_SEGMENT              EQU    500
+SVC_DESTROY_MEMORY_SEGMENT             EQU    501
+
+; ***Service request return code definitions
+SVC_EOF                                EQU     -1          ; Terminal input EOF
+SVC_OK                                 EQU      0          ; No error occurred
+
+; ***Static data
+LBPageNumber       EQU       5
+format1            DS        "n? %1I"
+format2            DS        "iterates = %1I%n"
+
+   END

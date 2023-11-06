@@ -1,0 +1,22 @@
+# P6.honkai
+# Weiss Del Carmen
+# Stop this madness Dr. Hanna
+# No more CCTQs smh...
+
+Herrscher
+   Veliona x: Bronya >>
+   Veliona y: Bronya >>
+
+   Do
+      Provide "x? " x >>
+   While ( x <> 0 )
+      Provide "y? " y >>
+      If  ( x < y ) Execute
+         Speak "x  < y", EndL >>
+      ElIf ( x = y ) Execute
+         Speak "x  = y", EndL >>
+      ElIf ( x > y ) Execute
+         Speak "x  > y", EndL >>
+      Stop
+   Stop
+Stop

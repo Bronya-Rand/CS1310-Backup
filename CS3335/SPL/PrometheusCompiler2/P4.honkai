@@ -1,0 +1,53 @@
+# P4.honkai
+# Weiss Del Carmen
+# Something Dr. Hanna did for some reason...
+
+Herrscher
+	
+/*----------------------*/
+/* Arithmetic operators */
+/*----------------------*/
+   Speak " 1 = ",1,EndL >>
+   Speak "+2 = ",+2,EndL >>
+   Speak "-3 = ",-3,EndL >>
+   Speak "Nneg 2 = ",Nneg 2,EndL >>
+   Speak "Nneg(-3) = ",Nneg(-3),EndL >>
+   Speak "4+5 = ",(4+5),EndL >>
+   Speak "5-4 = ",5-4,EndL >>
+   Speak "6*7 = ",6*7,EndL >>
+   Speak "7/4 = ",7/4,EndL >>
+   Speak "7%4 = ",7%4,EndL >>
+   Speak "2^3 = ",2^3,EndL >>
+   Speak "2^(3**2) = ",2^(3**2),EndL >>
+   Speak "(2**3)^2 = ",(2**3)^2,EndL >>
+
+/*----------------------*/
+/* Comparison operators */
+/*----------------------*/
+   Speak "1  < 2 = ",1  < 2,EndL >>
+   Speak "1  = 2 = ",1  = 2,EndL >>
+   Speak "1 <= 2 = ",1 <= 2,EndL >>
+   Speak "1  > 2 = ",1  > 2,EndL >>
+   Speak "1 != 2 = ",1 != 2,EndL >>
+   Speak "1 <> 2 = ",1 <> 2,EndL >>
+   Speak "1 >= 2 = ",1 >= 2,EndL >>
+
+/*----------------------*/
+/* Logical operators    */
+/*----------------------*/
+   Speak " True   OR  True = ", True   OR  True,EndL >>
+   Speak " True   OR False = ", True   OR False,EndL >>
+   Speak "False  NOR  True = ",False  NOR  True,EndL >>
+   Speak "False  NOR False = ",False  NOR False,EndL >>
+   Speak " True  XOR  True = ", True  XOR  True,EndL >>
+   Speak "False  XOR False = ",False  XOR False,EndL >>
+
+   Speak " True  AND  True = ", True  AND  True,EndL >>
+   Speak " True  AND False = ", True  AND False,EndL >>
+   Speak "False NAND  True = ",False NAND  True,EndL >>
+   Speak "False NAND False = ",False NAND False,EndL >>
+
+   Speak "NOT False = ",NOT False,EndL >>
+   Speak "NOT  True = ",NOT  True,EndL >>
+
+Stop

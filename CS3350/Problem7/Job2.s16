@@ -1,0 +1,66 @@
+;--------------------------------------------------
+; Dr. Art Hanna
+; Problem #7, Compute sum = 1+2+...+N using pre-test DO/WHILE-statement
+; Job2.s16
+;--------------------------------------------------
+   CODESEGMENT
+
+main               EQU       *
+
+; build activation record on run-time stack
+                   ADJSP     #6                            ; allocate local variables N,sum,i
+                   SETFB     #-6
+; INPUT "N? " N
+                   LDAR      R15,format1
+                   SVC       #SVC_READ_FROM_TERMINAL
+                   STR       R1,FB:0
+; i := 1
+                   LDR R2,#1
+                   STR R2,FB:2
+; sum := 0
+                   ZEROR     R2
+                   STR       R2,FB:1
+; DO WHILE ( i <= N )
+DO                 EQU *
+                   LDR R1, FB:2
+                   LDR R2, FB:0
+                   CMPR R1, R2
+                   JMPP R1, endDO
+
+;    sum := sum+i
+                   LDR R1, FB:2
+                   LDR R3, FB:1
+                   ADDR R3, R1
+                   STR R3, FB:1
+
+;    i := i+1
+                   LDR R1, FB:2
+                   INCR R1
+                   STR R1, FB:2
+                   JMP DO
+; END
+endDO              EQU *
+
+; PRINT "sum = ",sum,ENDL
+                   LDR       R1,FB:1
+                   LDAR      R15,format2
+                   SVC       #SVC_WRITE_TO_TERMINAL
+                   ADJSP     #-6                           ; deallocate local variables N,sum,i
+; STOP
+                   SVC       #SVC_TERMINATE_PROCESS
+
+   DATASEGMENT
+
+; ***Service request number definitions
+SVC_TERMINATE_PROCESS                  EQU    100
+SVC_READ_FROM_TERMINAL                 EQU    300
+SVC_WRITE_TO_TERMINAL                  EQU    301
+
+; ***Service request return code definitions
+SVC_EOF                                EQU     -1          ; Terminal input EOF
+SVC_OK                                 EQU      0          ; No error occurred
+
+format1            DS        "N? %1I"
+format2            DS        "sum = %1U%n"
+
+   END

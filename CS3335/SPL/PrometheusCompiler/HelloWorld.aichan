@@ -1,0 +1,25 @@
+"HelloWorld.honkai" Page    1
+Line Source Line
+---- -------------------------------------------------------------------------------
+   1 # HelloWorld.honkai
+   2 # Weiss Del Carmen
+   3 # Sample Hello World to Prometheus.
+   4 
+   5 Herrscher
+   6     Speak "Hello. Dr. MEI." >>
+===================================================================================================
+Contents of identifier table after compilation of global data definitions
+  # Scope Data type Dimensions Type                       Reference            Lexeme
+--- ----- --------- ---------- -------------------------- -------------------- --------------------
+===================================================================================================
+   7     Speak "I am Terminal Aide 0017." >>
+Begin nested scope #1, identifier table index = 0
+   8 Stop
+   9 
+===================================================================================================
+Contents of identifier table at end of compilation of PROGRAM module definition
+  # Scope Data type Dimensions Type                       Reference            Lexeme
+--- ----- --------- ---------- -------------------------- -------------------- --------------------
+===================================================================================================
+End nested scope #1, identifier table index now = 0
+******* SPL compiler ending

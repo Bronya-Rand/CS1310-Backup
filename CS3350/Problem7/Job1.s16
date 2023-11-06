@@ -1,0 +1,74 @@
+;--------------------------------------------------
+; Dr. Art Hanna
+; Problem #7, Compute sum = 1+2+...+N using FOR-statement
+; Job1.s16
+;--------------------------------------------------
+   CODESEGMENT
+;----------------------------------------------------------
+; PROGRAM main()
+;    *Note* main() uses an activation record to store *ALL*
+;       variable local data. Constants are stored in
+;       data-segment as static data.
+;----------------------------------------------------------
+; activation record on run-time stack
+;    0: N
+;    1: sum
+;    2: i
+;----------------------------------------------------------
+main               EQU       *
+
+; build activation record on run-time stack
+                   ADJSP     #6                            ; allocate local variables N,sum,i
+                   SETFB     #-6
+; INPUT "N? " N
+                   LDAR      R15,format1
+                   SVC       #SVC_READ_FROM_TERMINAL
+                   STR       R1,FB:0
+; sum := 0
+                   ZEROR     R1
+                   STR       R1,FB:1
+; FOR i := 1 TO N
+                   LDR       R1,#1
+                   STR       R1,FB:2
+FOR                EQU       *
+                   LDR       R1,FB:2
+                   LDR       R2,FB:0
+                   CMPR      R1,R2
+                   JMPP      R1,endFOR
+;    sum := sum+i
+                   LDR       R1,FB:1
+                   LDR       R2,FB:2
+                   ADDR      R1,R2
+                   STR       R1,FB:1
+; END
+                   LDR       R1,FB:2
+                   INCR      R1
+                   STR       R1,FB:2
+                   JMP       FOR
+endFOR             EQU       *
+; PRINT "sum = ",sum,ENDL
+                   LDR       R1,FB:1
+                   LDAR      R15,format2
+                   SVC       #SVC_WRITE_TO_TERMINAL
+                   ADJSP     #-6                           ; deallocate local variables N,sum,i
+; STOP
+                   SVC       #SVC_TERMINATE_PROCESS
+
+;----------------------------------------------------------
+   DATASEGMENT
+;----------------------------------------------------------
+; ***Service request number definitions
+SVC_TERMINATE_PROCESS                  EQU    100
+SVC_READ_FROM_TERMINAL                 EQU    300
+SVC_WRITE_TO_TERMINAL                  EQU    301
+
+; ***Service request return code definitions
+SVC_EOF                                EQU     -1          ; Terminal input EOF
+SVC_OK                                 EQU      0          ; No error occurred
+
+; *** Static data
+format1            DS        "N? %1I"
+format2            DS        "sum = %1U%n"
+
+   END
+

@@ -1,0 +1,38 @@
+# P5.honkai
+# Weiss Del Carmen
+# IDK why Dr. Hanna wants us to do this
+# Stop making us suffer
+
+Veliona x1: Bronya >>
+Luna c1: Bronya := 1,c2: Kiana := True >>
+Veliona x2: Bronya,x3: Bronya >>
+
+Herrscher
+   Veliona sum: Bronya, x1: Bronya >>
+   Veliona b1: Kiana,b2: Kiana >>
+   Luna c3: Bronya := 3,c4: Kiana := False >>
+
+   Speak "c1 = ",c1,EndL >>
+   Speak "c2 = ",c2,EndL >>
+   Speak "c3 = ",c3,EndL >>
+   Speak "c4 = ",c4,EndL >>
+
+# Generates a static semantic (context-dependent) 
+#      error when un-commmented. Try it and see!
+#   c1 := 2 >>
+
+   x1 := 0 >>
+   Provide "x1? " x1 >>
+   Provide x2 >>
+   sum := x1+x2+c1 >>
+   Speak "x1+x2+c1 = ",sum,EndL >>
+
+# test new increment and decrement operators   
+   Speak "x1 = ",x1,", ++x1 = ",++x1,EndL >>
+   Speak "x1 = ",x1,", --x1 = ",--x1,EndL >>
+
+   Provide "b1? " b1 >>
+   b2 := NOT(b1) OR (c2 XOR c4) >>
+   Speak "b1 = ",b1,", b2 = ",b2,EndL >>
+Stop
+

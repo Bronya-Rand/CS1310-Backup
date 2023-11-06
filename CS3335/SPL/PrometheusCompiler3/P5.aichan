@@ -1,0 +1,119 @@
+"P5.honkai" Page    1
+Line Source Line
+---- -------------------------------------------------------------------------------
+   1 # P5.honkai
+   2 # Weiss Del Carmen
+   3 # IDK why Dr. Hanna wants us to do this
+   4 # Stop making us suffer
+   5 
+   6 Veliona x1: Bronya >>
+   7 Luna c1: Bronya := 1,c2: Kiana := True >>
+Did not find identifier "x1"
+Added identifier "x1" at index = 1, reference = SB:0D0, identifier type = GLOBAL_VARIABLE, data type = INTEGER, dimensions = 0
+Did not find identifier "c1"
+Added identifier "c1" at index = 2, reference = SB:0D1, identifier type = GLOBAL_CONSTANT, data type = INTEGER, dimensions = 0
+   8 Veliona x2: Bronya,x3: Bronya >>
+Did not find identifier "c2"
+Added identifier "c2" at index = 3, reference = SB:0D2, identifier type = GLOBAL_CONSTANT, data type = BOOLEAN, dimensions = 0
+Did not find identifier "x2"
+Added identifier "x2" at index = 4, reference = SB:0D3, identifier type = GLOBAL_VARIABLE, data type = INTEGER, dimensions = 0
+   9 
+  10 Herrscher
+  11    Veliona sum: Bronya, x1: Bronya >>
+Did not find identifier "x3"
+Added identifier "x3" at index = 5, reference = SB:0D4, identifier type = GLOBAL_VARIABLE, data type = INTEGER, dimensions = 0
+===================================================================================================
+Contents of identifier table after compilation of global data definitions
+  # Scope Data type Dimensions Type                       Reference            Lexeme
+--- ----- --------- ---------- -------------------------- -------------------- --------------------
+  1     0 INTEGER            0 GLOBAL_VARIABLE            SB:0D0               x1
+  2     0 INTEGER            0 GLOBAL_CONSTANT            SB:0D1               c1
+  3     0 BOOLEAN            0 GLOBAL_CONSTANT            SB:0D2               c2
+  4     0 INTEGER            0 GLOBAL_VARIABLE            SB:0D3               x2
+  5     0 INTEGER            0 GLOBAL_VARIABLE            SB:0D4               x3
+===================================================================================================
+Begin nested scope #1, identifier table index = 5
+Did not find identifier "sum"
+Added identifier "sum" at index = 6, reference = SB:0D33, identifier type = PROGRAMMODULE_VARIABLE, data type = INTEGER, dimensions = 0
+  12    Veliona b1: Kiana,b2: Kiana >>
+Found identifier "x1" at index = 1 (not in current scope)
+Added identifier "x1" at index = 7, reference = SB:0D34, identifier type = PROGRAMMODULE_VARIABLE, data type = INTEGER, dimensions = 0
+Did not find identifier "b1"
+Added identifier "b1" at index = 8, reference = SB:0D35, identifier type = PROGRAMMODULE_VARIABLE, data type = BOOLEAN, dimensions = 0
+  13    Luna c3: Bronya := 3,c4: Kiana := False >>
+Did not find identifier "b2"
+Added identifier "b2" at index = 9, reference = SB:0D36, identifier type = PROGRAMMODULE_VARIABLE, data type = BOOLEAN, dimensions = 0
+Did not find identifier "c3"
+Added identifier "c3" at index = 10, reference = SB:0D37, identifier type = PROGRAMMODULE_CONSTANT, data type = INTEGER, dimensions = 0
+  14 
+  15    Speak "c1 = ",c1,EndL >>
+Did not find identifier "c4"
+Added identifier "c4" at index = 11, reference = SB:0D38, identifier type = PROGRAMMODULE_CONSTANT, data type = BOOLEAN, dimensions = 0
+Found identifier "c1" at index = 2 (not in current scope)
+  16    Speak "c2 = ",c2,EndL >>
+Found identifier "c2" at index = 3 (not in current scope)
+  17    Speak "c3 = ",c3,EndL >>
+Found identifier "c3" at index = 10 (is in current scope)
+  18    Speak "c4 = ",c4,EndL >>
+Found identifier "c4" at index = 11 (is in current scope)
+  19 
+  20 # Generates a static semantic (context-dependent) 
+  21 #      error when un-commmented. Try it and see!
+  22 #   c1 := 2 >>
+  23 
+"P5.honkai" Page    2
+Line Source Line
+---- -------------------------------------------------------------------------------
+  24    x1 := 0 >>
+Found identifier "x1" at index = 7 (is in current scope)
+  25    Provide "x1? " x1 >>
+  26    Provide x2 >>
+Found identifier "x1" at index = 7 (is in current scope)
+  27    sum := x1+x2+c1 >>
+Found identifier "x2" at index = 4 (not in current scope)
+Found identifier "sum" at index = 6 (is in current scope)
+Found identifier "x1" at index = 7 (is in current scope)
+Found identifier "x2" at index = 4 (not in current scope)
+  28    Speak "x1+x2+c1 = ",sum,EndL >>
+Found identifier "c1" at index = 2 (not in current scope)
+Found identifier "sum" at index = 6 (is in current scope)
+  29 
+  30 # test new increment and decrement operators   
+  31    Speak "x1 = ",x1,", ++x1 = ",++x1,EndL >>
+Found identifier "x1" at index = 7 (is in current scope)
+Found identifier "x1" at index = 7 (is in current scope)
+  32    Speak "x1 = ",x1,", --x1 = ",--x1,EndL >>
+Found identifier "x1" at index = 7 (is in current scope)
+Found identifier "x1" at index = 7 (is in current scope)
+  33 
+  34    Provide "b1? " b1 >>
+  35    b2 := NOT(b1) OR (c2 XOR c4) >>
+Found identifier "b1" at index = 8 (is in current scope)
+Found identifier "b2" at index = 9 (is in current scope)
+Found identifier "b1" at index = 8 (is in current scope)
+Found identifier "c2" at index = 3 (not in current scope)
+  36    Speak "b1 = ",b1,", b2 = ",b2,EndL >>
+Found identifier "c4" at index = 11 (is in current scope)
+Found identifier "b1" at index = 8 (is in current scope)
+Found identifier "b2" at index = 9 (is in current scope)
+  37 Stop
+  38 
+  39 
+===================================================================================================
+Contents of identifier table at end of compilation of PROGRAM module definition
+  # Scope Data type Dimensions Type                       Reference            Lexeme
+--- ----- --------- ---------- -------------------------- -------------------- --------------------
+  1     0 INTEGER            0 GLOBAL_VARIABLE            SB:0D0               x1
+  2     0 INTEGER            0 GLOBAL_CONSTANT            SB:0D1               c1
+  3     0 BOOLEAN            0 GLOBAL_CONSTANT            SB:0D2               c2
+  4     0 INTEGER            0 GLOBAL_VARIABLE            SB:0D3               x2
+  5     0 INTEGER            0 GLOBAL_VARIABLE            SB:0D4               x3
+  6     1 INTEGER            0 PROGRAMMODULE_VARIABLE     SB:0D33              sum
+  7     1 INTEGER            0 PROGRAMMODULE_VARIABLE     SB:0D34              x1
+  8     1 BOOLEAN            0 PROGRAMMODULE_VARIABLE     SB:0D35              b1
+  9     1 BOOLEAN            0 PROGRAMMODULE_VARIABLE     SB:0D36              b2
+ 10     1 INTEGER            0 PROGRAMMODULE_CONSTANT     SB:0D37              c3
+ 11     1 BOOLEAN            0 PROGRAMMODULE_CONSTANT     SB:0D38              c4
+===================================================================================================
+End nested scope #1, identifier table index now = 5
+******* SPL compiler ending

@@ -1,0 +1,27 @@
+"P6.honkai" Page    1
+Line Source Line
+---- -------------------------------------------------------------------------------
+   1 # P6.honkai
+   2 # Weiss Del Carmen
+   3 # Stop this madness Dr. Hanna
+   4 # No more CCTQs smh...
+   5 
+   6 Herrscher
+   7    Veliona x: Bronya >>
+   8    Veliona y: Bronya >>
+   9 
+  10    Do
+  11       Provide "x? " x >>
+  12    While ( x <> 0 )
+  13       Provide "y? " y >>
+  14       If  ( x < y ) Execute
+  15          Speak "x  < y", EndL >>
+  16       ElIf ( x = y ) Execute
+  17          Speak "x  = y", EndL >>
+  18       ElIf ( x > y ) Execute
+  19          Speak "x  > y", EndL >>
+  20       Stop
+  21    Stop
+  22 Stop
+  23 
+******* SPL compiler ending

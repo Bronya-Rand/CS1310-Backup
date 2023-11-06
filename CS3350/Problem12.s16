@@ -1,0 +1,382 @@
+;--------------------------------------------------
+; Dr. Art Hanna
+; Problem #12 (single-job, multi-threaded solution)
+; Problem12.s16
+;--------------------------------------------------
+   CODESEGMENT
+;----------------------------------------------------------
+; PROGRAM main()
+;    *Note* main() uses an activation record to store *ALL*
+;       variable local data. Constants are stored in
+;       data-segment as static data.
+;----------------------------------------------------------
+; activation record on run-time stack
+;    0: n
+;    1: P
+;    2: C
+;    3: CSHandle
+;    4: STARTHandle
+;    5: i
+; (P)roducer child thread parameter block (offsets 6-9)
+;    6: address-of(ProducerEntryPoint)
+;    7: 'P'                  3-character thread name string
+;    8: A-to-Z
+;    9: 0X0000 (NUL)
+; (C)onsumer child thread parameter block (offsets 10-13)
+;   10: ConsumerEntryPoint
+;   11: 'C'                  3-character thread name string
+;   12: A-to-Z
+;   13: 0X0000 (NUL)
+;----------------------------------------------------------
+main               EQU       *
+
+; build activation record on run-time stack
+                   ADJSP     #+28                           ; allocate local variables (see activation record)
+                   SETFB     #-28
+; INPUT "n? " n
+                   LDAR      R15,format1
+                   SVC       #SVC_READ_FROM_TERMINAL
+                   STR       R1,FB:0
+; INPUT "P [1,26]? " P
+                   LDAR      R15,format2
+                   SVC       #SVC_READ_FROM_TERMINAL
+                   STR       R1,FB:1
+; INPUT "C [1,26]? " C
+                   LDAR      R15,format3
+                   SVC       #SVC_READ_FROM_TERMINAL
+                   STR       R1,FB:2
+; create resources
+;   * create mutex "CS" for critical section
+                   LDAR      R15,CSName
+                   SVC       #SVC_CREATE_MUTEX
+                   STR       R15,FB:3
+;   * create event "START" to synchronize Producer and Consumer child threads with main()
+                   LDAR      R15,STARTName
+                   SVC       #SVC_CREATE_EVENT
+                   STR       R15,FB:4
+; launch Producer child threads named "Pi" i in [ 'A','A'+(P-1) ]
+; FOR i := 1 TO P
+                   LDR       R1,#1
+                   STR       R1,FB:5
+FOR1               EQU       *
+                   LDR       R1,FB:5
+                   LDR       R2,FB:1
+                   CMPR      R1,R2
+                   JMPP      R1,endFOR1
+;   * build Producer parameter block
+                   LDAR      R1,ProducerEntryPoint
+                   STR       R1,FB:6
+                   LDR       R1,#'P'
+                   STR       R1,FB:7
+                   LDR       R1,#'A'                       ; A-to-Z := 'A'+(i-1)
+                   LDR       R2,FB:5
+                   DECR      R2
+                   ADDR      R1,R2
+                   STR       R1,FB:8
+                   ZEROR     R1
+                   STR       R1,FB:9
+;   * create Producer child thread passing n,CSHandle,STARTHandle, and A-to-Z in R10-thru-R13
+                   LDR       R10,FB:0                      ; pass n in R10
+                   LDR       R11,FB:3                      ; pass CSHandle in R11
+                   LDR       R12,FB:4                      ; pass STARTHandle in R12
+                   LDR       R13,FB:8                      ; pass A-to-Z in R13
+                   LDAR      R15,FB:6
+                   SVC       #SVC_CREATE_CHILD_THREAD
+; END
+                   LDR       R1,FB:5
+                   INCR      R1
+                   STR       R1,FB:5
+                   JMP       FOR1
+endFOR1            EQU       *
+; launch Consumer child threads named "Ci" i in [ 'A','A'+(C-1) ]
+; FOR i := 1 TO C
+                   LDR       R1,#1
+                   STR       R1,FB:5
+FOR2               EQU       *
+                   LDR       R1,FB:5
+                   LDR       R2,FB:2
+                   CMPR      R1,R2
+                   JMPP      R1,endFOR2
+;   * build Consumer parameter block
+                   LDAR      R1,ConsumerEntryPoint
+                   STR       R1,FB:10
+                   LDR       R1,#'C'
+                   STR       R1,FB:11
+                   LDR       R1,#'A'                       ; A-to-Z := 'A'+(i-1)
+                   LDR       R2,FB:5
+                   DECR      R2
+                   ADDR      R1,R2
+                   STR       R1,FB:12
+                   ZEROR     R1
+                   STR       R1,FB:13
+;   * create Consumer child thread passing n,CSHandle,STARTHandle, and A-to-Z in R10-thru-R13
+                   LDR       R10,FB:0                      ; pass n in R10
+                   LDR       R11,FB:3                      ; pass CSHandle in R11
+                   LDR       R12,FB:4                      ; pass STARTHandle in R12
+                   LDR       R13,FB:12                     ; pass A-to-Z in R13
+                   LDAR      R15,FB:10
+                   SVC       #SVC_CREATE_CHILD_THREAD
+; END
+                   LDR       R1,FB:5
+                   INCR      R1
+                   STR       R1,FB:5
+                   JMP       FOR2
+endFOR2            EQU       *
+
+; initialize shared variables (in,out,counter,item)
+;   * initialize circular-buffer to empty
+;   * in,out,counter := 0
+                   LDR       R1,#0
+                   STR       R1,in
+                   STR       R1,out
+                   STR       R1,counter
+;   * item := 0
+                   ZEROR     R1
+                   STR       R1,item
+
+; start *ALL* Producer and Consumer child threads at the same time
+                   LDR       R15,FB:4
+                   SVC       #SVC_SIGNALALL_EVENT
+
+; busy-wait for *ALL* Producer and Consumer child threads to terminate
+; DO
+DO1                EQU       *
+;    get active thread count
+                   SVC       #SVC_GET_ACTIVE_CHILD_THREAD_COUNT
+; WHILE ( active thread count > 0 )
+                   JMPP      R15,DO1
+
+; destroy resources
+;   * destroy mutex "CS"
+                   LDR       R15,FB:3
+                   SVC       #SVC_DESTROY_MUTEX
+;   * destroy event "START"
+                   LDR       R15,FB:4
+                   SVC       #SVC_DESTROY_EVENT
+; STOP
+                   ADJSP     #-28                           ; deallocate local variables (see activation record)
+                   SVC       #SVC_TERMINATE_PROCESS
+
+;--------------------------------------------------
+; Producer child thread entry point
+; activation record on run-time stack
+;    0: n (passed in R10)
+;    1: CSHandle (passed in R11)
+;    2: STARTHandle (passed in R12)
+;    3: A-to-Z (passed in R13)
+;--------------------------------------------------
+ProducerEntryPoint EQU       *
+
+; build activation record on run-time stack
+                   ADJSP     #+8                            ; allocate local variables (see activation record)
+                   SETFB     #-8
+; n := R10
+; CSHandle := R11
+; STARTHandle := R12
+; A-to-Z := R13
+                   STR       R10,FB:0
+                   STR       R11,FB:1
+                   STR       R12,FB:2
+                   STR       R13,FB:3
+; wait on "START" event
+                   LDR       R15,FB:2
+                   SVC       #SVC_WAIT_EVENT
+; DO
+DO2                EQU       *
+;    enter critical section "CS"
+                   LDR       R15,FB:1
+                   SVC       #SVC_LOCK_MUTEX
+; WHILE ( item < n )
+                   LDR       R1,item
+                   LDR       R2,FB:0
+                   CMPR      R1,R2
+                   JMPNN     R1,endDO2
+;    IF ( counter < BUFFER_SIZE ) THEN
+                   LDR       R1,counter
+                   LDR       R2,#BUFFER_SIZE
+                   CMPR      R1,R2
+                   JMPNN     R1,endIF1
+;       item := item+1
+                   LDR       R1,item
+                   INCR      R1
+                   STR       R1,item
+;       buffer[in] := item
+                   LDAR      R2,buffer
+                   LDR       R1,in
+                   SLR       R1
+                   ADDR      R2,R1
+                   LDR       R1,item
+                   STR       R1,@R2
+;       counter := counter+1
+                   LDR       R1,counter
+                   INCR      R1
+                   STR       R1,counter
+;       PRINT "P",A-to-Z," item = ",item,", counter = ",counter,ENDL
+                   LDR       R3,FB:3
+                   LDR       R1,item
+                   LDR       R2,counter
+                   LDAR      R15,format4
+                   SVC       #SVC_WRITE_TO_TERMINAL
+;       in := in+1
+                   LDR       R1,in
+                   INCR      R1
+                   STR       R1,in
+;       IF ( in = BUFFER_SIZE ) THEN
+                   LDR       R1,in
+                   LDR       R2,#BUFFER_SIZE
+                   CMPR      R1,R2
+                   JMPNZ     R1,endIF2
+;          in := 0
+                   ZEROR     R1
+                   STR       R1,in
+;       END
+endIF2             EQU       *
+;    END
+endIF1             EQU       *
+;    exit critical section "CS"
+                   LDR       R15,FB:1
+                   SVC       #SVC_UNLOCK_MUTEX
+; END
+                   JMP       DO2
+endDO2             EQU       *
+; exit critical section "CS"
+                   LDR       R15,FB:1
+                   SVC       #SVC_UNLOCK_MUTEX
+; STOP
+                   ADJSP     #-8                            ; deallocate local variables (see activation record)
+                   SVC       #SVC_TERMINATE_PROCESS
+
+;--------------------------------------------------
+; Consumer child thread entry point
+; activation record on run-time stack
+;    0: n (passed in R10)
+;    1: CSHandle (passed in R11)
+;    2: STARTHandle (passed in R12)
+;    3: A-to-Z (passed in R13)
+;--------------------------------------------------
+ConsumerEntryPoint EQU       *
+
+; build activation record on run-time stack
+; n := R10
+; CSHandle := R11
+; STARTHandle := R12
+; A-to-Z := R13
+                   STR       R10,FB:0
+                   STR       R11,FB:1
+                   STR       R12,FB:2
+                   STR       R13,FB:3
+; wait on "START" event
+                   LDR       R15,FB:2
+                   SVC       #SVC_WAIT_EVENT
+; DO
+DO3                EQU *
+;    enter critical section "CS"
+                   LDR       R15,FB:1
+                   SVC       #SVC_LOCK_MUTEX
+; WHILE ( (item != n) OR (counter != 0) )
+                   LDR R1, item
+                   LDR R2, FB:0
+                   ZEROR R3
+
+                   CMPR R1, R2
+                   JMPZ R1, endDO3
+
+                   LDR R1, counter
+                   ZEROR R2
+                   
+                   CMPR R1, R2
+                   JMPNZ R1, endDO3
+;    IF ( counter != 0 ) THEN
+                   LDR R1, counter
+                   ZEROR R2
+
+                   CMPR R1, R2
+                   JMPNZ R1, endIF3
+;       PRINT "C",A-to-Z," item = ",buffer[out],ENDL
+                   LDR R3, FB:3
+                   LDR R4, buffer
+                   LDAR      R15,format5
+                   SVC       #SVC_WRITE_TO_TERMINAL
+;       counter := counter-1
+                   LDR R1, counter
+                   DECR R1
+                   STR R1, counter
+;       out := out+1
+                   LDR R1, out
+                   INCR R1
+                   STR R1, out
+;       IF ( out = BUFFER_SIZE ) THEN
+                   LDR R1, out
+                   LDR R2, BUFFER_SIZE
+
+                   CMPR R1, R2
+                   JMPNZ R1, endIF4
+;          out := 0
+                   ZEROR R1
+                   STR R1, out
+;       END
+endIF4             EQU *
+;    END
+endIF3             EQU *
+;    exit critical section "CS"
+                   LDR R15,FB:1
+                   SVC #SVC_UNLOCK_MUTEX
+; END
+                   JMP DO3
+endDO3             EQU *
+; exit critical section "CS"
+                   LDR R15, FB:1
+                   SVC #SVC_UNLOCK_MUTEX
+; STOP
+                   ADJSP     #-8                            ; deallocate local variables (see activation record)
+                   SVC       #SVC_TERMINATE_PROCESS
+
+;----------------------------------------------------------
+   DATASEGMENT
+;----------------------------------------------------------
+; ***Service request number definitions
+SVC_DO_NOTHING                         EQU      0
+SVC_TERMINATE_PROCESS                  EQU    100
+SVC_CREATE_CHILD_THREAD                EQU    180
+SVC_GET_ACTIVE_CHILD_THREAD_COUNT      EQU    181
+SVC_READ_FROM_TERMINAL                 EQU    300
+SVC_WRITE_TO_TERMINAL                  EQU    301
+SVC_CREATE_MUTEX                       EQU    800
+SVC_DESTROY_MUTEX                      EQU    801
+SVC_LOCK_MUTEX                         EQU    802
+SVC_UNLOCK_MUTEX                       EQU    803
+SVC_CREATE_EVENT                       EQU    900
+SVC_DESTROY_EVENT                      EQU    901
+SVC_SIGNAL_EVENT                       EQU    902
+SVC_SIGNALALL_EVENT                    EQU    903
+SVC_WAIT_EVENT                         EQU    904
+SVC_GET_EVENT_QUEUE_SIZE               EQU    905
+
+; ***Service request return code definitions
+SVC_EOF                                EQU     -1          ; Terminal input EOF
+SVC_OK                                 EQU      0          ; No error occurred
+
+; ***Static data
+format1            DS        "n? %1I"
+format2            DS        "P [1,26]? %1I"
+format3            DS        "C [1,26]? %1I"
+format4            DS        "P%3C item = %1I, counter = %2I%n"
+format5            DS        "C%3C item = %1I%n"
+
+; mutex for critical section access shared variables (see below)
+CSName             DS        "CS"
+
+; event to synchronize Producer and Consumer child threads with main()
+STARTName          DS        "START"
+
+; *** shared variables
+BUFFER_SIZE        EQU       8
+;   * circular-buffer definitions
+buffer             RW        BUFFER_SIZE                   ; BUFFER_SIZE-element circular-buffer
+in                 RW                                      ; index of next-empty element location
+out                RW                                      ; index of next-full element location
+counter            RW                                      ; count of elements in circular-buffer
+;   * the item that the Producer child threads "produce"
+item               RW
+
+   END

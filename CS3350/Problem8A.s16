@@ -1,0 +1,103 @@
+;--------------------------------------------------
+; Dr. Art Hanna
+; Problem #8 (single-process solution)
+; Problem8A.s16
+;--------------------------------------------------
+   CODESEGMENT
+;----------------------------------------------------------
+; PROGRAM main()
+;    *Note* main() uses an activation record to store *ALL*
+;       variable local data. Constants are stored in
+;       data-segment as static data.
+;----------------------------------------------------------
+; activation record on run-time stack
+;    0: n
+;    1: iterates
+;----------------------------------------------------------
+main               EQU       *
+
+; build activation record on run-time stack
+                   ADJSP     #4                            ; allocate local variables n,iterates
+                   SETFB     #-4
+; INPUT "n? " n
+                   LDAR      R15,format1
+                   SVC       #SVC_READ_FROM_TERMINAL
+                   STR       R1,FB:0
+; iterates := 0
+                   ZEROR     R0
+                   STR       R0,FB:1
+; WHILE ( n != 1 )
+WHILE              EQU       *
+                   LDR       R1,#1
+                   LDR       R2,FB:0
+                   CMPR      R1,R2
+                   JMPZ      R1,endWHILE
+;    IF ( n is even ) THEN
+                   LDR       R1,FB:0
+                   LSRR      R1                           ; R1 := n with zeroed-LSB
+                   SLR       R1
+                   LDR       R2,FB:0                      ; R2 := n
+                   CMPR      R1,R2                        ; R1 = R2 *ONLY* when n is even
+                   JMPNZ     R1,ELSE
+;       n := n/2
+                   LDR       R1,FB:0                      ; n/2 = n >> 1
+                   LSRR      R1
+                   STR       R1,FB:0
+;       iterates := iterates+1
+                   LDR       R1,FB:1
+                   INCR      R1
+                   STR       R1,FB:1
+;       PRINT "n = ",n,ENDL
+                   LDR       R1,FB:0
+                   LDAR      R15,format2
+                   SVC       #SVC_WRITE_TO_TERMINAL
+                   JMP       endIF
+;    ELSE
+ELSE               EQU       *
+;       n := 3n+1
+                   LDR       R2,FB:0                       ; R1 := (n << 1) + n
+                   SLR       R2
+                   LDR       R1,FB:0
+                   ADDR      R1,R2
+                   INCR      R1
+                   STR       R1,FB:0
+;       iterates := iterates+1
+                   LDR       R1,FB:1
+                   INCR      R1
+                   STR       R1,FB:1
+;       PRINT "n = ",n,ENDL
+                   LDR       R1,FB:0
+                   LDAR      R15,format2
+                   SVC       #SVC_WRITE_TO_TERMINAL
+;    END
+endIF              EQU       *
+; END
+                   JMP       WHILE
+endWHILE           EQU       *
+; PRINT "iterates = ",iterates,ENDL
+                   LDAR      R15,format3
+                   LDR       R1,FB:1
+                   SVC       #SVC_WRITE_TO_TERMINAL
+                   ADJSP     #-4                           ; deallocate local variables n,iterates
+; STOP
+                   SVC       #SVC_TERMINATE_PROCESS
+                   
+;----------------------------------------------------------
+   DATASEGMENT
+;----------------------------------------------------------
+; ***Service request number definitions
+SVC_DO_NOTHING                         EQU      0
+SVC_TERMINATE_PROCESS                  EQU    100
+SVC_READ_FROM_TERMINAL                 EQU    300
+SVC_WRITE_TO_TERMINAL                  EQU    301
+
+; ***Service request return code definitions
+SVC_EOF                                EQU     -1          ; Terminal input EOF
+SVC_OK                                 EQU      0          ; No error occurred
+
+; *** Static data
+format1            DS      "n? %1I"
+format2            DS      "n = %1I%n"
+format3            DS      "iterates = %1I%n"
+
+   END

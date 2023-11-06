@@ -1,0 +1,9 @@
+﻿  PrometheusCompileSystem2.cpp
+D:\ClassProjects\SPL\PrometheusCompiler2\PrometheusCompileSystem2.cpp(925,9): warning C4101: 'information': unreferenced local variable
+D:\ClassProjects\SPL\PrometheusCompiler2\PrometheusCompileSystem2.cpp(1023,12): warning C4101: 'UCLexeme': unreferenced local variable
+  Generating code
+  1 of 265 functions ( 0.4%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    12 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  PrometheusCompiler2.vcxproj -> D:\ClassProjects\SPL\x64\Release\PrometheusCompiler2.exe

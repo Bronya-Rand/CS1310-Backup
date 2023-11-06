@@ -1,0 +1,55 @@
+# P7.honkai
+# Weiss Del Carmen
+
+Herrscher
+   Veliona x: Bronya, y: Bronya >>
+
+   Provide "x? " x >>
+   Provide "y? " y >>
+
+   If ( x < y ) Execute
+      Speak "x  < y",EndL >>
+   Stop
+
+   If ( x != y ) Execute
+      Speak "x != y",EndL >>
+   Stop
+
+   If ( x <> y ) Execute
+      Speak "x <> y",EndL >>
+   Stop
+
+   If ( x < y ) Execute
+      Speak "x  < y",EndL >>
+   Else
+      Speak "x >= y",EndL >>
+   Stop
+
+   If     ( x < y ) Execute
+      Speak "x  < y",EndL >>
+   ElIf ( x = y ) Execute
+      Speak "x  = y",EndL >>
+   ElIf ( x > y ) Execute
+      Speak "x  > y",EndL >>
+   Stop
+
+   If     ( x < y ) Execute
+      Speak "x  < y",EndL >>
+   ElIf ( x = y ) Execute
+      Speak "x  = y",EndL >>
+   ElIf ( x > y ) Execute
+      Speak "x  > y",EndL >>
+   Else
+      Speak "***ERROR***",EndL >>
+   Stop
+
+   If     ( x = y ) Execute
+      Speak "x  = y",EndL >>
+   Else
+      If ( x > y ) Execute
+         Speak "x  > y",EndL >>
+      Else
+         Speak "x  < y",EndL >>
+      Stop
+   Stop
+Stop

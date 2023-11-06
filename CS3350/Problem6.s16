@@ -1,0 +1,157 @@
+;----------------------------------------------------------
+; Dr. Art Hanna
+; Problem #6 Beware of S16 stack overflow error!
+; Problem6.s16
+;----------------------------------------------------------
+   CODESEGMENT
+;----------------------------------------------------------
+; PROGRAM main()
+;    *Note* main() uses an activation record to store *ALL*
+;       variable local data. Constants are stored in
+;       data-segment as static data.
+;----------------------------------------------------------
+; activation record on run-time stack
+;    0: m
+;    1: n
+;----------------------------------------------------------
+main               EQU       *
+
+; build activation record on run-time stack
+                   ADJSP     #4                            ; allocate local variables m,n
+                   SETFB     #-4
+; INPUT "m? " m
+                   LDAR      R15,format1
+                   SVC       #SVC_READ_FROM_TERMINAL
+                   STR       R1,FB:0
+; INPUT "n? " n
+                   LDAR      R15,format2
+                   SVC       #SVC_READ_FROM_TERMINAL
+                   STR       R1,FB:1
+; PRINT "A(",m,",",n,") = ",A(m,n),ENDL
+                   PUSHR     R1                            ; push dummy function return value (pass-by-result)
+                   LDR       R1,FB:0                       ; push m parameter (pass-by-value)
+                   PUSHR     R1
+                   LDR       R1,FB:1                       ; push n parameter (pass-by-value)
+                   PUSHR     R1
+                   PUSHFB
+                   CALL      A
+                   POPFB
+                   POPR      R1                            ; pop n parameter and discard
+                   POPR      R1                            ; pop m parameter and discard
+                   POPR      R3                            ; pop function return value, store in R3
+                   LDR       R1,FB:0
+                   LDR       R2,FB:1
+                   LDAR      R15,format3
+                   SVC       #SVC_WRITE_TO_TERMINAL
+                   ADJSP     #-4                           ; deallocate local variables m,n
+; STOP
+                   SVC       #SVC_TERMINATE_PROCESS
+
+;-----------------------------------------------------------
+; FUNCTION A(IN m: INT,IN n: INT): INT
+;-----------------------------------------------------------
+A                  EQU       *
+                   PUSHR     R1                            ; save registers on entry
+; build activation record on run-time stack
+                   ADJSP     #4                            ; allocate local variables t,r
+                   SETFB     #-16
+; activation record on run-time stack
+;    0: function return value (pass-by-result)
+;    1: m (pass-by-value)
+;    2: n (pass-by-value)
+;    3: caller-FB
+;    4: return-address
+;    5: R1 (saved)
+;    6: r (local variable)
+;    7: t (local variable)
+
+; IF ( m = 0 ) THEN
+;    r := n+1
+                   LDR       R1,FB:1
+                   JMPNZ     R1,else1
+                   LDR       R1,FB:2
+                   INCR      R1
+                   STR       R1,FB:6
+                   JMP       endIF1
+; ELSE
+else1              EQU       *
+;    IF ( n = 0 ) THEN
+                   LDR       R1,FB:2
+                   JMPNZ     R1,else2
+;       r := A(m-1,1)
+                   PUSHR R1
+                   LDR R1, FB:1
+                   DECR R1
+                   PUSHR R1
+                   LDR R1, #1
+                   PUSHR R1
+                   PUSHFB
+                   CALL A
+                   POPFB
+                   POPR R1
+                   POPR R1
+                   POPR R1
+                   STR R1, FB:6
+
+                   JMP       endIF2
+;    ELSE
+else2              EQU       *
+;       t := A(m,n-1)
+                   PUSHR R1 
+                   LDR R1, FB:1
+                   PUSHR R1
+                   LDR R1, FB:2
+                   DECR R1
+                   PUSHR R1
+                   PUSHFB
+                   CALL A
+                   POPFB
+                   POPR R1
+                   POPR R1
+                   POPR R1
+                   STR R1, FB:7
+
+;       r := A(m-1,t)
+                   PUSHR R1
+                   LDR R1, FB:1
+                   DECR R1
+                   PUSHR R1
+                   LDR R1, FB:7
+                   PUSHR R1
+                   PUSHFB
+                   CALL A
+                   POPFB
+                   POPR R1
+                   POPR R1
+                   POPR R1
+                   STR R1, FB:6
+
+;    END
+endIF2             EQU       *
+; END
+endIF1             EQU       *
+; RETURN( r )
+                   LDR       R1,FB:6
+                   STR       R1,FB:0
+                   ADJSP     #-4                           ; deallocate local variables t,r
+                   POPR      R1                            ; restore registers on exit
+                   RET
+
+;----------------------------------------------------------
+   DATASEGMENT
+;----------------------------------------------------------
+; ***Service request number definitions
+SVC_TERMINATE_PROCESS                  EQU    100
+SVC_READ_FROM_TERMINAL                 EQU    300
+SVC_WRITE_TO_TERMINAL                  EQU    301
+
+; ***Service request return code definitions
+SVC_EOF                                EQU     -1          ; Terminal input EOF
+SVC_OK                                 EQU      0          ; No error occurred
+
+; *** Static data 
+format1            DS        "m? %1I"
+format2            DS        "n? %1I"
+format3            DS        "A(%1I,%2I) = %3I%n"
+
+   END

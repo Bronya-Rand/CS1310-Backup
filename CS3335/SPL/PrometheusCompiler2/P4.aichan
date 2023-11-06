@@ -1,0 +1,58 @@
+"P4.honkai" Page    1
+Line Source Line
+---- -------------------------------------------------------------------------------
+   1 # P4.honkai
+   2 # Weiss Del Carmen
+   3 # Something Dr. Hanna did for some reason...
+   4 
+   5 Herrscher
+   6 
+   7 /*----------------------*/
+   8 /* Arithmetic operators */
+   9 /*----------------------*/
+  10    Speak " 1 = ",1,EndL >>
+  11    Speak "+2 = ",+2,EndL >>
+  12    Speak "-3 = ",-3,EndL >>
+  13    Speak "Nneg 2 = ",Nneg 2,EndL >>
+  14    Speak "Nneg(-3) = ",Nneg(-3),EndL >>
+  15    Speak "4+5 = ",(4+5),EndL >>
+  16    Speak "5-4 = ",5-4,EndL >>
+  17    Speak "6*7 = ",6*7,EndL >>
+  18    Speak "7/4 = ",7/4,EndL >>
+  19    Speak "7%4 = ",7%4,EndL >>
+  20    Speak "2^3 = ",2^3,EndL >>
+  21    Speak "2^(3**2) = ",2^(3**2),EndL >>
+  22    Speak "(2**3)^2 = ",(2**3)^2,EndL >>
+  23 
+  24 /*----------------------*/
+  25 /* Comparison operators */
+  26 /*----------------------*/
+  27    Speak "1  < 2 = ",1  < 2,EndL >>
+  28    Speak "1  = 2 = ",1  = 2,EndL >>
+  29    Speak "1 <= 2 = ",1 <= 2,EndL >>
+  30    Speak "1  > 2 = ",1  > 2,EndL >>
+  31    Speak "1 != 2 = ",1 != 2,EndL >>
+  32    Speak "1 <> 2 = ",1 <> 2,EndL >>
+  33    Speak "1 >= 2 = ",1 >= 2,EndL >>
+  34 
+  35 /*----------------------*/
+  36 /* Logical operators    */
+  37 /*----------------------*/
+  38    Speak " True   OR  True = ", True   OR  True,EndL >>
+  39    Speak " True   OR False = ", True   OR False,EndL >>
+  40    Speak "False  NOR  True = ",False  NOR  True,EndL >>
+  41    Speak "False  NOR False = ",False  NOR False,EndL >>
+  42    Speak " True  XOR  True = ", True  XOR  True,EndL >>
+  43    Speak "False  XOR False = ",False  XOR False,EndL >>
+  44 
+  45    Speak " True  AND  True = ", True  AND  True,EndL >>
+  46    Speak " True  AND False = ", True  AND False,EndL >>
+  47    Speak "False NAND  True = ",False NAND  True,EndL >>
+  48    Speak "False NAND False = ",False NAND False,EndL >>
+  49 
+  50    Speak "NOT False = ",NOT False,EndL >>
+  51    Speak "NOT  True = ",NOT  True,EndL >>
+  52 
+  53 Stop
+  54 
+******* SPL compiler ending

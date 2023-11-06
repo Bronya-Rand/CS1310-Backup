@@ -1,0 +1,222 @@
+;--------------------------------------------------
+; Dr. Art Hanna
+; Problem #10 (single-job, multi-threaded solution)
+; Problem10.s16
+;--------------------------------------------------
+   CODESEGMENT
+;----------------------------------------------------------
+; PROGRAM main()
+;    *Note* main() uses an activation record to store *ALL*
+;       variable local data. Constants are stored in
+;       data-segment as static data.
+;----------------------------------------------------------
+; activation record on run-time stack
+;    0: loopIterations 
+;----------------------------------------------------------
+main               EQU       *
+
+; build activation record on run-time stack
+                   ADJSP     #+2                           ; allocate local variables loopIterations
+                   SETFB     #-2
+; INPUT "n? " n
+                   LDAR      R15,format1
+                   SVC       #SVC_READ_FROM_TERMINAL
+                   STR       R1,n
+; iterates,loopIterations := 0
+                   ZEROR     R0
+                   STR       R0,iterates
+                   STR       R0,FB:0
+; create "even-n" child thread
+                   LDAR      R15,evenNPB
+                   SVC       #SVC_CREATE_CHILD_THREAD
+; create "odd-n" child thread
+                   LDAR      R15,oddNPB
+                   SVC       #SVC_CREATE_CHILD_THREAD
+
+; busy-wait until both child threads terminate
+; DO
+DO                 EQU       *
+;    loopIterations := loopIterations+1
+                   LDR       R1,FB:0
+                   INCR      R1
+                   STR       R1,FB:0
+;    get active thread count
+                   SVC       #SVC_GET_ACTIVE_CHILD_THREAD_COUNT
+; WHILE ( active thread count > 0 )
+                   JMPP      R15,DO
+
+; PRINT "    iterates = ",iterates,", loopIterations = ",loopIterations,ENDL
+                   LDR       R1,iterates
+                   LDR       R2,FB:0
+                   LDAR      R15,format3
+                   SVC       #SVC_WRITE_TO_TERMINAL
+; STOP
+                   ADJSP     #-2                           ; deallocate local variables
+                   SVC       #SVC_TERMINATE_PROCESS
+
+;--------------------------------------------------
+; "even-n" child thread entry point
+; activation record on run-time stack
+;    0: evenIterates
+;    1: loopIterations
+;--------------------------------------------------
+evenNEntryPoint    EQU       *
+
+; build activation record on run-time stack
+                   ADJSP     #4                            ; allocate local variable evenIterates,loopIterations
+                   SETFB     #-4
+; evenIterates,loopIterations := 0
+                   ZEROR     R0
+                   STR       R0,FB:0
+                   STR       R0,FB:1
+; DO
+DOWHILE1           EQU       *
+;    loopIterations := loopIterations+1
+                   LDR       R1,FB:1
+                   INCR      R1
+                   STR       R1,FB:1
+; WHILE ( n != 1 )
+                   LDR       R1,#1
+                   LDR       R2,n
+                   CMPR      R1,R2
+                   JMPZ      R1,endDOWHILE1
+;    IF ( n is even ) THEN
+                   LDR       R1,n
+                   LSRR      R1                            ; R1 := n with zeroed-LSB
+                   SLR       R1
+                   LDR       R2,n                          ; R2 := n
+                   CMPR      R1,R2                         ; R1 = R2 *ONLY* when n is even
+                   JMPNZ     R1,endIF1
+;       n := n/2
+                   LDR       R1,n
+                   ASRR      R1
+                   STR       R1,n
+;       iterates := iterates+1
+                   LDR       R1,iterates
+                   INCR      R1
+                   STR       R1,iterates
+;       PRINT "n = ",n,ENDL
+                   LDR       R1,n
+                   LDAR      R15,format2
+                   SVC       #SVC_WRITE_TO_TERMINAL
+;       evenIterates := evenIterates+1
+                   LDR       R1,FB:0
+                   INCR      R1
+                   STR       R1,FB:0
+;    END
+endIF1             EQU       *
+; END
+                   JMP       DOWHILE1
+endDOWHILE1        EQU       *
+; PRINT "evenIterates = ", evenIterates,", loopIterations = ",loopIterations,ENDL
+                   LDR       R1,FB:0
+                   LDR       R2,FB:1
+                   LDAR      R15,format4
+                   SVC       #SVC_WRITE_TO_TERMINAL
+; STOP
+                   ADJSP     #-4
+                   SVC       #SVC_TERMINATE_PROCESS
+
+;--------------------------------------------------
+; "odd-n" child thread entry point
+; activation record on run-time stack
+;    0: oddIterates
+;    1: loopIterations
+;--------------------------------------------------
+oddNEntryPoint     EQU       *
+
+; build activation record on run-time stack
+                   ADJSP     #4                            ; allocate local variable evenIterates,loopIterations
+                   SETFB     #-4
+; oddIterates,loopIterations := 0
+                   ZEROR     R0
+                   STR R0, FB:0
+                   STR R0, FB:1
+; DO
+DOWHILE2                 EQU       *
+;    loopIterations := loopIterations+1
+                   LDR R1, FB:1
+                   INCR R1
+                   STR R1, FB:1
+; WHILE ( n != 1 )
+                  LDR       R1,#1
+                  LDR       R2,n
+                  CMPR      R1,R2
+                  JMPZ      R1,endDOWHILE2 
+;    IF ( n is odd ) THEN
+                  LDR       R1,n
+                  LSRR      R1
+                  SLR       R1
+                  LDR       R2,n
+                  CMPR      R1,R2
+                  JMPZ      R1,endIF2
+;       n := 3n+1
+                  LDR       R1,n
+                  LDR       R3,n
+                  ADDR      R1,R1
+                  ADDR      R1,R3
+                  INCR      R1
+                  STR       R1,n
+;       iterates := iterates+1
+                  LDR R1, iterates
+                  INCR R1
+                  STR R1, iterates
+;       PRINT "n = ",n,ENDL
+                  LDR       R1,n
+                  LDAR      R15,format2
+                  SVC       #SVC_WRITE_TO_TERMINAL
+;       oddIterates := oddIterates+1
+                  LDR R1,FB:0
+                  INCR R1
+                  STR R1,FB:0
+;    END
+endIF2            EQU *
+                  JMP       DOWHILE2
+; END
+endDOWHILE2       EQU *
+; PRINT "oddIterates = ", oddIterates,", loopIterations = ",loopIterations,ENDL
+                  LDR       R1,FB:0
+                  LDR       R2,FB:1
+                  LDAR      R15,format5
+                  SVC       #SVC_WRITE_TO_TERMINAL
+; STOP
+                  ADJSP     #-4
+                  SVC       #SVC_TERMINATE_PROCESS
+
+;----------------------------------------------------------
+   DATASEGMENT
+;----------------------------------------------------------
+; ***Service request number definitions
+SVC_DO_NOTHING                         EQU      0
+SVC_TERMINATE_PROCESS                  EQU    100
+SVC_CREATE_CHILD_THREAD                EQU    180
+SVC_GET_ACTIVE_CHILD_THREAD_COUNT      EQU    181
+SVC_READ_FROM_TERMINAL                 EQU    300
+SVC_WRITE_TO_TERMINAL                  EQU    301
+
+; ***Service request return code definitions
+SVC_EOF                                EQU     -1          ; Terminal input EOF
+SVC_OK                                 EQU      0          ; No error occurred
+
+; *** Static data
+format1            DS        "n? %1I"
+format2            DS        "n = %1I%n"
+format3            DS        "    iterates = %1I, loopIterations = %2U%n"
+format4            DS        "evenIterates = %1I, loopIterations = %2U%n"
+format5            DS        " oddIterates = %1I, loopIterations = %2U%n"
+
+; even-n child thread parameter block 
+evenNPB            EQU       *
+evenNPC            DW        evenNEntryPoint 
+evenNThreadName    DS        "EvenNThread"
+
+; odd-n child thread parameter block
+oddNPB             EQU       *
+oddNPC             DW        oddNEntryPoint
+oddNThreadName     DS        "OddNThread"
+
+; ***variables shared by all threads
+n                  RW
+iterates           RW
+
+   END

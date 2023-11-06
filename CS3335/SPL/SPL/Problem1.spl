@@ -1,0 +1,17 @@
+;------------------------------------------------------------
+; Dr. Art Hanna
+; SPL Programming, Problem #1
+; Problem1.spl
+;------------------------------------------------------------
+PROGRAM
+   VAR i: INT.
+   VAR n: INT.
+
+   i := 0.
+   
+   INPUT "n? " n.
+   DO WHILE ( i < n )
+      PRINT "Arthur Daryl Hanna",ENDL.
+      i := i+1.
+   END
+END

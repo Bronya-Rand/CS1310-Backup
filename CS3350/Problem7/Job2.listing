@@ -1,0 +1,74 @@
+Page   1, Full source file name "Job2.s16"
+    LC  Object code Line Source code
+------ ------------ ---- -------------------------------------------------------------------------------------------------
+                       1 ;--------------------------------------------------
+                       2 ; Dr. Art Hanna
+                       3 ; Problem #7, Compute sum = 1+2+...+N using pre-test DO/WHILE-statement
+                       4 ; Job2.s16
+                       5 ;--------------------------------------------------
+                       6    CODESEGMENT
+                       7 
+0X0000                 8 main               EQU       *
+                       9 
+                      10 ; build activation record on run-time stack
+0X0000 530006         11                    ADJSP     #6                            ; allocate local variables N,sum,i
+0X0003 52FFFA         12                    SETFB     #-6
+                      13 ; INPUT "N? " N
+0X0006 41010F0200     14                    LDAR      R15,format1
+0X000B 0A012C         15                    SVC       #SVC_READ_FROM_TERMINAL
+0X000E 4221010000     16                    STR       R1,FB:0
+                      17 ; i := 1
+0X0013 4010020001     18                    LDR R2,#1
+0X0018 4221020002     19                    STR R2,FB:2
+                      20 ; sum := 0
+0X001D 2402           21                    ZEROR     R2
+0X001F 4221020001     22                    STR       R2,FB:1
+                      23 ; DO WHILE ( i <= N )
+0X0024                24 DO                 EQU *
+0X0024 4021010002     25                    LDR R1, FB:2
+0X0029 4021020000     26                    LDR R2, FB:0
+0X002E 280102         27                    CMPR R1, R2
+0X0031 06010056       28                    JMPP R1, endDO
+                      29 
+                      30 ;    sum := sum+i
+0X0035 4021010002     31                    LDR R1, FB:2
+0X003A 4021030001     32                    LDR R3, FB:1
+0X003F 200301         33                    ADDR R3, R1
+0X0042 4221030001     34                    STR R3, FB:1
+                      35 
+                      36 ;    i := i+1
+0X0047 4021010002     37                    LDR R1, FB:2
+0X004C 2201           38                    INCR R1
+0X004E 4221010002     39                    STR R1, FB:2
+0X0053 010024         40                    JMP DO
+                      41 ; END
+0X0056                42 endDO              EQU *
+                      43 
+                      44 ; PRINT "sum = ",sum,ENDL
+0X0056 4021010001     45                    LDR       R1,FB:1
+0X005B 41010F020E     46                    LDAR      R15,format2
+0X0060 0A012D         47                    SVC       #SVC_WRITE_TO_TERMINAL
+0X0063 53FFFA         48                    ADJSP     #-6                           ; deallocate local variables N,sum,i
+                      49 ; STOP
+0X0066 0A0064         50                    SVC       #SVC_TERMINATE_PROCESS
+                      51 
+                      52    DATASEGMENT
+                      53 
+                      54 ; ***Service request number definitions
+0X0200                55 SVC_TERMINATE_PROCESS                  EQU    100
+0X0200                56 SVC_READ_FROM_TERMINAL                 EQU    300
+0X0200                57 SVC_WRITE_TO_TERMINAL                  EQU    301
+                      58 
+                      59 ; ***Service request return code definitions
+0X0200                60 SVC_EOF                                EQU     -1          ; Terminal input EOF
+0X0200                61 SVC_OK                                 EQU      0          ; No error occurred
+                      62 
+0X0200 004E003F0020   63 format1            DS        "N? %1I"
+0X0206 002500310049
+0X020C 0000        
+0X020E 00730075006D   64 format2            DS        "sum = %1U%n"
+0X0214 0020003D0020
+0X021A 002500310055
+0X0220 0025006E0000
+                      65 
+                      66    END

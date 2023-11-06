@@ -1,0 +1,118 @@
+Page   1, Full source file name "Problem8B/Job3.s16"
+    LC  Object code Line Source code
+------ ------------ ---- -------------------------------------------------------------------------------------------------
+                       1 ;--------------------------------------------------
+                       2 ; Dr. Art Hanna
+                       3 ; Problem #8B "odd-n" slave deals with n := 3n+1 case
+                       4 ; Job3.s16
+                       5 ;--------------------------------------------------
+                       6    CODESEGMENT
+                       7 ;----------------------------------------------------------
+                       8 ; PROGRAM main()
+                       9 ;    *Note* main() uses an activation record to store *ALL*
+                      10 ;       variable local data. Constants are stored in
+                      11 ;       data-segment as static data.
+                      12 ;----------------------------------------------------------
+                      13 ; activation record on run-time stack
+                      14 ;    0: MS1Handle
+                      15 ;    1: address-of(n) in MS1
+                      16 ;    2: address-of(iterates) in MS1
+                      17 ;----------------------------------------------------------
+0X0000                18 main               EQU       *
+                      19 
+                      20 ; build activation record on run-time stack
+0X0000 530006         21                    ADJSP     #6                            ; allocate local variables
+0X0003 52FFFA         22                    SETFB     #-6
+                      23 ; address-of(n) = LBPageNumber*512
+0X0006 4010010005     24                    LDR       R1,#LBPageNUmber
+0X000B 4010020200     25                    LDR       R2,#512
+0X0010 2F0102         26                    MULR      R1,R2
+0X0013 4221010001     27                    STR       R1,FB:1
+                      28 ; address-of(iterates) = (LBPageNumber*512)+2
+0X0018 4010010005     29                    LDR       R1,#LBPageNumber
+0X001D 4010020200     30                    LDR       R2,#512
+0X0022 2F0102         31                    MULR      R1,R2
+0X0025 4010020002     32                    LDR       R2,#2
+0X002A 200102         33                    ADDR      R1,R2
+0X002D 4221010002     34                    STR       R1,FB:2
+                      35 ; get handle of memory-segment resource name = "MS1"
+0X0032 41010F0200     36                    LDAR      R15,MS1Name
+0X0037 0A00CA         37                    SVC       #SVC_WAIT_FOR_RESOURCE_HANDLE
+0X003A 42210F0000     38                    STR       R15,FB:0
+                      39 ; share memory-segment resource name = "MS1"
+0X003F 40210F0000     40                    LDR       R15,FB:0
+0X0044 0A01F6         41                    SVC       #SVC_SHARE_MEMORY_SEGMENT
+                      42 ; WHILE ( n != 1 )
+0X0047                43 WHILE              EQU       *
+0X0047 4010010001     44                    LDR       R1,#1
+0X004C 4022020001     45                    LDR       R2,@FB:1
+0X0051 280102         46                    CMPR      R1,R2
+0X0054 040100A3       47                    JMPZ      R1,endWHILE
+                      48 
+                      49 ;    IF ( n is odd ) THEN
+0X0058 4022010001     50                    LDR       R1,@FB:1
+0X005D 2501           51                    LSRR      R1
+0X005F 2701           52                    SLR       R1
+0X0061 4022020001     53                    LDR       R2,@FB:1
+0X0066 280102         54                    CMPR      R1,R2
+0X0069 0401009D       55                    JMPZ      R1,endIF
+                      56 
+                      57 ;      n := 3n+1
+0X006D 4022010001     58                    LDR       R1,@FB:1
+0X0072 4022030001     59                    LDR       R3,@FB:1
+0X0077 200101         60                    ADDR      R1,R1
+0X007A 200103         61                    ADDR      R1,R3
+0X007D 2201           62                    INCR      R1
+0X007F 4222010001     63                    STR       R1,@FB:1
+                      64 
+                      65 ;      iterates := iterates+1
+0X0084 4022010002     66                    LDR       R1,@FB:2
+0X0089 2201           67                    INCR      R1
+0X008B 4222010002     68                    STR       R1,@FB:2
+                      69 
+                      70 ;      PRINT "n = ",n,ENDL
+0X0090 4022010001     71                    LDR       R1,@FB:1
+0X0095 41010F0208     72                    LDAR      R15,format1
+0X009A 0A012D         73                    SVC       #SVC_WRITE_TO_TERMINAL
+                      74 ;    END
+0X009D                75 endIF              EQU       *
+0X009D 0A0000         76                    SVC       #SVC_DO_NOTHING               ; forces context switch
+                      77 ; END
+0X00A0 010047         78                    JMP       WHILE
+0X00A3                79 endWHILE           EQU       *
+                      80 ; un-share memory-segment resource name = "MS1"
+0X00A3 40210F0000     81                    LDR       R15,FB:0
+0X00A8 0A01F7         82                    SVC       #SVC_UNSHARE_MEMORY_SEGMENT
+0X00AB 53FFFA         83                    ADJSP     #-6                           ; deallocate local variables
+                      84 ; STOP
+0X00AE 0A0064         85                    SVC       #SVC_TERMINATE_PROCESS
+                      86 
+                      87 ;----------------------------------------------------------
+                      88    DATASEGMENT
+                      89 ;----------------------------------------------------------
+                      90 ; ***Service request number definitions
+0X0200                91 SVC_DO_NOTHING                         EQU      0
+0X0200                92 SVC_TERMINATE_PROCESS                  EQU    100
+0X0200                93 SVC_WAIT_FOR_RESOURCE_HANDLE           EQU    202
+0X0200                94 SVC_READ_FROM_TERMINAL                 EQU    300
+0X0200                95 SVC_WRITE_TO_TERMINAL                  EQU    301
+Page   2, Full source file name "Problem8B/Job3.s16"
+    LC  Object code Line Source code
+------ ------------ ---- -------------------------------------------------------------------------------------------------
+0X0200                96 SVC_SHARE_MEMORY_SEGMENT               EQU    502
+0X0200                97 SVC_UNSHARE_MEMORY_SEGMENT             EQU    503
+                      98 
+                      99 ; ***Service request return code definitions
+0X0200               100 SVC_EOF                                EQU     -1          ; Terminal input EOF
+0X0200               101 SVC_OK                                 EQU      0          ; No error occurred
+                     102 
+                     103 ; ***Static data
+0X0200               104 LBPageNumber       EQU       5
+0X0200 004D00530031  105 MS1Name            DS        "MS1"
+0X0206 0000        
+0X0208 006E0020003D  106 format1            DS        "n = %1I%n"
+0X020E 002000250031
+0X0214 00490025006E
+0X021A 0000        
+                     107 
+                     108    END

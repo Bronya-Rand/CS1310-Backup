@@ -1,0 +1,293 @@
+;--------------------------------------------------
+; Dr. Art Hanna
+; Problem #11 (single-job, multi-threaded solution)
+; Problem11.s16
+;--------------------------------------------------
+   CODESEGMENT
+;----------------------------------------------------------
+; PROGRAM main()
+;    *Note* main() uses an activation record to store *ALL*
+;       variable local data. Constants are stored in
+;       data-segment as static data.
+;----------------------------------------------------------
+; activation record on run-time stack
+;    0: CSHandle
+;    1: evenNEventHandle
+;    2: oddNEventHandle
+;----------------------------------------------------------
+main               EQU       *
+
+; build activation record on run-time stack
+                   ADJSP     #+6                           ; allocate local variables (see activation record)
+                   SETFB     #-6
+; INPUT "n? " n
+                   LDAR      R15,format1
+                   SVC       #SVC_READ_FROM_TERMINAL
+                   STR       R1,n
+; iterates := 0
+                   ZEROR     R0
+                   STR       R0,iterates
+; create resources
+;   * create mutex "CS" for critical section
+                   LDAR      R15,CSName
+                   SVC       #SVC_CREATE_MUTEX
+                   STR       R15,FB:0
+;   * create event "EVENN" to synchronize main() termination with "even-n" child thread
+                   LDAR      R15,evenNEventName
+                   SVC       #SVC_CREATE_EVENT
+                   STR       R15,FB:1
+;   * create event "ODDN" to synchronize main() termination with "odd-n" child thread
+                   LDAR      R15,oddNEventName
+                   SVC       #SVC_CREATE_EVENT
+                   STR       R15,FB:2
+;   * create "even-n" child thread
+                   LDR       R10,FB:0                      ; pass CSHandle
+                   LDR       R11,FB:1                      ; pass evenNEventHandle
+                   LDAR      R15,evenNPB
+                   SVC       #SVC_CREATE_CHILD_THREAD
+;   *create "odd-n" child thread
+                   LDR       R10,FB:0                      ; pass CSHandle
+                   LDR       R11,FB:2                      ; pass oddNEventHandle
+                   LDAR      R15,oddNPB
+                   SVC       #SVC_CREATE_CHILD_THREAD
+; wait until both child threads terminate
+                   LDR       R15,FB:1
+                   SVC       #SVC_WAIT_EVENT
+                   LDR       R15,FB:2
+                   SVC       #SVC_WAIT_EVENT
+; PRINT "    iterates = ",iterates,ENDL
+                   LDR       R1,iterates
+                   LDR       R2,FB:0
+                   LDAR      R15,format3
+                   SVC       #SVC_WRITE_TO_TERMINAL
+; destroy resources
+;   * destroy mutex "CS"
+                   LDR       R15,FB:0
+                   SVC       #SVC_DESTROY_MUTEX
+;   * destroy events "EVENN" and "ODDN"
+                   LDR       R15,FB:1
+                   SVC       #SVC_DESTROY_EVENT
+                   LDR       R15,FB:2
+                   SVC       #SVC_DESTROY_EVENT
+; STOP
+                   ADJSP     #-6                           ; deallocate local variables (see activation record)
+                   SVC       #SVC_TERMINATE_PROCESS
+
+;--------------------------------------------------
+; "even-n" child thread entry point
+; activation record on run-time stack
+;    0: evenIterates
+;    1: loopIterations
+;    2: CSHandle
+;    3: evenNEventHandle
+;--------------------------------------------------
+evenNEntryPoint    EQU       *
+
+; build activation record on run-time stack
+                   ADJSP     #+8                           ; allocate local variable (see activation record)
+                   SETFB     #-8
+; CSHandle := R10
+                   STR       R10,FB:2
+; evenNEventHandle := R11
+                   STR       R11,FB:3
+; evenIterates,loopIterations := 0
+                   ZEROR     R1
+                   STR       R1,FB:0
+                   STR       R1,FB:1
+; DO
+DOWHILE1           EQU       *
+;    loopIterations := loopIterations+1
+                   LDR       R1,FB:1
+                   INCR      R1
+                   STR       R1,FB:1
+;    enter critical section
+                   LDR       R15,FB:2
+                   SVC       #SVC_LOCK_MUTEX
+; WHILE ( n != 1 )
+                   LDR       R1,#1
+                   LDR       R2,n
+                   CMPR      R1,R2
+                   JMPZ      R1,endWHILE1
+;    IF ( n is even ) THEN
+                   LDR       R1,n
+                   LSRR      R1                            ; R1 := n with zeroed-LSB
+                   SLR       R1
+                   LDR       R2,n                          ; R2 := n
+                   CMPR      R1,R2                         ; R1 = R2 *ONLY* when n is even
+                   JMPNZ     R1,endIF1
+;       n := n/2
+                   LDR       R1,n
+                   ASRR      R1
+                   STR       R1,n
+;       iterates := iterates+1
+                   LDR       R1,iterates
+                   INCR      R1
+                   STR       R1,iterates
+;       PRINT "n = ",n,ENDL
+                   LDR       R1,n
+                   LDAR      R15,format2
+                   SVC       #SVC_WRITE_TO_TERMINAL
+;       evenIterates := evenIterates+1
+                   LDR       R1,FB:0
+                   INCR      R1
+                   STR       R1,FB:0
+;    END
+endIF1             EQU       *
+;    exit critical section
+                   LDR       R15,FB:2
+                   SVC       #SVC_UNLOCK_MUTEX
+; END
+                   JMP       DOWHILE1
+endWHILE1          EQU       *
+; exit critical section
+                   LDR       R15,FB:2
+                   SVC       #SVC_UNLOCK_MUTEX
+; PRINT "evenIterates = ",evenIterates,", loopIterations = ",loopIterations,ENDL
+                   LDR       R1,FB:0
+                   LDR       R2,FB:1
+                   LDAR      R15,format4
+                   SVC       #SVC_WRITE_TO_TERMINAL
+; synchronize with main()
+                   LDR       R15,FB:3
+                   SVC       #SVC_SIGNAL_EVENT
+; STOP
+                   ADJSP     #-8                           ; deallocate local variables (see activation record)
+                   SVC       #SVC_TERMINATE_PROCESS
+
+;--------------------------------------------------
+; "odd-n" child thread entry point
+; activation record on run-time stack
+;    0: oddIterates
+;    1: loopIterations
+;    2: CSHandle
+;    3: oddNEventHandle
+;--------------------------------------------------
+oddNEntryPoint     EQU       *
+
+; build activation record on run-time stack
+                   ADJSP     #+8                           ; allocate local variable (see activation record)
+                   SETFB     #-8
+; CSHandle := R10
+                   STR       R10,FB:2
+; oddNEventHandle := R11
+                   STR R11, FB:3
+; oddIterates,loopIterations := 0
+                   ZEROR     R0
+                   STR R0, FB:0
+                   STR R0, FB:1
+; DO
+DOWHILE2           EQU *
+;    loopIterations := loopIterations+1
+                   LDR R1, FB:1
+                   INCR R1
+                   STR R1, FB:1
+;    enter critical section
+                   LDR       R15,FB:2
+                   SVC       #SVC_LOCK_MUTEX
+; WHILE ( n != 1 )
+                  LDR       R1,#1
+                  LDR       R2,n
+                  CMPR      R1,R2
+                  JMPZ      R1,endDOWHILE2 
+;    IF ( n is odd ) THEN
+                  LDR       R1,n
+                  LSRR      R1
+                  SLR       R1
+                  LDR       R2,n
+                  CMPR      R1,R2
+                  JMPZ      R1,endIF2
+;      n := 3n+1
+                  LDR       R1,n
+                  LDR       R3,n
+                  ADDR      R1,R1
+                  ADDR      R1,R3
+                  INCR      R1
+                  STR       R1,n
+;       iterates := iterates+1
+                  LDR R1, iterates
+                  INCR R1
+                  STR R1, iterates
+;       PRINT "n = ",n,ENDL
+                  LDR       R1,n
+                  LDAR      R15,format2
+                  SVC       #SVC_WRITE_TO_TERMINAL
+;       oddIterates := oddIterates+1
+                  LDR R1,FB:0
+                  INCR R1
+                  STR R1,FB:0
+;    END
+endIF2             EQU *
+;    exit critical section
+                   LDR       R15,FB:2
+                   SVC       #SVC_UNLOCK_MUTEX
+; END
+                   JMP       DOWHILE2
+; END
+endDOWHILE2        EQU *
+;    exit critical section
+                   LDR       R15,FB:2
+                   SVC       #SVC_UNLOCK_MUTEX
+; PRINT "oddIterates = ",oddIterates,", loopIterations = ",loopIterations,ENDL
+                   LDR       R1,FB:0
+                   LDR       R2,FB:1
+                   LDAR      R15,format5
+                   SVC       #SVC_WRITE_TO_TERMINAL
+; synchronize with main()
+                   LDR       R15,FB:3
+                   SVC       #SVC_SIGNAL_EVENT
+; STOP
+                   ADJSP     #-8                           ; deallocate local variables (see activation record)
+                   SVC       #SVC_TERMINATE_PROCESS
+
+;----------------------------------------------------------
+   DATASEGMENT
+;----------------------------------------------------------
+; ***Service request number definitions
+SVC_DO_NOTHING                         EQU      0
+SVC_TERMINATE_PROCESS                  EQU    100
+SVC_CREATE_CHILD_THREAD                EQU    180
+SVC_GET_ACTIVE_CHILD_THREAD_COUNT      EQU    181
+SVC_READ_FROM_TERMINAL                 EQU    300
+SVC_WRITE_TO_TERMINAL                  EQU    301
+SVC_CREATE_MUTEX                       EQU    800
+SVC_DESTROY_MUTEX                      EQU    801
+SVC_LOCK_MUTEX                         EQU    802
+SVC_UNLOCK_MUTEX                       EQU    803
+SVC_CREATE_EVENT                       EQU    900
+SVC_DESTROY_EVENT                      EQU    901
+SVC_SIGNAL_EVENT                       EQU    902
+SVC_WAIT_EVENT                         EQU    904
+
+; ***Service request return code definitions
+SVC_EOF                                EQU     -1          ; Terminal input EOF
+SVC_OK                                 EQU      0          ; No error occurred
+
+; *** Static data
+format1            DS        "n? %1I"
+format2            DS        "n = %1I%n"
+format3            DS        "    iterates = %1I%n"
+format4            DS        "evenIterates = %1I, loopIterations = %2U%n"
+format5            DS        " oddIterates = %1I, loopIterations = %2U%n"
+
+; even-n child thread parameter block 
+evenNPB            EQU       *
+evenNPC            DW        evenNEntryPoint 
+evenNThreadName    DS        "EvenNThread"
+
+; odd-n child thread parameter block
+oddNPB             EQU       *
+oddNPC             DW        oddNEntryPoint
+oddNThreadName     DS        "OddNThread"
+
+; mutex for critical section access to n and iterates
+CSName             DS        "CS"
+
+; events to synchronize child threads with main() termination
+evenNEventName     DS        "EVENN"
+oddNEventName      DS        "ODDN"
+
+; ***variables shared by *ALL* threads-of-control
+n                  RW
+iterates           RW
+
+   END

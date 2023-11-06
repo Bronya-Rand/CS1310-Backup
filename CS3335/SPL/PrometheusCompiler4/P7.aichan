@@ -1,0 +1,60 @@
+"P7.honkai" Page    1
+Line Source Line
+---- -------------------------------------------------------------------------------
+   1 # P7.honkai
+   2 # Weiss Del Carmen
+   3 
+   4 Herrscher
+   5    Veliona x: Bronya, y: Bronya >>
+   6 
+   7    Provide "x? " x >>
+   8    Provide "y? " y >>
+   9 
+  10    If ( x < y ) Execute
+  11       Speak "x  < y",EndL >>
+  12    Stop
+  13 
+  14    If ( x != y ) Execute
+  15       Speak "x != y",EndL >>
+  16    Stop
+  17 
+  18    If ( x <> y ) Execute
+  19       Speak "x <> y",EndL >>
+  20    Stop
+  21 
+  22    If ( x < y ) Execute
+  23       Speak "x  < y",EndL >>
+  24    Else
+  25       Speak "x >= y",EndL >>
+  26    Stop
+  27 
+  28    If     ( x < y ) Execute
+  29       Speak "x  < y",EndL >>
+  30    ElIf ( x = y ) Execute
+  31       Speak "x  = y",EndL >>
+  32    ElIf ( x > y ) Execute
+  33       Speak "x  > y",EndL >>
+  34    Stop
+  35 
+  36    If     ( x < y ) Execute
+  37       Speak "x  < y",EndL >>
+  38    ElIf ( x = y ) Execute
+  39       Speak "x  = y",EndL >>
+  40    ElIf ( x > y ) Execute
+  41       Speak "x  > y",EndL >>
+  42    Else
+  43       Speak "***ERROR***",EndL >>
+  44    Stop
+  45 
+  46    If     ( x = y ) Execute
+  47       Speak "x  = y",EndL >>
+  48    Else
+  49       If ( x > y ) Execute
+  50          Speak "x  > y",EndL >>
+  51       Else
+  52          Speak "x  < y",EndL >>
+  53       Stop
+  54    Stop
+  55 Stop
+  56 
+******* SPL compiler ending

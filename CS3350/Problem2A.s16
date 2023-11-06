@@ -1,0 +1,252 @@
+;----------------------------------------------------------
+; Dr. Art Hanna
+; Problem #2, Program 1
+; Program1.s16
+;----------------------------------------------------------
+   CODESEGMENT
+;----------------------------------------------------------
+; PROGRAM main()
+;    *Note* main() does not have an activation record because *ALL*
+;       main() local data is stored as static data
+;----------------------------------------------------------
+main               EQU       *
+
+; INPUT "line? " line 1
+                    LDAR R1, line 
+                    LDAR R15, format1
+                    SVC #SVC_READ_FROM_TERMINAL
+
+; INPUT "n? " n
+                    LDAR R15, format2
+                    SVC #SVC_READ_FROM_TERMINAL
+                    STR R2, n
+
+; FOR i := 1 TO n
+                    LDR R1,#1
+                    STR R1,i
+
+FOR                 EQU *
+                    LDR R1,i
+                    LDR R2,n
+                    CMPR R1,R2
+                    JMPP R1, endFOR
+;    PRINT line,ENDL
+                    LDR R15,#format3
+                    LDAR R1,line
+                    SVC #SVC_WRITE_TO_TERMINAL
+; END
+                    LDR R1,i
+                    INCR R1
+                    STR R1,i
+                    JMP FOR
+endFOR              EQU *
+
+; Get Current Time 2
+                    SVC #SVC_GET_CURRENT_TIME
+                    STR R15, time
+
+                    LDAR R15, format4
+                    LDR R3, time
+                    SVC #SVC_WRITE_TO_TERMINAL
+
+; Sums 3
+; A for X
+                    LDAR R15, format5
+                    SVC #SVC_READ_FROM_TERMINAL
+                    STR R4, a
+; B for Y
+                    LDAR R15, format6
+                    SVC #SVC_READ_FROM_TERMINAL
+                    STR R5, b
+
+; X+Y 
+                    LDR R4, a
+                    LDR R5, b
+                    ADDR R4,R5
+                    LDAR R15,format7
+                    SVC #SVC_WRITE_TO_TERMINAL
+
+; X-Y 
+                    LDR R4, a
+                    LDR R5, b
+                    SUBR R4,R5
+                    LDAR R15,format8
+                    SVC #SVC_WRITE_TO_TERMINAL
+
+; X*Y 
+                    LDR R4, a
+                    LDR R5, b
+                    MULR R4,R5
+                    LDAR R15,format9
+                    SVC #SVC_WRITE_TO_TERMINAL
+
+; X/Y 
+                    LDR R4, a
+                    LDR R5, b
+                    DIVR R4,R5
+                    LDAR R15,format10
+                    SVC #SVC_WRITE_TO_TERMINAL
+
+; X MOD Y 
+                    LDR R4, a
+                    LDR R5, b
+                    MODR R4,R5
+                    LDAR R15,format11
+                    SVC #SVC_WRITE_TO_TERMINAL
+
+; 4
+WHILE               EQU       *
+                    LDAR      R15,format12
+                    SVC       #SVC_READ_FROM_TERMINAL
+                    JMPN      R0,endWHILE                   ; EOF = -1
+
+                    LDR R7, count
+                    LDR R8, sum
+                    INCR R7
+                    ADDR R8,R6
+                    STR R7, count
+                    STR R8, sum
+                    
+                    JMP WHILE
+
+endWHILE            EQU *
+
+                    LDR R7, count
+                    LDR R8, sum
+                    LDAR R15, countformat
+                    SVC       #SVC_WRITE_TO_TERMINAL
+                    LDAR R15, sumformat
+                    SVC       #SVC_WRITE_TO_TERMINAL
+
+; 5
+                    ; c
+                    LDR R15,#25
+                    SVC #SVC_GET_RANDOM_INTEGER
+                    STR R15, c
+
+                    ; n
+                    LDR R15,#6
+                    SVC #SVC_GET_RANDOM_INTEGER
+                    STR R15, d
+                    
+                    ; c + 'A'
+                    LDR R11,#'A'
+                    LDR R9, c
+                    ADDR R9,R11
+                    STR R9,c
+
+                    ; n + 1
+                    LDR R10, d
+                    INCR R10
+                    STR R10,d 
+                    LDAR R15, format13
+                    SVC #SVC_WRITE_TO_TERMINAL
+
+; FOR i := 1 TO n
+                    LDR R1,#1
+                    STR R1,i
+
+FORTWO              EQU *
+
+                    LDR R1,i
+                    LDR R3,d
+                    CMPR R1,R3
+                    JMPP R1, endFORTWO
+
+                    LDR R2,#1
+                    STR R2,j
+
+; FOR j := 1 TO i
+FORTHREE            EQU *
+
+                    LDR R2,j
+                    LDR R1,i
+
+                    CMPR R2,R1
+                    JMPP R2, endFORTHREE
+
+                    ;    PRINT c
+                    LDR R15,#cformat
+                    SVC #SVC_WRITE_TO_TERMINAL
+
+                    LDR R2,j
+                    INCR R2
+                    STR R2,j
+                    JMP FORTHREE   
+endFORTHREE         EQU *
+
+; IF i = n
+                    LDR R1,i
+                    LDR R3,d
+                    CMPR R1,R3
+                    JMPNZ R1, ELSE
+
+; .
+                    LDAR R15, dotformat
+                    SVC #SVC_WRITE_TO_TERMINAL
+                    JMP endIF
+
+; ,
+ELSE                EQU *
+
+                    LDAR R15, commaformat
+                    SVC #SVC_WRITE_TO_TERMINAL
+endIF               EQU *
+
+; i++
+                    LDR R1,i
+                    INCR R1
+                    STR R1,i
+                    JMP FORTWO
+endFORTWO           EQU *
+
+; STOP
+                    SVC #SVC_TERMINATE_PROCESS
+
+;----------------------------------------------------------
+   DATASEGMENT
+;----------------------------------------------------------
+; ***Service request number definitions
+SVC_GET_CURRENT_TIME                   EQU      1
+SVC_GET_RANDOM_INTEGER                 EQU      2
+SVC_TERMINATE_PROCESS                  EQU    100
+SVC_READ_FROM_TERMINAL                 EQU    300
+SVC_WRITE_TO_TERMINAL                  EQU    301
+
+; ***Service request return code definitions
+SVC_EOF                               EQU    -1           ; Terminal input EOF
+SVC_OK                                EQU     0           ; No error occurred
+
+; *** Static data
+line RW 80 ; String of 79 chars + \n
+a RW
+b RW 
+n RW
+i RW
+j RW
+c RW
+d RW
+result RW
+count DW 0
+sum DW 0
+time RW
+format1 DS "line? %1S"
+format2 DS "n? %2i"
+format3 DS "%1s%n"
+format4 DS "Current time = %3i%n"
+format5 DS "a? %4i"
+format6 DS "b? %5i"
+format7 DS "x+y = %4i%n"
+format8 DS "x-y = %4i%n"
+format9 DS "x*y = %4i%n"
+format10 DS "x/y = %4i%n"
+format11 DS "x MOD y = %4i%n"
+format12 DS "x? %6i"
+format13 DS "n = %10i%n"
+countformat DS "count = %7i%n"
+sumformat DS "sum = %8i%n"
+cformat DS "%9c"
+dotformat DS "."
+commaformat DS ","
+
+   END
