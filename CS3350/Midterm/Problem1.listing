@@ -1,0 +1,160 @@
+Page   1, Full source file name "Midterm/Problem1.s16"
+    LC  Object code Line Source code
+------ ------------ ---- -------------------------------------------------------------------------------------------------
+                       1 ;--------------------------------------------------
+                       2 ; Dr. Art Hanna
+                       3 ; Midterm Examination, Problem #1
+                       4 ; Problem1.s16
+                       5 ;--------------------------------------------------
+                       6    CODESEGMENT
+                       7 ;----------------------------------------------------------
+                       8 ; PROGRAM main()
+                       9 ;    *Note* main() uses an activation record to store *ALL*
+                      10 ;       variable local data. Constants are stored in the
+                      11 ;       data-segment as static data.
+                      12 ;----------------------------------------------------------
+                      13 ; activation record on run-time stack
+                      14 ;    0: n
+                      15 ;    1: i
+                      16 ; 2-26: F[0:24]
+                      17 ;----------------------------------------------------------
+0X0000                18 main               EQU       *
+                      19 
+                      20 ; build activation record on run-time stack
+0X0000 530036         21                    ADJSP     #54                           ; allocate local variables
+0X0003 52FFCA         22                    SETFB     #-54
+                      23 
+                      24 ; INPUT "n [0,24]? " n
+0X0006 41010F0200     25                    LDAR      R15,format1
+0X000B 0A012C         26                    SVC       #SVC_READ_FROM_TERMINAL
+0X000E 4221010000     27                    STR       R1,FB:0
+                      28 ; F[0] := 0
+0X0013 2401           29                    ZEROR R1
+0X0015 4221010002     30                    STR R1, FB:2
+                      31 ; F[1] := 1
+0X001A 4010010001     32                    LDR R1, #1
+0X001F 4221010003     33                    STR R1, FB:3
+                      34 
+                      35 ; FOR i := 2 TO n BY 1
+0X0024 4010010002     36                    LDR R1, #2
+0X0029 4221010001     37                    STR R1, FB:1
+                      38 
+0X002E                39 FOR                EQU *
+0X002E 4021010001     40                    LDR R1, FB:1
+0X0033 4021020000     41                    LDR R2, FB:0
+0X0038 280102         42                    CMPR R1, R2
+0X003B 06010093       43                    JMPP R1, endFOR
+                      44 
+                      45 ;                   LDAR R15, debug1
+                      46 ;                   SVC #SVC_WRITE_TO_TERMINAL
+                      47 
+                      48 ;    F[i] := F[i-2]+F[i-1]
+                      49 ;                  F[i-2]
+0X003F 4121020002     50                    LDAR R2, FB:2
+0X0044 4021030001     51                    LDR R3, FB:1
+0X0049 2303           52                    DECR R3
+0X004B 2303           53                    DECR R3
+                      54 
+0X004D 200303         55                    ADDR R3, R3
+0X0050 200203         56                    ADDR R2, R3
+                      57 
+0X0053 40020402       58                    LDR R4, @R2
+                      59                    
+                      60 ;                  F[i-1]
+0X0057 4121020002     61                    LDAR R2, FB:2
+0X005C 4021030001     62                    LDR R3, FB:1
+0X0061 2303           63                    DECR R3
+0X0063 200303         64                    ADDR R3, R3
+0X0066 200203         65                    ADDR R2, R3
+                      66 
+0X0069 40020502       67                    LDR R5, @R2
+                      68 
+0X006D 200405         69                    ADDR R4, R5
+                      70 
+                      71 ;                  F[i]
+0X0070 4121020002     72                    LDAR R2, FB:2
+0X0075 4021030001     73                    LDR R3, FB:1
+0X007A 200303         74                    ADDR R3, R3
+0X007D 200203         75                    ADDR R2, R3
+                      76 
+0X0080 42020402       77                    STR R4, @R2
+                      78 
+0X0084 4021010001     79                    LDR R1, FB:1
+0X0089 2201           80                    INCR R1
+0X008B 4221010001     81                    STR R1, FB:1
+0X0090 01002E         82                    JMP FOR
+                      83 ; END
+0X0093                84 endFOR             EQU *
+                      85 ; FOR i := 0 TO n BY 1
+0X0093 2401           86                    ZEROR R1
+0X0095 4221010001     87                    STR R1, FB:1
+0X009A                88 FOR2               EQU *
+0X009A 4021010001     89                    LDR R1, FB:1
+0X009F 4021020000     90                    LDR R2, FB:0
+                      91 
+0X00A4 280102         92                    CMPR R1, R2
+0X00A7 060100DB       93                    JMPP R1, endFOR2
+                      94 
+Page   2, Full source file name "Midterm/Problem1.s16"
+    LC  Object code Line Source code
+------ ------------ ---- -------------------------------------------------------------------------------------------------
+                      95 ;                   LDAR R15, debug2
+                      96 ;                   SVC #SVC_WRITE_TO_TERMINAL
+                      97 
+                      98 ;    PRINT "F(",i,") = ",F[i],ENDL
+0X00AB 4021030001     99                    LDR R3, FB:1
+0X00B0 41010F021C    100                    LDAR R15,format2
+                     101                 
+                     102 ;                  F[i]
+0X00B5 4121020002    103                    LDAR R2, FB:2
+0X00BA 4021040001    104                    LDR R4, FB:1
+0X00BF 200404        105                    ADDR R4, R4
+0X00C2 200204        106                    ADDR R2, R4
+0X00C5 40020202      107                    LDR R2, @R2
+                     108 
+0X00C9 0A012D        109                    SVC       #SVC_WRITE_TO_TERMINAL
+                     110                    
+0X00CC 4021010001    111                    LDR R1, FB:1
+0X00D1 2201          112                    INCR R1
+0X00D3 4221010001    113                    STR R1, FB:1
+0X00D8 01009A        114                    JMP FOR2
+                     115 ; END
+0X00DB               116 endFOR2            EQU *
+                     117 
+                     118 ; STOP
+                     119 ; destroy activation record on run-time stack
+0X00DB 53FFCA        120                    ADJSP     #-54                          ; deallocate local variables
+0X00DE 0A0064        121                    SVC       #SVC_TERMINATE_PROCESS
+                     122 
+                     123 ;----------------------------------------------------------
+                     124    DATASEGMENT
+                     125 ;----------------------------------------------------------
+                     126 ; ***Service request number definitions
+0X0200               127 SVC_TERMINATE_PROCESS                  EQU    100
+0X0200               128 SVC_READ_FROM_TERMINAL                 EQU    300
+0X0200               129 SVC_WRITE_TO_TERMINAL                  EQU    301
+                     130 
+                     131 ; ***Service request return code definitions
+0X0200               132 SVC_EOF                                EQU     -1          ; Terminal input EOF
+0X0200               133 SVC_OK                                 EQU      0          ; No error occurred
+                     134 
+                     135 ; *** Static data
+0X0200 006E0020005B  136 format1            DS        "n [0,24]? %1i"
+0X0206 0030002C0032
+0X020C 0034005D003F
+0X0212 002000250031
+0X0218 00690000    
+0X021C 004600280025  137 format2            DS        "F(%3i) = %2u%n"
+0X0222 003300690029
+0X0228 0020003D0020
+0X022E 002500320075
+0X0234 0025006E0000
+                     138 
+0X023A 0046006F0072  139 debug1 DS "For1%n"
+0X0240 00310025006E
+0X0246 0000        
+0X0248 0046006F0072  140 debug2 DS "For2%n"
+0X024E 00320025006E
+0X0254 0000        
+                     141 
+                     142    END

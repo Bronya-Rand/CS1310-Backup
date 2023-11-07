@@ -257,6 +257,8 @@ endDO2             EQU       *
 ConsumerEntryPoint EQU       *
 
 ; build activation record on run-time stack
+                   ADJSP     #+8                            ; allocate local variables (see activation record)
+                   SETFB     #-8
 ; n := R10
 ; CSHandle := R11
 ; STARTHandle := R12
@@ -276,27 +278,30 @@ DO3                EQU *
 ; WHILE ( (item != n) OR (counter != 0) )
                    LDR R1, item
                    LDR R2, FB:0
+
+                   CMPR R1, R2
+
+                   LDR R2, counter
                    ZEROR R3
-
-                   CMPR R1, R2
-                   JMPZ R1, endDO3
-
-                   LDR R1, counter
-                   ZEROR R2
+                   CMPR R2,R3
                    
-                   CMPR R1, R2
-                   JMPNZ R1, endDO3
+                   ORR R1, R2
+                   JMPZ R1, endDO3
 ;    IF ( counter != 0 ) THEN
                    LDR R1, counter
                    ZEROR R2
 
                    CMPR R1, R2
-                   JMPNZ R1, endIF3
+                   JMPZ R1, endIF3
 ;       PRINT "C",A-to-Z," item = ",buffer[out],ENDL
                    LDR R3, FB:3
-                   LDR R4, buffer
-                   LDAR      R15,format5
-                   SVC       #SVC_WRITE_TO_TERMINAL
+                   LDAR R2, buffer
+                   LDR R1, out
+                   SLR R1
+                   ADDR R2,R1
+                   LDR R1,@R2
+                   LDAR R15,format5
+                   SVC #SVC_WRITE_TO_TERMINAL
 ;       counter := counter-1
                    LDR R1, counter
                    DECR R1
@@ -307,7 +312,7 @@ DO3                EQU *
                    STR R1, out
 ;       IF ( out = BUFFER_SIZE ) THEN
                    LDR R1, out
-                   LDR R2, BUFFER_SIZE
+                   LDR R2, #BUFFER_SIZE
 
                    CMPR R1, R2
                    JMPNZ R1, endIF4
