@@ -1,0 +1,9 @@
+﻿  PrometheusCompilerSystem5.cpp
+D:\ClassProjects\SPL\PrometheusCompiler5\PrometheusCompilerSystem5.cpp(1403,9): warning C4101: 'operand': unreferenced local variable
+D:\ClassProjects\SPL\PrometheusCompiler5\PrometheusCompilerSystem5.cpp(2100,9): warning C4101: 'information': unreferenced local variable
+D:\ClassProjects\SPL\PrometheusCompiler5\PrometheusCompilerSystem5.cpp(2198,12): warning C4101: 'UCLexeme': unreferenced local variable
+  Generating code
+  Previous IPDB not found, fall back to full compilation.
+  All 291 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  PrometheusCompiler5.vcxproj -> D:\ClassProjects\SPL\x64\Release\PrometheusCompiler5.exe

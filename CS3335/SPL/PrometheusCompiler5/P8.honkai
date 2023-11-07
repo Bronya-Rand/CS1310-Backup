@@ -1,0 +1,66 @@
+# P8.honkai
+# Weiss Del Carmen
+# :RaidenScream:
+
+Luna initialX: Bronya := 1 >>
+
+Veliona i: Bronya >>
+
+Herrscher
+   Luna initialY: Bronya := 3 >>
+
+   Veliona n: Bronya,x: Bronya,y: Bronya >>
+
+   Provide "n? " n >>
+
+   Speak "For-loop (1)",EndL >>
+   x := initialX >> y := initialY >>
+   For i := 1 Towards n Account 1
+      Speak i,": " >>
+      If   ( x < y ) Execute
+         Speak x," < ",y,EndL >>
+      ElIf ( x = y ) Execute
+         Speak x," = ",y,EndL >>
+      ElIf ( x > y ) Execute
+         Speak x," > ",y,EndL >>
+      Stop
+      x := x+1 >>
+      y := y-1 >>
+   Stop
+
+   Speak "For-loop (2)",EndL >>
+   x := initialX >> y := initialY >>
+   For i := 1 Towards n
+      Speak i,": " >>
+      If   ( x < y ) Execute
+         Speak x," < ",y,EndL >>
+      ElIf ( x = y ) Execute
+         Speak x," = ",y,EndL >>
+      ElIf ( x > y ) Execute
+         Speak x," > ",y,EndL >>
+      Stop
+      x := x+2 >>
+      y := y-2 >>
+   Stop
+
+   Speak "For-loop (3)",EndL >>
+   x := initialX >> y := initialY >>
+   For i := n Towards 1 Account -1
+      Speak i,": " >>
+      If   ( x < y ) Execute
+         Speak x," < ",y,EndL >>
+      ElIf ( x = y ) Execute
+         Speak x," = ",y,EndL >>
+      ElIf ( x > y ) Execute
+         Speak x," > ",y,EndL >>
+      Stop
+      x := x+3 >>
+      y := y-3 >>
+   Stop
+
+   Speak "For-loop (4)",EndL >>
+   For i := 1 Towards n Account 1-1              # run-time error #2 (e3 = 0)
+      Speak "UNREACHABLE",EndL >>
+   Stop
+
+Stop

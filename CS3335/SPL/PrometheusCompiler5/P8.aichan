@@ -1,0 +1,74 @@
+"P8.honkai" Page    1
+Line Source Line
+---- -------------------------------------------------------------------------------
+   1 # P8.honkai
+   2 # Weiss Del Carmen
+   3 # :RaidenScream:
+   4 
+   5 Luna initialX: Bronya := 1 >>
+   6 
+   7 Veliona i: Bronya >>
+   8 
+   9 Herrscher
+  10    Luna initialY: Bronya := 3 >>
+  11 
+  12    Veliona n: Bronya,x: Bronya,y: Bronya >>
+  13 
+  14    Provide "n? " n >>
+  15 
+  16    Speak "For-loop (1)",EndL >>
+  17    x := initialX >> y := initialY >>
+  18    For i := 1 Towards n Account 1
+  19       Speak i,": " >>
+  20       If   ( x < y ) Execute
+  21          Speak x," < ",y,EndL >>
+  22       ElIf ( x = y ) Execute
+  23          Speak x," = ",y,EndL >>
+  24       ElIf ( x > y ) Execute
+  25          Speak x," > ",y,EndL >>
+  26       Stop
+  27       x := x+1 >>
+  28       y := y-1 >>
+  29    Stop
+  30 
+  31    Speak "For-loop (2)",EndL >>
+  32    x := initialX >> y := initialY >>
+  33    For i := 1 Towards n
+  34       Speak i,": " >>
+  35       If   ( x < y ) Execute
+  36          Speak x," < ",y,EndL >>
+  37       ElIf ( x = y ) Execute
+  38          Speak x," = ",y,EndL >>
+  39       ElIf ( x > y ) Execute
+  40          Speak x," > ",y,EndL >>
+  41       Stop
+  42       x := x+2 >>
+  43       y := y-2 >>
+  44    Stop
+  45 
+  46    Speak "For-loop (3)",EndL >>
+  47    x := initialX >> y := initialY >>
+  48    For i := n Towards 1 Account -1
+  49       Speak i,": " >>
+  50       If   ( x < y ) Execute
+  51          Speak x," < ",y,EndL >>
+  52       ElIf ( x = y ) Execute
+  53          Speak x," = ",y,EndL >>
+  54       ElIf ( x > y ) Execute
+  55          Speak x," > ",y,EndL >>
+  56       Stop
+  57       x := x+3 >>
+  58       y := y-3 >>
+  59    Stop
+  60 
+"P8.honkai" Page    2
+Line Source Line
+---- -------------------------------------------------------------------------------
+  61    Speak "For-loop (4)",EndL >>
+  62    For i := 1 Towards n Account 1-1              # run-time error #2 (e3 = 0)
+  63       Speak "UNREACHABLE",EndL >>
+  64    Stop
+  65 
+  66 Stop
+  67 
+******* SPL compiler ending
