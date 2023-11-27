@@ -1,0 +1,31 @@
+1. T
+2. T
+3. 6
+4. T
+5. T
+6. A
+7. D
+8. Index Addressing Mode
+9. F
+10. S16OS SVC_WAIT_SEMAPHORE system service request : P-operator :: SVC_SIGNAL_SEMAPHORE : 
+11. NULL
+12. NULL as it is empty, waiting to be filled
+13. buffer[in] := item
+14. A
+15. item := buffer[out]
+16. B
+17.  
+
+Positive-value-d semaphore: Some of the opportunities for Consumer are still open for use. 
+Zero-value semaphores: All the opportunites are gone with no empty slots for Consumer. 
+Negative value semaphores: the process is put on the WAITQ for an opportunity 
+
+18. F
+19. T
+20. S16 solves this problem by using mutexts to limit the system from reaching race conditions.
+21. A local copy ensures that there is no conflict between other threads if other threads gain access to counter.
+22. FB:07
+23. T
+24. T
+25. P(ES) then unlock(CS)
+

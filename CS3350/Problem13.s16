@@ -1,0 +1,436 @@
+;--------------------------------------------------
+; Dr. Art Hanna
+; Problem #13 (single-job, multi-threaded solution)
+; Problem13.s16
+;--------------------------------------------------
+   CODESEGMENT
+;----------------------------------------------------------
+; PROGRAM main()
+;    *Note* main() uses an activation record to store *ALL*
+;       variable local data. Constants are stored in
+;       data-segment as static data.
+;----------------------------------------------------------
+; activation record on run-time stack
+;    0: P
+;    1: Pn
+;    2: C
+;    3: Cn
+;    4: i
+;    5: CSHandle
+;    6: STARTHandle
+; (P)roducer child thread parameter block (offsets 7-10)
+;    7: address-of(ProducerEntryPoint)
+;    8: 'P'                  3-character thread name string
+;    9: PA-to-Z
+;   10: 0X0000 (NUL)
+; (C)onsumer child thread parameter block (offsets 11-14)
+;   11: ConsumerEntryPoint
+;   12: 'C'                  3-character thread name string
+;   13: CA-to-Z
+;   14: 0X0000 (NUL)
+; "ES" semaphore parameter block for replacement of busy-waiting loop in Producer child threads (offsets 15-18)
+;   15: ESValue
+;   16: 'E'
+;   17: 'S'
+;   18: 0X0000 (NUL)
+;   19: ESHandle
+; "FS" semaphore parameter block for replacement of busy-waiting loop in Consumer child threads (offsets 20-23)
+;   20: FSValue
+;   21: 'F'
+;   22: 'S'
+;   23: 0X0000 (NUL)
+;   24: FSHandle
+;----------------------------------------------------------
+main               EQU       *
+
+; build activation record on run-time stack
+                   ADJSP     #+50                           ; allocate local variables (see activation record)
+                   SETFB     #-50
+; INPUT "P [1,9]? " P
+                   LDAR      R15,format2
+                   SVC       #SVC_READ_FROM_TERMINAL
+                   STR       R1,FB:0
+; INPUT "Pn? " Pn
+                   LDAR      R15,format6
+                   SVC       #SVC_READ_FROM_TERMINAL
+                   STR       R1,FB:1
+; INPUT "C [1,9]? " C
+                   LDAR      R15,format3
+                   SVC       #SVC_READ_FROM_TERMINAL
+                   STR       R1,FB:2
+; INPUT "Cn? " Cn
+                   LDAR      R15,format7
+                   SVC       #SVC_READ_FROM_TERMINAL
+                   STR       R1,FB:3
+; create resources
+;   * create mutex "CS" for critical section
+                   LDAR      R15,CSName
+                   SVC       #SVC_CREATE_MUTEX
+                   STR       R15,FB:5
+;   * create event "START" to synchronize Producer and Consumer child threads with main()
+                   LDAR      R15,STARTName
+                   SVC       #SVC_CREATE_EVENT
+                   STR       R15,FB:6
+;   * create sempahore "ES" (empty)
+                   LDR       R1,#BUFFER_SIZE               ; build parameter block
+                   STR       R1,FB:15
+                   LDR       R1,#'E'
+                   STR       R1,FB:16
+                   LDR       R1,#'S'
+                   STR       R1,FB:17
+                   LDR       R1,#0X0000
+                   STR       R1,FB:18
+                   LDAR      R15,FB:15
+                   SVC       #SVC_CREATE_SEMAPHORE
+                   STR       R15,FB:19
+;   * create sempahore "FS" (full)
+                   ZEROR     R1                            ; build parameter block
+                   STR       R1,FB:20
+                   LDR       R1,#'F'
+                   STR       R1,FB:21
+                   LDR       R1,#'S'
+                   STR       R1,FB:22
+                   LDR       R1,#0X0000
+                   STR       R1,FB:23
+                   LDAR      R15,FB:20
+                   SVC       #SVC_CREATE_SEMAPHORE
+                   STR       R15,FB:24
+; launch Producer child threads named "Pi" i in [ 'A','A'+(P-1) ]
+; FOR i := 1 TO P
+                   LDR       R1,#1
+                   STR       R1,FB:4
+FOR1               EQU       *
+                   LDR       R1,FB:4
+                   LDR       R2,FB:0
+                   CMPR      R1,R2
+                   JMPP      R1,endFOR1
+;   * build Producer parameter block
+                   LDAR      R1,ProducerEntryPoint
+                   STR       R1,FB:7
+                   LDR       R1,#'P'
+                   STR       R1,FB:8
+                   LDR       R1,#'A'                       ; PA-to-Z := 'A'+(i-1)
+                   LDR       R2,FB:4
+                   DECR      R2
+                   ADDR      R1,R2
+                   STR       R1,FB:9
+                   ZEROR     R1
+                   STR       R1,FB:10
+;   * create Producer child thread passing ESHandle,FSHandle,CSHandle,STARTHandle, and PA-to-Z in R9-thru-R14
+                   LDR       R9,FB:19                      ; pass ESHandle in R9
+                   LDR       R10,FB:24                     ; pass FSHandle in R10
+                   LDR       R11,FB:5                      ; pass CSHandle in R11
+                   LDR       R12,FB:6                      ; pass STARTHandle in R12
+                   LDR       R13,FB:9                      ; pass PA-to-Z in R13
+                   LDR       R14,FB:1                      ; pass Pn in R14
+                   LDAR      R15,FB:7
+                   SVC       #SVC_CREATE_CHILD_THREAD
+; END
+                   LDR       R1,FB:4
+                   INCR      R1
+                   STR       R1,FB:4
+                   JMP       FOR1
+endFOR1            EQU       *
+; launch Consumer child threads named "Ci" i in [ 'A','A'+(C-1) ]
+; FOR i := 1 TO C
+                   LDR       R1,#1
+                   STR       R1,FB:4
+FOR2               EQU       *
+                   LDR       R1,FB:4
+                   LDR       R2,FB:2
+                   CMPR      R1,R2
+                   JMPP      R1,endFOR2
+;   * build Consumer parameter block
+                   LDAR      R1,ConsumerEntryPoint
+                   STR       R1,FB:11
+                   LDR       R1,#'C'
+                   STR       R1,FB:12
+                   LDR       R1,#'A'                       ; CA-to-Z := 'A'+(i-1)
+                   LDR       R2,FB:4
+                   DECR      R2
+                   ADDR      R1,R2
+                   STR       R1,FB:13
+                   ZEROR     R1
+                   STR       R1,FB:14
+;   * create Consumer child thread passing ESHandle,FSHandle,CSHandle,STARTHandle, and CA-to-Z in R9-thru-R14
+                   LDR       R9,FB:19                      ; pass ESHandle in R9
+                   LDR       R10,FB:24                     ; pass FSHandle in R10
+                   LDR       R11,FB:5                      ; pass CSHandle in R11
+                   LDR       R12,FB:6                      ; pass STARTHandle in R12
+                   LDR       R13,FB:13                     ; pass CA-to-Z in R13
+                   LDR       R14,FB:3                      ; pass Cn in R14
+                   LDAR      R15,FB:11
+                   SVC       #SVC_CREATE_CHILD_THREAD
+; END
+                   LDR       R1,FB:4
+                   INCR      R1
+                   STR       R1,FB:4
+                   JMP       FOR2
+endFOR2            EQU       *
+
+; initialize shared variables (in,out,counter)
+;   * initialize circular-buffer to empty
+;   * in,out,counter := 0
+                   LDR       R1,#0
+                   STR       R1,in
+                   STR       R1,out
+                   STR       R1,counter
+
+; start *ALL* Producer and Consumer child threads at the same time
+                   LDR       R15,FB:6
+                   SVC       #SVC_SIGNALALL_EVENT
+
+; busy-wait for *ALL* Producer and Consumer child threads to terminate
+; DO
+DO1                EQU       *
+;    get active thread count
+                   SVC       #SVC_GET_ACTIVE_CHILD_THREAD_COUNT
+; WHILE ( active thread count > 0 )
+                   JMPP      R15,DO1
+
+; destroy resources
+;   * destroy sempahore "ES"
+                   LDR       R15,FB:19
+                   SVC       #SVC_DESTROY_SEMAPHORE
+;   * destroy sempahore "FS"
+                   LDR       R15,FB:24
+                   SVC       #SVC_DESTROY_SEMAPHORE
+;   * destroy mutex "CS"
+                   LDR       R15,FB:5
+                   SVC       #SVC_DESTROY_MUTEX
+;   * destroy event "START"
+                   LDR       R15,FB:6
+                   SVC       #SVC_DESTROY_EVENT
+; STOP
+                   ADJSP     #-50                           ; deallocate local variables (see activation record)
+                   SVC       #SVC_TERMINATE_PROCESS
+
+;--------------------------------------------------
+; Producer child thread entry point
+; activation record on run-time stack
+;    0: ESHandle (passed in R9)
+;    1: FSHandle (passed in R10)
+;    2: CSHandle (passed in R11)
+;    3: STARTHandle (passed in R12)
+;    4: PA-to-Z (passed in R13)
+;    5: Pn (passed in R14)
+;    6: item
+;    7: counter (local)
+;--------------------------------------------------
+ProducerEntryPoint EQU       *
+
+; build activation record on run-time stack
+                   ADJSP     #+16                           ; allocate local variables (see activation record)
+                   SETFB     #-16
+; ESHandle := R9
+; FSHandle := R10
+; CSHandle := R11
+; STARTHandle := R12
+; PA-to-Z := R13
+; Pn := R14
+                   STR       R9,FB:0
+                   STR       R10,FB:1
+                   STR       R11,FB:2
+                   STR       R12,FB:3
+                   STR       R13,FB:4
+                   STR       R14,FB:5
+; wait on "START" event
+                   LDR       R15,FB:3
+                   SVC       #SVC_WAIT_EVENT
+; FOR item := 1 TO Pn
+                   LDR       R1,#1
+                   STR       R1,FB:6
+FORP               EQU       *
+                   LDR       R1,FB:6
+                   LDR       R2,FB:5
+                   CMPR      R1,R2
+                   JMPP      R1,endFORP
+;    wait semaphore "ES"
+                   LDR       R15,FB:0
+                   SVC       #SVC_WAIT_SEMAPHORE
+;    enter critical section "CS"
+                   LDR       R15,FB:2
+                   SVC       #SVC_LOCK_MUTEX
+;    buffer[in] := item
+                   LDR       R1,FB:6                       ; use indexed addressing mode
+                   LDR       R2,in
+                   SLR       R2
+                   STR       R1,buffer,R2
+;    counter,counter(local) := counter+1
+                   LDR       R1,counter
+                   INCR      R1
+                   STR       R1,counter
+                   STR       R1,FB:7
+
+;    in := (in+1) % BUFFER_SIZE
+                   LDR       R1,in
+                   INCR      R1
+                   LDR       R2,#BUFFER_SIZE
+                   MODR      R1,R2
+                   STR       R1,in
+; instead of the Problem #12 method
+;    in := in+1
+;    IF ( in = BUFFER_SIZE ) THEN
+;       in := 0
+;    END
+
+;    exit critical section "CS"
+                   LDR       R15,FB:2
+                   SVC       #SVC_UNLOCK_MUTEX
+;    signal semaphore "FS"
+                   LDR       R15,FB:1
+                   SVC       #SVC_SIGNAL_SEMAPHORE
+;    PRINT "P",PA-to-Z,": item = ",item,", counter = ",counter(local),ENDL
+                   LDR       R3,FB:4
+                   LDR       R1,FB:6
+                   LDR       R2,FB:7
+                   LDAR      R15,format4
+                   SVC       #SVC_WRITE_TO_TERMINAL
+; END
+                   LDR       R1,FB:6
+                   INCR      R1
+                   STR       R1,FB:6
+                   JMP       FORP
+endFORP            EQU       *
+; STOP
+                   ADJSP     #-16                          ; deallocate local variables (see activation record)
+                   SVC       #SVC_TERMINATE_PROCESS
+
+;--------------------------------------------------
+; Consumer child thread entry point
+; activation record on run-time stack
+;    0: ESHandle (passed in R9)
+;    1: FSHandle (passed in R10)
+;    2: CSHandle (passed in R11)
+;    3: STARTHandle (passed in R12)
+;    4: CA-to-Z (passed in R13)
+;    5: Cn (passed in R14)
+;    6: i
+;    7: item
+;--------------------------------------------------
+ConsumerEntryPoint EQU       *
+
+; build activation record on run-time stack
+                   ADJSP     #+16                           ; allocate local variables (see activation record)
+                   SETFB     #-16
+; ESHandle := R9
+; FSHandle := R10
+; CSHandle := R11
+; STARTHandle := R12
+; CA-to-Z := R13
+; Cn := R14
+               STR       R9,FB:0
+               STR       R10,FB:1
+               STR       R11,FB:2
+               STR       R12,FB:3
+               STR       R13,FB:4
+               STR       R14,FB:5
+; wait on "START" event
+               LDR       R15,FB:3
+               SVC       #SVC_WAIT_EVENT
+; FOR i := 1 TO Cn
+               LDR       R1,#1
+               STR       R1,FB:6
+FORC           EQU       *
+               LDR       R1,FB:6  
+               LDR       R2,FB:5   
+               CMPR      R1,R2      
+               JMPP      R1,endFORC   
+;    wait semaphore "FS"
+               LDR       R15,FB:1    
+               SVC       #SVC_WAIT_SEMAPHORE
+;    enter critical section "CS"
+               LDR       R15,FB:2
+               SVC       #SVC_LOCK_MUTEX
+;    item := buffer[out]
+               LDR       R2,out
+               SLR     R2
+               LDR     R1,buffer,R2
+               STR       R1,FB:7
+;    counter := counter-1
+               LDR      R1,counter
+               DECR      R1
+               STR       R1,counter
+;    out := (out+1) % BUFFER_SIZE
+               LDR       R1,out
+               INCR      R1
+               LDR       R2,#BUFFER_SIZE
+               MODR      R1,R2
+               STR       R1,out
+; instead of the Problem #12 method
+;    out := out+1
+;    IF ( out = BUFFER_SIZE ) THEN
+;       out := 0
+;    END
+;    exit critical section "CS"
+               LDR       R15,FB:2
+               SVC       #SVC_UNLOCK_MUTEX
+;    signal semaphore "ES"
+               LDR       R15,FB:0   ;check if FB:0
+               SVC       #SVC_SIGNAL_SEMAPHORE
+;    PRINT "C",CA-to-Z,": item = ",item,ENDL
+               LDR       R3,FB:4
+               LDR       R1,FB:7
+               LDAR      R15,format5
+               SVC       #SVC_WRITE_TO_TERMINAL
+; END
+               LDR       R1,FB:6
+               INCR      R1
+               STR       R1,FB:6
+               JMP       FORC
+endFORC        EQU       *
+; STOP
+               ADJSP     #-16                          ; deallocate local variables (see activation record)
+               SVC       #SVC_TERMINATE_PROCESS
+
+;----------------------------------------------------------
+   DATASEGMENT
+;----------------------------------------------------------
+; ***Service request number definitions
+SVC_TERMINATE_PROCESS                  EQU    100
+SVC_CREATE_CHILD_THREAD                EQU    180
+SVC_GET_ACTIVE_CHILD_THREAD_COUNT      EQU    181
+SVC_READ_FROM_TERMINAL                 EQU    300
+SVC_WRITE_TO_TERMINAL                  EQU    301
+SVC_CREATE_SEMAPHORE                   EQU    700
+SVC_DESTROY_SEMAPHORE                  EQU    701
+SVC_WAIT_SEMAPHORE                     EQU    702
+SVC_SIGNAL_SEMAPHORE                   EQU    703
+SVC_CREATE_MUTEX                       EQU    800
+SVC_DESTROY_MUTEX                      EQU    801
+SVC_LOCK_MUTEX                         EQU    802
+SVC_UNLOCK_MUTEX                       EQU    803
+SVC_CREATE_EVENT                       EQU    900
+SVC_DESTROY_EVENT                      EQU    901
+SVC_SIGNAL_EVENT                       EQU    902
+SVC_SIGNALALL_EVENT                    EQU    903
+SVC_WAIT_EVENT                         EQU    904
+SVC_GET_EVENT_QUEUE_SIZE               EQU    905
+
+; ***Service request return code definitions
+SVC_EOF                                EQU     -1          ; Terminal input EOF
+SVC_OK                                 EQU      0          ; No error occurred
+
+; ***Static data
+format2            DS        "P [1,26]? %1I"
+format3            DS        "C [1,26]? %1I"
+format4            DS        "P%3C item = %1I, counter = %2I%n"
+format5            DS        "C%3C item = %1I%n"
+format6            DS        "Pn? %1I"
+format7            DS        "Cn? %1I"
+
+; mutex for critical section access shared variables (see below)
+CSName             DS        "CS"
+
+; event to synchronize Producer and Consumer child threads with main()
+STARTName          DS        "START"
+
+; *** shared variables
+BUFFER_SIZE        EQU       8
+;   * circular-buffer definitions
+buffer             RW        BUFFER_SIZE                   ; BUFFER_SIZE-element circular-buffer
+in                 RW                                      ; index of next-empty element location
+out                RW                                      ; index of next-full element location
+counter            RW                                      ; count of elements in circular-buffer
+
+   END

@@ -1,0 +1,23 @@
+1. iterates = 6
+2. F
+3. A
+4. T
+5. The wait queue is the stack that ads tasks from a job into the ready queue for it to be executed instantly in the readyQ before being removed and waits for a new task
+6. CPU
+7. 144
+8. CPU
+9. 0xF002
+10. 
+First n is stored into R1, then is shifted right once then back once, then n is stored in R2 and is checked against the shifted n in R1 that checks to be sure that n is a even
+digit.
+11. T
+12. 0x0001
+13. T
+14. T
+15. 
+
+LDR R1,FB:0
+LDR R2,#3
+MULR R1,R2
+INCR R1
+STR R1,FB:0

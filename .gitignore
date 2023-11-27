@@ -12,6 +12,5 @@ env
 *.o
 *.obj
 *.spec
-*.txt
 out
 !requirements.txt

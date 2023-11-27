@@ -1,0 +1,10 @@
+888100; John B. Smith; 15000.00
+888101; Franklin T. Wong; 17000.00
+888102; Alicia J. Zelaya; 13500.00
+888103; Jennifer S. Wallace; 22000.00
+888104; Ramesh K. Narayan; 18300.00
+888105; Joyce A. English; 16800.00
+888106; James E. Borg; 19000.00
+888107; Brandon K. Anthony; 14000.00
+888108; Daniel A. Matthew; 16000.00
+888109; Mark Jonathan; 21000.00

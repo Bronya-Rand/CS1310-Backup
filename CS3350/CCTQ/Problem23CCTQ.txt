@@ -1,0 +1,16 @@
+1. T
+2. D
+3. T
+4. F
+5. R15
+6. With JOIN_CHILD_THREAD, less CPU resources will be used to process code whilst Problem 11 has to go through many cycles in order to
+process the same request in it's exact moment.
+7. T
+8. T
+9. C
+10. A
+11. 4
+12. B
+13. F
+14. Join State
+15. A
