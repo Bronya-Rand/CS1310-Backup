@@ -1,5 +1,5 @@
 ;--------------------------------------------------------------
-; HelloWorld.stm
+; Problem1.stm
 ;--------------------------------------------------------------
 ; SVC numbers
 SVC_DONOTHING          EQU       0D0                  ; force context switch
@@ -22,14 +22,15 @@ SVC_DEALLOCATE_BLOCK   EQU       0D92
                        ORG       0X0000
 
                        JMP       PROGRAMMAIN
-;    1 # HelloWorld.honkai
-;    2 # Weiss Del Carmen
-;    3 # Sample Hello World to Prometheus.
-;    4 
-;    5 Herrscher
-;    6     Speak "Hello Dr MEI",EndL >>
+;    1 ;------------------------------------------------------------
+;    2 ; Dr. Art Hanna
+;    3 ; SPL Programming, Problem #1
+;    4 ; Problem1.spl
+;    5 ;------------------------------------------------------------
+;    6 PROGRAM
+;    7    VAR i: INT.
 ; **** =========
-; **** PROGRAM module (   5)
+; **** PROGRAM module (   6)
 ; **** =========
 PROGRAMMAIN            EQU       *
                        PUSH      #RUNTIMESTACK        ; set SP
@@ -47,20 +48,64 @@ PROGRAMMAIN            EQU       *
                        SVC       #SVC_TERMINATE
 
 PROGRAMBODY0010        EQU       *
-; **** PRINT statement (   6)
-                       PUSHA     SB:0D28
-                       SVC       #SVC_WRITE_STRING
-;    7     Speak "I am Terminal Aide 0017",EndL >>
-                       SVC       #SVC_WRITE_ENDL
-; **** PRINT statement (   7)
-                       PUSHA     SB:0D32
-                       SVC       #SVC_WRITE_STRING
-;    8 Stop
+;    8    VAR n: INT.
 ;    9 
+;   10    i := 0.
+;   11    
+; **** assignment statement (  10)
+                       PUSHA     SB:0D28
+;   12    INPUT "n? " n.
+                       PUSH      #0D0
+                       MAKEDUP   
+                       POP       @SP:0D2
+                       SWAP      
+                       DISCARD   #0D1
+                       DISCARD   #0D1
+;   13    DO WHILE ( i < n )
+; **** INPUT statement (  12)
+                       PUSHA     SB:0D30
+                       SVC       #SVC_WRITE_STRING
+                       PUSHA     SB:0D29
+                       SVC       #SVC_READ_INTEGER
+                       POP       @SP:0D1
+                       DISCARD   #0D1
+; **** DO-WHILE statement (  13)
+D0020                  EQU       *
+;   14       PRINT "Arthur Daryl Hanna",ENDL.
+                       PUSH      SB:0D28
+                       PUSH      SB:0D29
+                       CMPI      
+                       JMPL      T0040
+                       PUSH      #0X0000
+                       JMP       E0050
+T0040                  PUSH      #0XFFFF
+E0050                  EQU       *
+                       SETT      
+                       DISCARD   #0D1
+                       JMPNT     E0030
+; **** PRINT statement (  14)
+;   15       i := i+1.
+                       PUSHA     SB:0D35
+                       SVC       #SVC_WRITE_STRING
                        SVC       #SVC_WRITE_ENDL
+; **** assignment statement (  15)
+                       PUSHA     SB:0D28
+;   16    END
+                       PUSH      SB:0D28
+;   17 END
+                       PUSH      #0D1
+;   18 
+                       ADDI      
+                       MAKEDUP   
+                       POP       @SP:0D2
+                       SWAP      
+                       DISCARD   #0D1
+                       DISCARD   #0D1
+                       JMP       D0020
+E0030                  EQU       *
                        RETURN    
 ; **** =========
-; **** END (   8)
+; **** END (  17)
 ; **** =========
 
 ;------------------------------------------------------------
@@ -68,10 +113,10 @@ PROGRAMBODY0010        EQU       *
 ;------------------------------------------------------------
 HANDLERUNTIMEERROR     EQU       *
                        SVC       #SVC_WRITE_ENDL
-                       PUSHA     SB:0D47
+                       PUSHA     SB:0D55
                        SVC       #SVC_WRITE_STRING
                        SVC       #SVC_WRITE_INTEGER
-                       PUSHA     SB:0D65
+                       PUSHA     SB:0D73
                        SVC       #SVC_WRITE_STRING
                        SVC       #SVC_WRITE_INTEGER
                        SVC       #SVC_WRITE_ENDL
@@ -83,8 +128,10 @@ HANDLERUNTIMEERROR     EQU       *
 ;------------------------------------------------------------
 STATICDATA             EQU       *
                        DS        "Normal program termination"
-                       DS        "EI"
-                       DS        "nal Aide 0017"
+                       RW        0D1                  ; i
+                       RW        0D1                  ; n
+                       DS        "n? "
+                       DS        "Arthur Daryl Hanna"
                        DS        "Run-time error #"
                        DS        " near line #"
 

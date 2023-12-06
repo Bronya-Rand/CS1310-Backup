@@ -27,7 +27,7 @@ SVC_DEALLOCATE_BLOCK   EQU       0D92
 ;    3 # Sample Hello World to Prometheus.
 ;    4 
 ;    5 Herrscher
-;    6     Speak "Hello Dr MEI",EndL >>
+;    6     Speak "Hello Dr. MEI. " >>
 ; **** =========
 ; **** PROGRAM module (   5)
 ; **** =========
@@ -47,13 +47,12 @@ PROGRAMMAIN            EQU       *
                        SVC       #SVC_TERMINATE
 
 PROGRAMBODY0010        EQU       *
+;    7     Speak "I am Terminal Aide 0017.", EndL >>
 ; **** PRINT statement (   6)
                        PUSHA     SB:0D28
                        SVC       #SVC_WRITE_STRING
-;    7     Speak "I am Terminal Aide 0017",EndL >>
-                       SVC       #SVC_WRITE_ENDL
 ; **** PRINT statement (   7)
-                       PUSHA     SB:0D32
+                       PUSHA     SB:0D45
                        SVC       #SVC_WRITE_STRING
 ;    8 Stop
 ;    9 
@@ -68,10 +67,10 @@ PROGRAMBODY0010        EQU       *
 ;------------------------------------------------------------
 HANDLERUNTIMEERROR     EQU       *
                        SVC       #SVC_WRITE_ENDL
-                       PUSHA     SB:0D47
+                       PUSHA     SB:0D71
                        SVC       #SVC_WRITE_STRING
                        SVC       #SVC_WRITE_INTEGER
-                       PUSHA     SB:0D65
+                       PUSHA     SB:0D89
                        SVC       #SVC_WRITE_STRING
                        SVC       #SVC_WRITE_INTEGER
                        SVC       #SVC_WRITE_ENDL
@@ -83,8 +82,8 @@ HANDLERUNTIMEERROR     EQU       *
 ;------------------------------------------------------------
 STATICDATA             EQU       *
                        DS        "Normal program termination"
-                       DS        "EI"
-                       DS        "nal Aide 0017"
+                       DS        "Hello Dr. MEI. "
+                       DS        "I am Terminal Aide 0017."
                        DS        "Run-time error #"
                        DS        " near line #"
 

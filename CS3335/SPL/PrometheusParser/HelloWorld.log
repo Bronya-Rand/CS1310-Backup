@@ -1,0 +1,189 @@
+Page   1  HelloWorld.hoyo
+
+    LC  Object    Line  Source Line
+------  --------  ----  -------------------------------------------------------------
+0X0000               1  ;--------------------------------------------------------------
+0X0000               2  ; HelloWorld.stm
+0X0000               3  ;--------------------------------------------------------------
+0X0000               4  ; SVC numbers
+0X0000               5  SVC_DONOTHING          EQU       0D0                  ; force context switch
+0X0000               6  SVC_TERMINATE          EQU       0D1
+0X0000               7  SVC_READ_INTEGER       EQU       0D10
+0X0000               8  SVC_WRITE_INTEGER      EQU       0D11
+0X0000               9  SVC_READ_FLOAT         EQU       0D20
+0X0000              10  SVC_WRITE_FLOAT        EQU       0D21
+0X0000              11  SVC_READ_BOOLEAN       EQU       0D30
+0X0000              12  SVC_WRITE_BOOLEAN      EQU       0D31
+0X0000              13  SVC_READ_CHARACTER     EQU       0D40
+0X0000              14  SVC_WRITE_CHARACTER    EQU       0D41
+0X0000              15  SVC_WRITE_ENDL         EQU       0D42
+0X0000              16  SVC_READ_STRING        EQU       0D50
+0X0000              17  SVC_WRITE_STRING       EQU       0D51
+0X0000              18  SVC_INITIALIZE_HEAP    EQU       0D90
+0X0000              19  SVC_ALLOCATE_BLOCK     EQU       0D91
+0X0000              20  SVC_DEALLOCATE_BLOCK   EQU       0D92
+0X0000              21  
+0X0000              22                         ORG       0X0000
+0X0000              23  
+0X0000  800003      24                         JMP       PROGRAMMAIN
+0X0003              25  ;    1 # HelloWorld.honkai
+0X0003              26  ;    2 # Weiss Del Carmen
+0X0003              27  ;    3 # Sample Hello World to Prometheus.
+0X0003              28  ;    4 
+0X0003              29  ;    5 Herrscher
+0X0003              30  ;    6     Speak "Hello Dr. MEI. " >>
+0X0003              31  ; **** =========
+0X0003              32  ; **** PROGRAM module (   5)
+0X0003              33  ; **** =========
+0X0003              34  PROGRAMMAIN            EQU       *
+0X0003  0100FFFE    35                         PUSH      #RUNTIMESTACK        ; set SP
+0X0007  0A          36                         POPSP     
+0X0008  0201005F    37                         PUSHA     STATICDATA           ; set SB
+0X000C  0C          38                         POPSB     
+0X000D  0100012D    39                         PUSH      #HEAPBASE            ; initialize heap
+0X0011  01001000    40                         PUSH      #HEAPSIZE
+0X0015  FF005A      41                         SVC       #SVC_INITIALIZE_HEAP
+0X0018  A0002C      42                         CALL      PROGRAMBODY0010
+0X001B  020A0000    43                         PUSHA     SB:0D0
+0X001F  FF0033      44                         SVC       #SVC_WRITE_STRING
+0X0022  FF002A      45                         SVC       #SVC_WRITE_ENDL
+0X0025  01000000    46                         PUSH      #0D0                 ; terminate with status = 0
+0X0029  FF0001      47                         SVC       #SVC_TERMINATE
+0X002C              48  
+0X002C              49  PROGRAMBODY0010        EQU       *
+0X002C              50  ;    7     Speak "I am Terminal Aide 0017.", EndL >>
+0X002C              51  ; **** PRINT statement (   6)
+0X002C  020A001C    52                         PUSHA     SB:0D28
+0X0030  FF0033      53                         SVC       #SVC_WRITE_STRING
+0X0033              54  ; **** PRINT statement (   7)
+0X0033  020A002D    55                         PUSHA     SB:0D45
+0X0037  FF0033      56                         SVC       #SVC_WRITE_STRING
+Page   2  HelloWorld.hoyo
+
+    LC  Object    Line  Source Line
+------  --------  ----  -------------------------------------------------------------
+0X003A              57  ;    8 Stop
+0X003A              58  ;    9 
+0X003A  FF002A      59                         SVC       #SVC_WRITE_ENDL
+0X003D  A1          60                         RETURN    
+0X003E              61  ; **** =========
+0X003E              62  ; **** END (   8)
+0X003E              63  ; **** =========
+0X003E              64  
+0X003E              65  ;------------------------------------------------------------
+0X003E              66  ; Issue "Run-time error #X..X near line #X..X" to handle run-time errors
+0X003E              67  ;------------------------------------------------------------
+0X003E              68  HANDLERUNTIMEERROR     EQU       *
+0X003E  FF002A      69                         SVC       #SVC_WRITE_ENDL
+0X0041  020A0047    70                         PUSHA     SB:0D71
+0X0045  FF0033      71                         SVC       #SVC_WRITE_STRING
+0X0048  FF000B      72                         SVC       #SVC_WRITE_INTEGER
+0X004B  020A0059    73                         PUSHA     SB:0D89
+0X004F  FF0033      74                         SVC       #SVC_WRITE_STRING
+0X0052  FF000B      75                         SVC       #SVC_WRITE_INTEGER
+0X0055  FF002A      76                         SVC       #SVC_WRITE_ENDL
+0X0058  01000001    77                         PUSH      #0D1
+0X005C  FF0001      78                         SVC       #SVC_TERMINATE
+0X005F              79  
+0X005F              80  ;------------------------------------------------------------
+0X005F              81  ; Static allocation of global data and PROGRAM module data
+0X005F              82  ;------------------------------------------------------------
+0X005F              83  STATICDATA             EQU       *
+0X005F  001A001A    84                         DS        "Normal program termination"
+0X0063  004E006F
+0X0067  0072006D
+0X006B  0061006C
+0X006F  00200070
+0X0073  0072006F
+0X0077  00670072
+0X007B  0061006D
+0X007F  00200074
+0X0083  00650072
+0X0087  006D0069
+0X008B  006E0061
+0X008F  00740069
+0X0093  006F006E
+0X0097  000F000F    85                         DS        "Hello Dr. MEI. "
+0X009B  00480065
+0X009F  006C006C
+0X00A3  006F0020
+0X00A7  00440072
+0X00AB  002E0020
+0X00AF  004D0045
+0X00B3  0049002E
+0X00B7  0020    
+0X00B9  00180018    86                         DS        "I am Terminal Aide 0017."
+0X00BD  00490020
+0X00C1  0061006D
+0X00C5  00200054
+0X00C9  00650072
+0X00CD  006D0069
+Page   3  HelloWorld.hoyo
+
+    LC  Object    Line  Source Line
+------  --------  ----  -------------------------------------------------------------
+0X00D1  006E0061
+0X00D5  006C0020
+0X00D9  00410069
+0X00DD  00640065
+0X00E1  00200030
+0X00E5  00300031
+0X00E9  0037002E
+0X00ED  00100010    87                         DS        "Run-time error #"
+0X00F1  00520075
+0X00F5  006E002D
+0X00F9  00740069
+0X00FD  006D0065
+0X0101  00200065
+0X0105  00720072
+0X0109  006F0072
+0X010D  00200023
+0X0111  000C000C    88                         DS        " near line #"
+0X0115  0020006E
+0X0119  00650061
+0X011D  00720020
+0X0121  006C0069
+0X0125  006E0065
+0X0129  00200023
+0X012D              89  
+0X012D              90  ;------------------------------------------------------------
+0X012D              91  ; Heap space for dynamic memory allocation (to support future SPL syntax)
+0X012D              92  ;------------------------------------------------------------
+0X012D              93  HEAPBASE               EQU       *
+0X012D              94  HEAPSIZE               EQU       0B0001000000000000   ; 8K bytes = 4K words
+0X012D              95  
+0X012D              96  ;------------------------------------------------------------
+0X012D              97  ; Run-time stack
+0X012D              98  ;------------------------------------------------------------
+0X012D              99  RUNTIMESTACK           EQU       0XFFFE
+
+
+  PC   SP TOS0 TOS1 TOS2 mnemonic  information
+---- ---- ---- ---- ---- --------- ----------------------------------------------
+0000 FFFE                 JMP       0X0003
+0003 FFFE                 PUSH      #memory[EA = 0X0005] = 0XFFFE
+0007 FFFC FFFE            POPSP     SP = 0XFFFE
+0008 FFFE                 PUSHA     memory[EA = 0X005F]
+000C FFFC 005F            POPSB     SB = 0X005F
+000D FFFE                 PUSH      #memory[EA = 0X000F] = 0X012D
+0011 FFFC 012D            PUSH      #memory[EA = 0X0013] = 0X1000
+-------------------------------------------------------------
+FREE nodes list
+   0X012D:0X112C(0X0FFC)
+-------------------------------------------------------------
+0015 FFFA 1000 012D       SVC       #90 initialize heap, heapBase = 0X012D, heapSize = 0X1000 words
+0018 FFFE                 CALL      0X002C return to 0X001B
+002C FFFC 001B            PUSHA     SB( 28) memory[EA = 0X0097]
+0030 FFFA 0097 001B       SVC       #51 write string
+0033 FFFC 001B            PUSHA     SB( 45) memory[EA = 0X00B9]
+0037 FFFA 00B9 001B       SVC       #51 write string
+Hello Dr. MEI. I am Terminal Aide 0017.
+003A FFFC 001B            SVC       #42 write ENDL
+003D FFFC 001B            RETURN    to 0X001B
+001B FFFE                 PUSHA     SB(  0) memory[EA = 0X005F]
+001F FFFC 005F            SVC       #51 write string
+Normal program termination
+0022 FFFE                 SVC       #42 write ENDL
+0025 FFFE                 PUSH      #memory[EA = 0X0027] = 0X0000
+0029 FFFC 0000            SVC       #1 terminate program with status 0, SP = 0XFFFE
+

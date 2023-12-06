@@ -6,14 +6,14 @@ Line Source Line
    3 # Sample Hello World to Prometheus.
    4 
    5 Herrscher
-   6     Speak "Hello. Dr. MEI." >>
+   6     Speak "Hello Dr MEI",EndL >>
 ===================================================================================================
 Contents of identifier table after compilation of global data definitions
   # Scope Data type Dimensions Type                       Reference            Lexeme
 --- ----- --------- ---------- -------------------------- -------------------- --------------------
 ===================================================================================================
-   7     Speak "I am Terminal Aide 0017." >>
 Begin nested scope #1, identifier table index = 0
+   7     Speak "I am Terminal Aide 0017",EndL >>
    8 Stop
    9 
 ===================================================================================================

@@ -1,0 +1,1033 @@
+Page   1  P4.hoyo
+
+    LC  Object    Line  Source Line
+------  --------  ----  -------------------------------------------------------------
+0X0000               1  ;--------------------------------------------------------------
+0X0000               2  ; P4.stm
+0X0000               3  ;--------------------------------------------------------------
+0X0000               4  ; SVC numbers
+0X0000               5  SVC_DONOTHING          EQU       0D0                  ; force context switch
+0X0000               6  SVC_TERMINATE          EQU       0D1
+0X0000               7  SVC_READ_INTEGER       EQU       0D10
+0X0000               8  SVC_WRITE_INTEGER      EQU       0D11
+0X0000               9  SVC_READ_FLOAT         EQU       0D20
+0X0000              10  SVC_WRITE_FLOAT        EQU       0D21
+0X0000              11  SVC_READ_BOOLEAN       EQU       0D30
+0X0000              12  SVC_WRITE_BOOLEAN      EQU       0D31
+0X0000              13  SVC_READ_CHARACTER     EQU       0D40
+0X0000              14  SVC_WRITE_CHARACTER    EQU       0D41
+0X0000              15  SVC_WRITE_ENDL         EQU       0D42
+0X0000              16  SVC_READ_STRING        EQU       0D50
+0X0000              17  SVC_WRITE_STRING       EQU       0D51
+0X0000              18  SVC_INITIALIZE_HEAP    EQU       0D90
+0X0000              19  SVC_ALLOCATE_BLOCK     EQU       0D91
+0X0000              20  SVC_DEALLOCATE_BLOCK   EQU       0D92
+0X0000              21  
+0X0000              22                         ORG       0X0000
+0X0000              23  
+0X0000  800003      24                         JMP       PROGRAMMAIN
+0X0003              25  ;    1 # P4.honkai
+0X0003              26  ;    2 # Weiss Del Carmen
+0X0003              27  ;    3 # Something Dr. Hanna did for some reason...
+0X0003              28  ;    4 
+0X0003              29  ;    5 Herrscher
+0X0003              30  ;    6 
+0X0003              31  ;    7 /*----------------------*/
+0X0003              32  ;    8 /* Arithmetic operators */
+0X0003              33  ;    9 /*----------------------*/
+0X0003              34  ;   10    Speak " 1 = ",1,EndL >>
+0X0003              35  ; **** =========
+0X0003              36  ; **** PROGRAM module (   5)
+0X0003              37  ; **** =========
+0X0003              38  PROGRAMMAIN            EQU       *
+0X0003  0100FFFE    39                         PUSH      #RUNTIMESTACK        ; set SP
+0X0007  0A          40                         POPSP     
+0X0008  02010365    41                         PUSHA     STATICDATA           ; set SB
+0X000C  0C          42                         POPSB     
+0X000D  01000741    43                         PUSH      #HEAPBASE            ; initialize heap
+0X0011  01001000    44                         PUSH      #HEAPSIZE
+0X0015  FF005A      45                         SVC       #SVC_INITIALIZE_HEAP
+0X0018  A0002C      46                         CALL      PROGRAMBODY0010
+0X001B  020A0000    47                         PUSHA     SB:0D0
+0X001F  FF0033      48                         SVC       #SVC_WRITE_STRING
+0X0022  FF002A      49                         SVC       #SVC_WRITE_ENDL
+0X0025  01000000    50                         PUSH      #0D0                 ; terminate with status = 0
+0X0029  FF0001      51                         SVC       #SVC_TERMINATE
+0X002C              52  
+0X002C              53  PROGRAMBODY0010        EQU       *
+0X002C              54  ; **** PRINT statement (  10)
+0X002C  020A001C    55                         PUSHA     SB:0D28
+0X0030  FF0033      56                         SVC       #SVC_WRITE_STRING
+Page   2  P4.hoyo
+
+    LC  Object    Line  Source Line
+------  --------  ----  -------------------------------------------------------------
+0X0033  01000001    57                         PUSH      #0D1
+0X0037              58  ;   11    Speak "+2 = ",+2,EndL >>
+0X0037  FF000B      59                         SVC       #SVC_WRITE_INTEGER
+0X003A  FF002A      60                         SVC       #SVC_WRITE_ENDL
+0X003D              61  ; **** PRINT statement (  11)
+0X003D  020A0023    62                         PUSHA     SB:0D35
+0X0041  FF0033      63                         SVC       #SVC_WRITE_STRING
+0X0044  01000002    64                         PUSH      #0D2
+0X0048              65  ;   12    Speak "-3 = ",-3,EndL >>
+0X0048  FF000B      66                         SVC       #SVC_WRITE_INTEGER
+0X004B  FF002A      67                         SVC       #SVC_WRITE_ENDL
+0X004E              68  ; **** PRINT statement (  12)
+0X004E  020A002A    69                         PUSHA     SB:0D42
+0X0052  FF0033      70                         SVC       #SVC_WRITE_STRING
+0X0055  01000003    71                         PUSH      #0D3
+0X0059              72  ;   13    Speak "Nneg 2 = ",Nneg 2,EndL >>
+0X0059  2B          73                         NEGI      
+0X005A  FF000B      74                         SVC       #SVC_WRITE_INTEGER
+0X005D  FF002A      75                         SVC       #SVC_WRITE_ENDL
+0X0060              76  ; **** PRINT statement (  13)
+0X0060  020A0031    77                         PUSHA     SB:0D49
+0X0064  FF0033      78                         SVC       #SVC_WRITE_STRING
+0X0067  01000002    79                         PUSH      #0D2
+0X006B              80  ;   14    Speak "Nneg(-3) = ",Nneg(-3),EndL >>
+0X006B  72          81                         SETNZPI   
+0X006C  880070      82                         JMPNN     E0020
+0X006F  2B          83                         NEGI      
+0X0070              84  E0020                  EQU       *
+0X0070  FF000B      85                         SVC       #SVC_WRITE_INTEGER
+0X0073  FF002A      86                         SVC       #SVC_WRITE_ENDL
+0X0076              87  ; **** PRINT statement (  14)
+0X0076  020A003C    88                         PUSHA     SB:0D60
+0X007A  FF0033      89                         SVC       #SVC_WRITE_STRING
+0X007D  01000003    90                         PUSH      #0D3
+0X0081  2B          91                         NEGI      
+0X0082              92  ;   15    Speak "4+5 = ",(4+5),EndL >>
+0X0082  72          93                         SETNZPI   
+0X0083  880087      94                         JMPNN     E0030
+0X0086  2B          95                         NEGI      
+0X0087              96  E0030                  EQU       *
+0X0087  FF000B      97                         SVC       #SVC_WRITE_INTEGER
+0X008A  FF002A      98                         SVC       #SVC_WRITE_ENDL
+0X008D              99  ; **** PRINT statement (  15)
+0X008D  020A0049   100                         PUSHA     SB:0D73
+0X0091  FF0033     101                         SVC       #SVC_WRITE_STRING
+0X0094  01000004   102                         PUSH      #0D4
+0X0098  01000005   103                         PUSH      #0D5
+0X009C  20         104                         ADDI      
+0X009D             105  ;   16    Speak "5-4 = ",5-4,EndL >>
+0X009D  FF000B     106                         SVC       #SVC_WRITE_INTEGER
+0X00A0  FF002A     107                         SVC       #SVC_WRITE_ENDL
+0X00A3             108  ; **** PRINT statement (  16)
+0X00A3  020A0051   109                         PUSHA     SB:0D81
+0X00A7  FF0033     110                         SVC       #SVC_WRITE_STRING
+0X00AA  01000005   111                         PUSH      #0D5
+0X00AE  01000004   112                         PUSH      #0D4
+Page   3  P4.hoyo
+
+    LC  Object    Line  Source Line
+------  --------  ----  -------------------------------------------------------------
+0X00B2             113  ;   17    Speak "6*7 = ",6*7,EndL >>
+0X00B2  22         114                         SUBI      
+0X00B3  FF000B     115                         SVC       #SVC_WRITE_INTEGER
+0X00B6  FF002A     116                         SVC       #SVC_WRITE_ENDL
+0X00B9             117  ; **** PRINT statement (  17)
+0X00B9  020A0059   118                         PUSHA     SB:0D89
+0X00BD  FF0033     119                         SVC       #SVC_WRITE_STRING
+0X00C0  01000006   120                         PUSH      #0D6
+0X00C4  01000007   121                         PUSH      #0D7
+0X00C8             122  ;   18    Speak "7/4 = ",7/4,EndL >>
+0X00C8  24         123                         MULI      
+0X00C9  FF000B     124                         SVC       #SVC_WRITE_INTEGER
+0X00CC  FF002A     125                         SVC       #SVC_WRITE_ENDL
+0X00CF             126  ; **** PRINT statement (  18)
+0X00CF  020A0061   127                         PUSHA     SB:0D97
+0X00D3  FF0033     128                         SVC       #SVC_WRITE_STRING
+0X00D6  01000007   129                         PUSH      #0D7
+0X00DA  01000004   130                         PUSH      #0D4
+0X00DE             131  ;   19    Speak "7%4 = ",7%4,EndL >>
+0X00DE  26         132                         DIVI      
+0X00DF  FF000B     133                         SVC       #SVC_WRITE_INTEGER
+0X00E2  FF002A     134                         SVC       #SVC_WRITE_ENDL
+0X00E5             135  ; **** PRINT statement (  19)
+0X00E5  020A0069   136                         PUSHA     SB:0D105
+0X00E9  FF0033     137                         SVC       #SVC_WRITE_STRING
+0X00EC  01000007   138                         PUSH      #0D7
+0X00F0  01000004   139                         PUSH      #0D4
+0X00F4             140  ;   20    Speak "2^3 = ",2^3,EndL >>
+0X00F4  28         141                         REMI      
+0X00F5  FF000B     142                         SVC       #SVC_WRITE_INTEGER
+0X00F8  FF002A     143                         SVC       #SVC_WRITE_ENDL
+0X00FB             144  ; **** PRINT statement (  20)
+0X00FB  020A0071   145                         PUSHA     SB:0D113
+0X00FF  FF0033     146                         SVC       #SVC_WRITE_STRING
+0X0102  01000002   147                         PUSH      #0D2
+0X0106  01000003   148                         PUSH      #0D3
+0X010A             149  ;   21    Speak "2^(3**2) = ",2^(3**2),EndL >>
+0X010A  29         150                         POWI      
+0X010B  FF000B     151                         SVC       #SVC_WRITE_INTEGER
+0X010E  FF002A     152                         SVC       #SVC_WRITE_ENDL
+0X0111             153  ; **** PRINT statement (  21)
+0X0111  020A0079   154                         PUSHA     SB:0D121
+0X0115  FF0033     155                         SVC       #SVC_WRITE_STRING
+0X0118  01000002   156                         PUSH      #0D2
+0X011C  01000003   157                         PUSH      #0D3
+0X0120  01000002   158                         PUSH      #0D2
+0X0124  29         159                         POWI      
+0X0125             160  ;   22    Speak "(2**3)^2 = ",(2**3)^2,EndL >>
+0X0125  29         161                         POWI      
+0X0126  FF000B     162                         SVC       #SVC_WRITE_INTEGER
+0X0129  FF002A     163                         SVC       #SVC_WRITE_ENDL
+0X012C             164  ; **** PRINT statement (  22)
+0X012C  020A0086   165                         PUSHA     SB:0D134
+0X0130  FF0033     166                         SVC       #SVC_WRITE_STRING
+0X0133  01000002   167                         PUSH      #0D2
+0X0137  01000003   168                         PUSH      #0D3
+Page   4  P4.hoyo
+
+    LC  Object    Line  Source Line
+------  --------  ----  -------------------------------------------------------------
+0X013B  29         169                         POWI      
+0X013C  01000002   170                         PUSH      #0D2
+0X0140             171  ;   23 
+0X0140             172  ;   24 /*----------------------*/
+0X0140  29         173                         POWI      
+0X0141  FF000B     174                         SVC       #SVC_WRITE_INTEGER
+0X0144             175  ;   25 /* Comparison operators */
+0X0144             176  ;   26 /*----------------------*/
+0X0144             177  ;   27    Speak "1  < 2 = ",1  < 2,EndL >>
+0X0144  FF002A     178                         SVC       #SVC_WRITE_ENDL
+0X0147             179  ; **** PRINT statement (  27)
+0X0147  020A0093   180                         PUSHA     SB:0D147
+0X014B  FF0033     181                         SVC       #SVC_WRITE_STRING
+0X014E  01000001   182                         PUSH      #0D1
+0X0152  01000002   183                         PUSH      #0D2
+0X0156             184  ;   28    Speak "1  = 2 = ",1  = 2,EndL >>
+0X0156  70         185                         CMPI      
+0X0157  810161     186                         JMPL      T0040
+0X015A  01000000   187                         PUSH      #0X0000
+0X015E  800165     188                         JMP       E0050
+0X0161  0100FFFF   189  T0040                  PUSH      #0XFFFF
+0X0165             190  E0050                  EQU       *
+0X0165  FF001F     191                         SVC       #SVC_WRITE_BOOLEAN
+0X0168  FF002A     192                         SVC       #SVC_WRITE_ENDL
+0X016B             193  ; **** PRINT statement (  28)
+0X016B  020A009E   194                         PUSHA     SB:0D158
+0X016F  FF0033     195                         SVC       #SVC_WRITE_STRING
+0X0172  01000001   196                         PUSH      #0D1
+0X0176  01000002   197                         PUSH      #0D2
+0X017A             198  ;   29    Speak "1 <= 2 = ",1 <= 2,EndL >>
+0X017A  70         199                         CMPI      
+0X017B  820185     200                         JMPE      T0060
+0X017E  01000000   201                         PUSH      #0X0000
+0X0182  800189     202                         JMP       E0070
+0X0185  0100FFFF   203  T0060                  PUSH      #0XFFFF
+0X0189             204  E0070                  EQU       *
+0X0189  FF001F     205                         SVC       #SVC_WRITE_BOOLEAN
+0X018C  FF002A     206                         SVC       #SVC_WRITE_ENDL
+0X018F             207  ; **** PRINT statement (  29)
+0X018F  020A00A9   208                         PUSHA     SB:0D169
+0X0193  FF0033     209                         SVC       #SVC_WRITE_STRING
+0X0196  01000001   210                         PUSH      #0D1
+0X019A  01000002   211                         PUSH      #0D2
+0X019E             212  ;   30    Speak "1  > 2 = ",1  > 2,EndL >>
+0X019E  70         213                         CMPI      
+0X019F  8401A9     214                         JMPLE     T0080
+0X01A2  01000000   215                         PUSH      #0X0000
+0X01A6  8001AD     216                         JMP       E0090
+0X01A9  0100FFFF   217  T0080                  PUSH      #0XFFFF
+0X01AD             218  E0090                  EQU       *
+0X01AD  FF001F     219                         SVC       #SVC_WRITE_BOOLEAN
+0X01B0  FF002A     220                         SVC       #SVC_WRITE_ENDL
+0X01B3             221  ; **** PRINT statement (  30)
+0X01B3  020A00B4   222                         PUSHA     SB:0D180
+0X01B7  FF0033     223                         SVC       #SVC_WRITE_STRING
+0X01BA  01000001   224                         PUSH      #0D1
+Page   5  P4.hoyo
+
+    LC  Object    Line  Source Line
+------  --------  ----  -------------------------------------------------------------
+0X01BE  01000002   225                         PUSH      #0D2
+0X01C2             226  ;   31    Speak "1 != 2 = ",1 != 2,EndL >>
+0X01C2  70         227                         CMPI      
+0X01C3  8301CD     228                         JMPG      T0100
+0X01C6  01000000   229                         PUSH      #0X0000
+0X01CA  8001D1     230                         JMP       E0110
+0X01CD  0100FFFF   231  T0100                  PUSH      #0XFFFF
+0X01D1             232  E0110                  EQU       *
+0X01D1  FF001F     233                         SVC       #SVC_WRITE_BOOLEAN
+0X01D4  FF002A     234                         SVC       #SVC_WRITE_ENDL
+0X01D7             235  ; **** PRINT statement (  31)
+0X01D7  020A00BF   236                         PUSHA     SB:0D191
+0X01DB  FF0033     237                         SVC       #SVC_WRITE_STRING
+0X01DE  01000001   238                         PUSH      #0D1
+0X01E2  01000002   239                         PUSH      #0D2
+0X01E6             240  ;   32    Speak "1 <> 2 = ",1 <> 2,EndL >>
+0X01E6  70         241                         CMPI      
+0X01E7  8501F1     242                         JMPNE     T0120
+0X01EA  01000000   243                         PUSH      #0X0000
+0X01EE  8001F5     244                         JMP       E0130
+0X01F1  0100FFFF   245  T0120                  PUSH      #0XFFFF
+0X01F5             246  E0130                  EQU       *
+0X01F5  FF001F     247                         SVC       #SVC_WRITE_BOOLEAN
+0X01F8  FF002A     248                         SVC       #SVC_WRITE_ENDL
+0X01FB             249  ; **** PRINT statement (  32)
+0X01FB  020A00CA   250                         PUSHA     SB:0D202
+0X01FF  FF0033     251                         SVC       #SVC_WRITE_STRING
+0X0202  01000001   252                         PUSH      #0D1
+0X0206  01000002   253                         PUSH      #0D2
+0X020A             254  ;   33    Speak "1 >= 2 = ",1 >= 2,EndL >>
+0X020A  70         255                         CMPI      
+0X020B  850215     256                         JMPNE     T0140
+0X020E  01000000   257                         PUSH      #0X0000
+0X0212  800219     258                         JMP       E0150
+0X0215  0100FFFF   259  T0140                  PUSH      #0XFFFF
+0X0219             260  E0150                  EQU       *
+0X0219  FF001F     261                         SVC       #SVC_WRITE_BOOLEAN
+0X021C  FF002A     262                         SVC       #SVC_WRITE_ENDL
+0X021F             263  ; **** PRINT statement (  33)
+0X021F  020A00D5   264                         PUSHA     SB:0D213
+0X0223  FF0033     265                         SVC       #SVC_WRITE_STRING
+0X0226  01000001   266                         PUSH      #0D1
+0X022A  01000002   267                         PUSH      #0D2
+0X022E             268  ;   34 
+0X022E             269  ;   35 /*----------------------*/
+0X022E  70         270                         CMPI      
+0X022F  860239     271                         JMPGE     T0160
+0X0232  01000000   272                         PUSH      #0X0000
+0X0236  80023D     273                         JMP       E0170
+0X0239  0100FFFF   274  T0160                  PUSH      #0XFFFF
+0X023D             275  E0170                  EQU       *
+0X023D  FF001F     276                         SVC       #SVC_WRITE_BOOLEAN
+0X0240             277  ;   36 /* Logical operators    */
+0X0240             278  ;   37 /*----------------------*/
+0X0240             279  ;   38    Speak " True   OR  True = ", True   OR  True,EndL >>
+0X0240  FF002A     280                         SVC       #SVC_WRITE_ENDL
+Page   6  P4.hoyo
+
+    LC  Object    Line  Source Line
+------  --------  ----  -------------------------------------------------------------
+0X0243             281  ; **** PRINT statement (  38)
+0X0243  020A00E0   282                         PUSHA     SB:0D224
+0X0247  FF0033     283                         SVC       #SVC_WRITE_STRING
+0X024A  0100FFFF   284                         PUSH      #0XFFFF
+0X024E  0100FFFF   285                         PUSH      #0XFFFF
+0X0252             286  ;   39    Speak " True   OR False = ", True   OR False,EndL >>
+0X0252  2F         287                         OR        
+0X0253  FF001F     288                         SVC       #SVC_WRITE_BOOLEAN
+0X0256  FF002A     289                         SVC       #SVC_WRITE_ENDL
+0X0259             290  ; **** PRINT statement (  39)
+0X0259  020A00F5   291                         PUSHA     SB:0D245
+0X025D  FF0033     292                         SVC       #SVC_WRITE_STRING
+0X0260  0100FFFF   293                         PUSH      #0XFFFF
+0X0264  01000000   294                         PUSH      #0X0000
+0X0268             295  ;   40    Speak "False  NOR  True = ",False  NOR  True,EndL >>
+0X0268  2F         296                         OR        
+0X0269  FF001F     297                         SVC       #SVC_WRITE_BOOLEAN
+0X026C  FF002A     298                         SVC       #SVC_WRITE_ENDL
+0X026F             299  ; **** PRINT statement (  40)
+0X026F  020A010A   300                         PUSHA     SB:0D266
+0X0273  FF0033     301                         SVC       #SVC_WRITE_STRING
+0X0276  01000000   302                         PUSH      #0X0000
+0X027A  0100FFFF   303                         PUSH      #0XFFFF
+0X027E             304  ;   41    Speak "False  NOR False = ",False  NOR False,EndL >>
+0X027E  30         305                         NOR       
+0X027F  FF001F     306                         SVC       #SVC_WRITE_BOOLEAN
+0X0282  FF002A     307                         SVC       #SVC_WRITE_ENDL
+0X0285             308  ; **** PRINT statement (  41)
+0X0285  020A011F   309                         PUSHA     SB:0D287
+0X0289  FF0033     310                         SVC       #SVC_WRITE_STRING
+0X028C  01000000   311                         PUSH      #0X0000
+0X0290  01000000   312                         PUSH      #0X0000
+0X0294             313  ;   42    Speak " True  XOR  True = ", True  XOR  True,EndL >>
+0X0294  30         314                         NOR       
+0X0295  FF001F     315                         SVC       #SVC_WRITE_BOOLEAN
+0X0298  FF002A     316                         SVC       #SVC_WRITE_ENDL
+0X029B             317  ; **** PRINT statement (  42)
+0X029B  020A0134   318                         PUSHA     SB:0D308
+0X029F  FF0033     319                         SVC       #SVC_WRITE_STRING
+0X02A2  0100FFFF   320                         PUSH      #0XFFFF
+0X02A6  0100FFFF   321                         PUSH      #0XFFFF
+0X02AA             322  ;   43    Speak "False  XOR False = ",False  XOR False,EndL >>
+0X02AA  31         323                         XOR       
+0X02AB  FF001F     324                         SVC       #SVC_WRITE_BOOLEAN
+0X02AE  FF002A     325                         SVC       #SVC_WRITE_ENDL
+0X02B1             326  ; **** PRINT statement (  43)
+0X02B1  020A0149   327                         PUSHA     SB:0D329
+0X02B5  FF0033     328                         SVC       #SVC_WRITE_STRING
+0X02B8  01000000   329                         PUSH      #0X0000
+0X02BC  01000000   330                         PUSH      #0X0000
+0X02C0             331  ;   44 
+0X02C0             332  ;   45    Speak " True  AND  True = ", True  AND  True,EndL >>
+0X02C0  31         333                         XOR       
+0X02C1  FF001F     334                         SVC       #SVC_WRITE_BOOLEAN
+0X02C4  FF002A     335                         SVC       #SVC_WRITE_ENDL
+0X02C7             336  ; **** PRINT statement (  45)
+Page   7  P4.hoyo
+
+    LC  Object    Line  Source Line
+------  --------  ----  -------------------------------------------------------------
+0X02C7  020A015E   337                         PUSHA     SB:0D350
+0X02CB  FF0033     338                         SVC       #SVC_WRITE_STRING
+0X02CE  0100FFFF   339                         PUSH      #0XFFFF
+0X02D2  0100FFFF   340                         PUSH      #0XFFFF
+0X02D6             341  ;   46    Speak " True  AND False = ", True  AND False,EndL >>
+0X02D6  2D         342                         AND       
+0X02D7  FF001F     343                         SVC       #SVC_WRITE_BOOLEAN
+0X02DA  FF002A     344                         SVC       #SVC_WRITE_ENDL
+0X02DD             345  ; **** PRINT statement (  46)
+0X02DD  020A0173   346                         PUSHA     SB:0D371
+0X02E1  FF0033     347                         SVC       #SVC_WRITE_STRING
+0X02E4  0100FFFF   348                         PUSH      #0XFFFF
+0X02E8  01000000   349                         PUSH      #0X0000
+0X02EC             350  ;   47    Speak "False NAND  True = ",False NAND  True,EndL >>
+0X02EC  2D         351                         AND       
+0X02ED  FF001F     352                         SVC       #SVC_WRITE_BOOLEAN
+0X02F0  FF002A     353                         SVC       #SVC_WRITE_ENDL
+0X02F3             354  ; **** PRINT statement (  47)
+0X02F3  020A0188   355                         PUSHA     SB:0D392
+0X02F7  FF0033     356                         SVC       #SVC_WRITE_STRING
+0X02FA  01000000   357                         PUSH      #0X0000
+0X02FE  0100FFFF   358                         PUSH      #0XFFFF
+0X0302             359  ;   48    Speak "False NAND False = ",False NAND False,EndL >>
+0X0302  2E         360                         NAND      
+0X0303  FF001F     361                         SVC       #SVC_WRITE_BOOLEAN
+0X0306  FF002A     362                         SVC       #SVC_WRITE_ENDL
+0X0309             363  ; **** PRINT statement (  48)
+0X0309  020A019D   364                         PUSHA     SB:0D413
+0X030D  FF0033     365                         SVC       #SVC_WRITE_STRING
+0X0310  01000000   366                         PUSH      #0X0000
+0X0314  01000000   367                         PUSH      #0X0000
+0X0318             368  ;   49 
+0X0318             369  ;   50    Speak "NOT False = ",NOT False,EndL >>
+0X0318  2E         370                         NAND      
+0X0319  FF001F     371                         SVC       #SVC_WRITE_BOOLEAN
+0X031C  FF002A     372                         SVC       #SVC_WRITE_ENDL
+0X031F             373  ; **** PRINT statement (  50)
+0X031F  020A01B2   374                         PUSHA     SB:0D434
+0X0323  FF0033     375                         SVC       #SVC_WRITE_STRING
+0X0326  01000000   376                         PUSH      #0X0000
+0X032A             377  ;   51    Speak "NOT  True = ",NOT  True,EndL >>
+0X032A  33         378                         NOT       
+0X032B  FF001F     379                         SVC       #SVC_WRITE_BOOLEAN
+0X032E  FF002A     380                         SVC       #SVC_WRITE_ENDL
+0X0331             381  ; **** PRINT statement (  51)
+0X0331  020A01C0   382                         PUSHA     SB:0D448
+0X0335  FF0033     383                         SVC       #SVC_WRITE_STRING
+0X0338  0100FFFF   384                         PUSH      #0XFFFF
+0X033C             385  ;   52 
+0X033C             386  ;   53 Stop
+0X033C  33         387                         NOT       
+0X033D  FF001F     388                         SVC       #SVC_WRITE_BOOLEAN
+0X0340             389  ;   54 
+0X0340  FF002A     390                         SVC       #SVC_WRITE_ENDL
+0X0343  A1         391                         RETURN    
+0X0344             392  ; **** =========
+Page   8  P4.hoyo
+
+    LC  Object    Line  Source Line
+------  --------  ----  -------------------------------------------------------------
+0X0344             393  ; **** END (  53)
+0X0344             394  ; **** =========
+0X0344             395  
+0X0344             396  ;------------------------------------------------------------
+0X0344             397  ; Issue "Run-time error #X..X near line #X..X" to handle run-time errors
+0X0344             398  ;------------------------------------------------------------
+0X0344             399  HANDLERUNTIMEERROR     EQU       *
+0X0344  FF002A     400                         SVC       #SVC_WRITE_ENDL
+0X0347  020A01CE   401                         PUSHA     SB:0D462
+0X034B  FF0033     402                         SVC       #SVC_WRITE_STRING
+0X034E  FF000B     403                         SVC       #SVC_WRITE_INTEGER
+0X0351  020A01E0   404                         PUSHA     SB:0D480
+0X0355  FF0033     405                         SVC       #SVC_WRITE_STRING
+0X0358  FF000B     406                         SVC       #SVC_WRITE_INTEGER
+0X035B  FF002A     407                         SVC       #SVC_WRITE_ENDL
+0X035E  01000001   408                         PUSH      #0D1
+0X0362  FF0001     409                         SVC       #SVC_TERMINATE
+0X0365             410  
+0X0365             411  ;------------------------------------------------------------
+0X0365             412  ; Static allocation of global data and PROGRAM module data
+0X0365             413  ;------------------------------------------------------------
+0X0365             414  STATICDATA             EQU       *
+0X0365  001A001A   415                         DS        "Normal program termination"
+0X0369  004E006F
+0X036D  0072006D
+0X0371  0061006C
+0X0375  00200070
+0X0379  0072006F
+0X037D  00670072
+0X0381  0061006D
+0X0385  00200074
+0X0389  00650072
+0X038D  006D0069
+0X0391  006E0061
+0X0395  00740069
+0X0399  006F006E
+0X039D  00050005   416                         DS        " 1 = "
+0X03A1  00200031
+0X03A5  0020003D
+0X03A9  0020    
+0X03AB  00050005   417                         DS        "+2 = "
+0X03AF  002B0032
+0X03B3  0020003D
+0X03B7  0020    
+0X03B9  00050005   418                         DS        "-3 = "
+0X03BD  002D0033
+0X03C1  0020003D
+0X03C5  0020    
+0X03C7  00090009   419                         DS        "Nneg 2 = "
+0X03CB  004E006E
+0X03CF  00650067
+0X03D3  00200032
+0X03D7  0020003D
+0X03DB  0020    
+0X03DD  000B000B   420                         DS        "Nneg(-3) = "
+0X03E1  004E006E
+Page   9  P4.hoyo
+
+    LC  Object    Line  Source Line
+------  --------  ----  -------------------------------------------------------------
+0X03E5  00650067
+0X03E9  0028002D
+0X03ED  00330029
+0X03F1  0020003D
+0X03F5  0020    
+0X03F7  00060006   421                         DS        "4+5 = "
+0X03FB  0034002B
+0X03FF  00350020
+0X0403  003D0020
+0X0407  00060006   422                         DS        "5-4 = "
+0X040B  0035002D
+0X040F  00340020
+0X0413  003D0020
+0X0417  00060006   423                         DS        "6*7 = "
+0X041B  0036002A
+0X041F  00370020
+0X0423  003D0020
+0X0427  00060006   424                         DS        "7/4 = "
+0X042B  0037002F
+0X042F  00340020
+0X0433  003D0020
+0X0437  00060006   425                         DS        "7%4 = "
+0X043B  00370025
+0X043F  00340020
+0X0443  003D0020
+0X0447  00060006   426                         DS        "2^3 = "
+0X044B  0032005E
+0X044F  00330020
+0X0453  003D0020
+0X0457  000B000B   427                         DS        "2^(3**2) = "
+0X045B  0032005E
+0X045F  00280033
+0X0463  002A002A
+0X0467  00320029
+0X046B  0020003D
+0X046F  0020    
+0X0471  000B000B   428                         DS        "(2**3)^2 = "
+0X0475  00280032
+0X0479  002A002A
+0X047D  00330029
+0X0481  005E0032
+0X0485  0020003D
+0X0489  0020    
+0X048B  00090009   429                         DS        "1  < 2 = "
+0X048F  00310020
+0X0493  0020003C
+0X0497  00200032
+0X049B  0020003D
+0X049F  0020    
+0X04A1  00090009   430                         DS        "1  = 2 = "
+0X04A5  00310020
+0X04A9  0020003D
+0X04AD  00200032
+0X04B1  0020003D
+0X04B5  0020    
+0X04B7  00090009   431                         DS        "1 <= 2 = "
+Page  10  P4.hoyo
+
+    LC  Object    Line  Source Line
+------  --------  ----  -------------------------------------------------------------
+0X04BB  00310020
+0X04BF  003C003D
+0X04C3  00200032
+0X04C7  0020003D
+0X04CB  0020    
+0X04CD  00090009   432                         DS        "1  > 2 = "
+0X04D1  00310020
+0X04D5  0020003E
+0X04D9  00200032
+0X04DD  0020003D
+0X04E1  0020    
+0X04E3  00090009   433                         DS        "1 != 2 = "
+0X04E7  00310020
+0X04EB  0021003D
+0X04EF  00200032
+0X04F3  0020003D
+0X04F7  0020    
+0X04F9  00090009   434                         DS        "1 <> 2 = "
+0X04FD  00310020
+0X0501  003C003E
+0X0505  00200032
+0X0509  0020003D
+0X050D  0020    
+0X050F  00090009   435                         DS        "1 >= 2 = "
+0X0513  00310020
+0X0517  003E003D
+0X051B  00200032
+0X051F  0020003D
+0X0523  0020    
+0X0525  00130013   436                         DS        " True   OR  True = "
+0X0529  00200054
+0X052D  00720075
+0X0531  00650020
+0X0535  00200020
+0X0539  004F0052
+0X053D  00200020
+0X0541  00540072
+0X0545  00750065
+0X0549  0020003D
+0X054D  0020    
+0X054F  00130013   437                         DS        " True   OR False = "
+0X0553  00200054
+0X0557  00720075
+0X055B  00650020
+0X055F  00200020
+0X0563  004F0052
+0X0567  00200046
+0X056B  0061006C
+0X056F  00730065
+0X0573  0020003D
+0X0577  0020    
+0X0579  00130013   438                         DS        "False  NOR  True = "
+0X057D  00460061
+0X0581  006C0073
+0X0585  00650020
+0X0589  0020004E
+Page  11  P4.hoyo
+
+    LC  Object    Line  Source Line
+------  --------  ----  -------------------------------------------------------------
+0X058D  004F0052
+0X0591  00200020
+0X0595  00540072
+0X0599  00750065
+0X059D  0020003D
+0X05A1  0020    
+0X05A3  00130013   439                         DS        "False  NOR False = "
+0X05A7  00460061
+0X05AB  006C0073
+0X05AF  00650020
+0X05B3  0020004E
+0X05B7  004F0052
+0X05BB  00200046
+0X05BF  0061006C
+0X05C3  00730065
+0X05C7  0020003D
+0X05CB  0020    
+0X05CD  00130013   440                         DS        " True  XOR  True = "
+0X05D1  00200054
+0X05D5  00720075
+0X05D9  00650020
+0X05DD  00200058
+0X05E1  004F0052
+0X05E5  00200020
+0X05E9  00540072
+0X05ED  00750065
+0X05F1  0020003D
+0X05F5  0020    
+0X05F7  00130013   441                         DS        "False  XOR False = "
+0X05FB  00460061
+0X05FF  006C0073
+0X0603  00650020
+0X0607  00200058
+0X060B  004F0052
+0X060F  00200046
+0X0613  0061006C
+0X0617  00730065
+0X061B  0020003D
+0X061F  0020    
+0X0621  00130013   442                         DS        " True  AND  True = "
+0X0625  00200054
+0X0629  00720075
+0X062D  00650020
+0X0631  00200041
+0X0635  004E0044
+0X0639  00200020
+0X063D  00540072
+0X0641  00750065
+0X0645  0020003D
+0X0649  0020    
+0X064B  00130013   443                         DS        " True  AND False = "
+0X064F  00200054
+0X0653  00720075
+0X0657  00650020
+0X065B  00200041
+0X065F  004E0044
+Page  12  P4.hoyo
+
+    LC  Object    Line  Source Line
+------  --------  ----  -------------------------------------------------------------
+0X0663  00200046
+0X0667  0061006C
+0X066B  00730065
+0X066F  0020003D
+0X0673  0020    
+0X0675  00130013   444                         DS        "False NAND  True = "
+0X0679  00460061
+0X067D  006C0073
+0X0681  00650020
+0X0685  004E0041
+0X0689  004E0044
+0X068D  00200020
+0X0691  00540072
+0X0695  00750065
+0X0699  0020003D
+0X069D  0020    
+0X069F  00130013   445                         DS        "False NAND False = "
+0X06A3  00460061
+0X06A7  006C0073
+0X06AB  00650020
+0X06AF  004E0041
+0X06B3  004E0044
+0X06B7  00200046
+0X06BB  0061006C
+0X06BF  00730065
+0X06C3  0020003D
+0X06C7  0020    
+0X06C9  000C000C   446                         DS        "NOT False = "
+0X06CD  004E004F
+0X06D1  00540020
+0X06D5  00460061
+0X06D9  006C0073
+0X06DD  00650020
+0X06E1  003D0020
+0X06E5  000C000C   447                         DS        "NOT  True = "
+0X06E9  004E004F
+0X06ED  00540020
+0X06F1  00200054
+0X06F5  00720075
+0X06F9  00650020
+0X06FD  003D0020
+0X0701  00100010   448                         DS        "Run-time error #"
+0X0705  00520075
+0X0709  006E002D
+0X070D  00740069
+0X0711  006D0065
+0X0715  00200065
+0X0719  00720072
+0X071D  006F0072
+0X0721  00200023
+0X0725  000C000C   449                         DS        " near line #"
+0X0729  0020006E
+0X072D  00650061
+0X0731  00720020
+0X0735  006C0069
+0X0739  006E0065
+Page  13  P4.hoyo
+
+    LC  Object    Line  Source Line
+------  --------  ----  -------------------------------------------------------------
+0X073D  00200023
+0X0741             450  
+0X0741             451  ;------------------------------------------------------------
+0X0741             452  ; Heap space for dynamic memory allocation (to support future SPL syntax)
+0X0741             453  ;------------------------------------------------------------
+0X0741             454  HEAPBASE               EQU       *
+0X0741             455  HEAPSIZE               EQU       0B0001000000000000   ; 8K bytes = 4K words
+0X0741             456  
+0X0741             457  ;------------------------------------------------------------
+0X0741             458  ; Run-time stack
+0X0741             459  ;------------------------------------------------------------
+0X0741             460  RUNTIMESTACK           EQU       0XFFFE
+
+
+  PC   SP TOS0 TOS1 TOS2 mnemonic  information
+---- ---- ---- ---- ---- --------- ----------------------------------------------
+0000 FFFE                 JMP       0X0003
+0003 FFFE                 PUSH      #memory[EA = 0X0005] = 0XFFFE
+0007 FFFC FFFE            POPSP     SP = 0XFFFE
+0008 FFFE                 PUSHA     memory[EA = 0X0365]
+000C FFFC 0365            POPSB     SB = 0X0365
+000D FFFE                 PUSH      #memory[EA = 0X000F] = 0X0741
+0011 FFFC 0741            PUSH      #memory[EA = 0X0013] = 0X1000
+-------------------------------------------------------------
+FREE nodes list
+   0X0741:0X1740(0X0FFC)
+-------------------------------------------------------------
+0015 FFFA 1000 0741       SVC       #90 initialize heap, heapBase = 0X0741, heapSize = 0X1000 words
+0018 FFFE                 CALL      0X002C return to 0X001B
+002C FFFC 001B            PUSHA     SB( 28) memory[EA = 0X039D]
+0030 FFFA 039D 001B       SVC       #51 write string
+0033 FFFC 001B            PUSH      #memory[EA = 0X0035] = 0X0001
+0037 FFFA 0001 001B       SVC       #11 write integer
+ 1 = 1
+003A FFFC 001B            SVC       #42 write ENDL
+003D FFFC 001B            PUSHA     SB( 35) memory[EA = 0X03AB]
+0041 FFFA 03AB 001B       SVC       #51 write string
+0044 FFFC 001B            PUSH      #memory[EA = 0X0046] = 0X0002
+0048 FFFA 0002 001B       SVC       #11 write integer
++2 = 2
+004B FFFC 001B            SVC       #42 write ENDL
+004E FFFC 001B            PUSHA     SB( 42) memory[EA = 0X03B9]
+0052 FFFA 03B9 001B       SVC       #51 write string
+0055 FFFC 001B            PUSH      #memory[EA = 0X0057] = 0X0003
+0059 FFFA 0003 001B       NEGI      0XFFFD = -(0X0003)
+005A FFFA FFFD 001B       SVC       #11 write integer
+-3 = -3
+005D FFFC 001B            SVC       #42 write ENDL
+0060 FFFC 001B            PUSHA     SB( 49) memory[EA = 0X03C7]
+0064 FFFA 03C7 001B       SVC       #51 write string
+0067 FFFC 001B            PUSH      #memory[EA = 0X0069] = 0X0002
+006B FFFA 0002 001B       SETNZPI   TOS = 0X0002 NZP = 001
+006C FFFA 0002 001B       JMPNN     0X0070 NZP = 001
+0070 FFFA 0002 001B       SVC       #11 write integer
+Nneg 2 = 2
+0073 FFFC 001B            SVC       #42 write ENDL
+0076 FFFC 001B            PUSHA     SB( 60) memory[EA = 0X03DD]
+007A FFFA 03DD 001B       SVC       #51 write string
+007D FFFC 001B            PUSH      #memory[EA = 0X007F] = 0X0003
+0081 FFFA 0003 001B       NEGI      0XFFFD = -(0X0003)
+0082 FFFA FFFD 001B       SETNZPI   TOS = 0XFFFD NZP = 100
+0083 FFFA FFFD 001B       JMPNN     0X0087 NZP = 100
+0086 FFFA FFFD 001B       NEGI      0X0003 = -(0XFFFD)
+0087 FFFA 0003 001B       SVC       #11 write integer
+Nneg(-3) = 3
+008A FFFC 001B            SVC       #42 write ENDL
+008D FFFC 001B            PUSHA     SB( 73) memory[EA = 0X03F7]
+0091 FFFA 03F7 001B       SVC       #51 write string
+0094 FFFC 001B            PUSH      #memory[EA = 0X0096] = 0X0004
+0098 FFFA 0004 001B       PUSH      #memory[EA = 0X009A] = 0X0005
+009C FFF8 0005 0004  001B ADDI      0X0009 = 0X0004 + 0X0005
+009D FFFA 0009 001B       SVC       #11 write integer
+4+5 = 9
+00A0 FFFC 001B            SVC       #42 write ENDL
+00A3 FFFC 001B            PUSHA     SB( 81) memory[EA = 0X0407]
+00A7 FFFA 0407 001B       SVC       #51 write string
+00AA FFFC 001B            PUSH      #memory[EA = 0X00AC] = 0X0005
+00AE FFFA 0005 001B       PUSH      #memory[EA = 0X00B0] = 0X0004
+00B2 FFF8 0004 0005  001B SUBI      0X0001 = 0X0005 - 0X0004
+00B3 FFFA 0001 001B       SVC       #11 write integer
+5-4 = 1
+00B6 FFFC 001B            SVC       #42 write ENDL
+00B9 FFFC 001B            PUSHA     SB( 89) memory[EA = 0X0417]
+00BD FFFA 0417 001B       SVC       #51 write string
+00C0 FFFC 001B            PUSH      #memory[EA = 0X00C2] = 0X0006
+00C4 FFFA 0006 001B       PUSH      #memory[EA = 0X00C6] = 0X0007
+00C8 FFF8 0007 0006  001B MULI      0X002A = 0X0006 * 0X0007
+00C9 FFFA 002A 001B       SVC       #11 write integer
+6*7 = 42
+00CC FFFC 001B            SVC       #42 write ENDL
+00CF FFFC 001B            PUSHA     SB( 97) memory[EA = 0X0427]
+00D3 FFFA 0427 001B       SVC       #51 write string
+00D6 FFFC 001B            PUSH      #memory[EA = 0X00D8] = 0X0007
+00DA FFFA 0007 001B       PUSH      #memory[EA = 0X00DC] = 0X0004
+00DE FFF8 0004 0007  001B DIVI      0X0001 = 0X0007 / 0X0004
+00DF FFFA 0001 001B       SVC       #11 write integer
+7/4 = 1
+00E2 FFFC 001B            SVC       #42 write ENDL
+00E5 FFFC 001B            PUSHA     SB(105) memory[EA = 0X0437]
+00E9 FFFA 0437 001B       SVC       #51 write string
+00EC FFFC 001B            PUSH      #memory[EA = 0X00EE] = 0X0007
+00F0 FFFA 0007 001B       PUSH      #memory[EA = 0X00F2] = 0X0004
+00F4 FFF8 0004 0007  001B REMI      0X0003 = 0X0007 40365
+00F5 FFFA 0003 001B       SVC       #11 write integer
+7%4 = 3
+00F8 FFFC 001B            SVC       #42 write ENDL
+00FB FFFC 001B            PUSHA     SB(113) memory[EA = 0X0447]
+00FF FFFA 0447 001B       SVC       #51 write string
+0102 FFFC 001B            PUSH      #memory[EA = 0X0104] = 0X0002
+0106 FFFA 0002 001B       PUSH      #memory[EA = 0X0108] = 0X0003
+010A FFF8 0003 0002  001B POWI      0X0008 = 0X0002 ^ 0X0003
+010B FFFA 0008 001B       SVC       #11 write integer
+2^3 = 8
+010E FFFC 001B            SVC       #42 write ENDL
+0111 FFFC 001B            PUSHA     SB(121) memory[EA = 0X0457]
+0115 FFFA 0457 001B       SVC       #51 write string
+0118 FFFC 001B            PUSH      #memory[EA = 0X011A] = 0X0002
+011C FFFA 0002 001B       PUSH      #memory[EA = 0X011E] = 0X0003
+0120 FFF8 0003 0002  001B PUSH      #memory[EA = 0X0122] = 0X0002
+0124 FFF6 0002 0003  0002 POWI      0X0009 = 0X0003 ^ 0X0002
+0125 FFF8 0009 0002  001B POWI      0X0200 = 0X0002 ^ 0X0009
+0126 FFFA 0200 001B       SVC       #11 write integer
+2^(3**2) = 512
+0129 FFFC 001B            SVC       #42 write ENDL
+012C FFFC 001B            PUSHA     SB(134) memory[EA = 0X0471]
+0130 FFFA 0471 001B       SVC       #51 write string
+0133 FFFC 001B            PUSH      #memory[EA = 0X0135] = 0X0002
+0137 FFFA 0002 001B       PUSH      #memory[EA = 0X0139] = 0X0003
+013B FFF8 0003 0002  001B POWI      0X0008 = 0X0002 ^ 0X0003
+013C FFFA 0008 001B       PUSH      #memory[EA = 0X013E] = 0X0002
+0140 FFF8 0002 0008  001B POWI      0X0040 = 0X0008 ^ 0X0002
+0141 FFFA 0040 001B       SVC       #11 write integer
+(2**3)^2 = 64
+0144 FFFC 001B            SVC       #42 write ENDL
+0147 FFFC 001B            PUSHA     SB(147) memory[EA = 0X048B]
+014B FFFA 048B 001B       SVC       #51 write string
+014E FFFC 001B            PUSH      #memory[EA = 0X0150] = 0X0001
+0152 FFFA 0001 001B       PUSH      #memory[EA = 0X0154] = 0X0002
+0156 FFF8 0002 0001  001B CMPI      0X0001 ? 0X0002 LEG = 100
+0157 FFFC 001B            JMPL      0X0161 LEG = 100
+0161 FFFC 001B            PUSH      #memory[EA = 0X0163] = 0XFFFF
+0165 FFFA FFFF 001B       SVC       #31 write boolean 0XFFFF
+1  < 2 = T
+0168 FFFC 001B            SVC       #42 write ENDL
+016B FFFC 001B            PUSHA     SB(158) memory[EA = 0X04A1]
+016F FFFA 04A1 001B       SVC       #51 write string
+0172 FFFC 001B            PUSH      #memory[EA = 0X0174] = 0X0001
+0176 FFFA 0001 001B       PUSH      #memory[EA = 0X0178] = 0X0002
+017A FFF8 0002 0001  001B CMPI      0X0001 ? 0X0002 LEG = 100
+017B FFFC 001B            JMPE      0X0185 LEG = 100
+017E FFFC 001B            PUSH      #memory[EA = 0X0180] = 0X0000
+0182 FFFA 0000 001B       JMP       0X0189
+0189 FFFA 0000 001B       SVC       #31 write boolean 0X0000
+1  = 2 = F
+018C FFFC 001B            SVC       #42 write ENDL
+018F FFFC 001B            PUSHA     SB(169) memory[EA = 0X04B7]
+0193 FFFA 04B7 001B       SVC       #51 write string
+0196 FFFC 001B            PUSH      #memory[EA = 0X0198] = 0X0001
+019A FFFA 0001 001B       PUSH      #memory[EA = 0X019C] = 0X0002
+019E FFF8 0002 0001  001B CMPI      0X0001 ? 0X0002 LEG = 100
+019F FFFC 001B            JMPLE     0X01A9 LEG = 100
+01A9 FFFC 001B            PUSH      #memory[EA = 0X01AB] = 0XFFFF
+01AD FFFA FFFF 001B       SVC       #31 write boolean 0XFFFF
+1 <= 2 = T
+01B0 FFFC 001B            SVC       #42 write ENDL
+01B3 FFFC 001B            PUSHA     SB(180) memory[EA = 0X04CD]
+01B7 FFFA 04CD 001B       SVC       #51 write string
+01BA FFFC 001B            PUSH      #memory[EA = 0X01BC] = 0X0001
+01BE FFFA 0001 001B       PUSH      #memory[EA = 0X01C0] = 0X0002
+01C2 FFF8 0002 0001  001B CMPI      0X0001 ? 0X0002 LEG = 100
+01C3 FFFC 001B            JMPG      0X01CD LEG = 100
+01C6 FFFC 001B            PUSH      #memory[EA = 0X01C8] = 0X0000
+01CA FFFA 0000 001B       JMP       0X01D1
+01D1 FFFA 0000 001B       SVC       #31 write boolean 0X0000
+1  > 2 = F
+01D4 FFFC 001B            SVC       #42 write ENDL
+01D7 FFFC 001B            PUSHA     SB(191) memory[EA = 0X04E3]
+01DB FFFA 04E3 001B       SVC       #51 write string
+01DE FFFC 001B            PUSH      #memory[EA = 0X01E0] = 0X0001
+01E2 FFFA 0001 001B       PUSH      #memory[EA = 0X01E4] = 0X0002
+01E6 FFF8 0002 0001  001B CMPI      0X0001 ? 0X0002 LEG = 100
+01E7 FFFC 001B            JMPNE     0X01F1 LEG = 100
+01F1 FFFC 001B            PUSH      #memory[EA = 0X01F3] = 0XFFFF
+01F5 FFFA FFFF 001B       SVC       #31 write boolean 0XFFFF
+1 != 2 = T
+01F8 FFFC 001B            SVC       #42 write ENDL
+01FB FFFC 001B            PUSHA     SB(202) memory[EA = 0X04F9]
+01FF FFFA 04F9 001B       SVC       #51 write string
+0202 FFFC 001B            PUSH      #memory[EA = 0X0204] = 0X0001
+0206 FFFA 0001 001B       PUSH      #memory[EA = 0X0208] = 0X0002
+020A FFF8 0002 0001  001B CMPI      0X0001 ? 0X0002 LEG = 100
+020B FFFC 001B            JMPNE     0X0215 LEG = 100
+0215 FFFC 001B            PUSH      #memory[EA = 0X0217] = 0XFFFF
+0219 FFFA FFFF 001B       SVC       #31 write boolean 0XFFFF
+1 <> 2 = T
+021C FFFC 001B            SVC       #42 write ENDL
+021F FFFC 001B            PUSHA     SB(213) memory[EA = 0X050F]
+0223 FFFA 050F 001B       SVC       #51 write string
+0226 FFFC 001B            PUSH      #memory[EA = 0X0228] = 0X0001
+022A FFFA 0001 001B       PUSH      #memory[EA = 0X022C] = 0X0002
+022E FFF8 0002 0001  001B CMPI      0X0001 ? 0X0002 LEG = 100
+022F FFFC 001B            JMPGE     0X0239 LEG = 100
+0232 FFFC 001B            PUSH      #memory[EA = 0X0234] = 0X0000
+0236 FFFA 0000 001B       JMP       0X023D
+023D FFFA 0000 001B       SVC       #31 write boolean 0X0000
+1 >= 2 = F
+0240 FFFC 001B            SVC       #42 write ENDL
+0243 FFFC 001B            PUSHA     SB(224) memory[EA = 0X0525]
+0247 FFFA 0525 001B       SVC       #51 write string
+024A FFFC 001B            PUSH      #memory[EA = 0X024C] = 0XFFFF
+024E FFFA FFFF 001B       PUSH      #memory[EA = 0X0250] = 0XFFFF
+0252 FFF8 FFFF FFFF  001B OR        T = T OR T
+0253 FFFA FFFF 001B       SVC       #31 write boolean 0XFFFF
+ True   OR  True = T
+0256 FFFC 001B            SVC       #42 write ENDL
+0259 FFFC 001B            PUSHA     SB(245) memory[EA = 0X054F]
+025D FFFA 054F 001B       SVC       #51 write string
+0260 FFFC 001B            PUSH      #memory[EA = 0X0262] = 0XFFFF
+0264 FFFA FFFF 001B       PUSH      #memory[EA = 0X0266] = 0X0000
+0268 FFF8 0000 FFFF  001B OR        T = T OR F
+0269 FFFA FFFF 001B       SVC       #31 write boolean 0XFFFF
+ True   OR False = T
+026C FFFC 001B            SVC       #42 write ENDL
+026F FFFC 001B            PUSHA     SB(266) memory[EA = 0X0579]
+0273 FFFA 0579 001B       SVC       #51 write string
+0276 FFFC 001B            PUSH      #memory[EA = 0X0278] = 0X0000
+027A FFFA 0000 001B       PUSH      #memory[EA = 0X027C] = 0XFFFF
+027E FFF8 FFFF 0000  001B NOR       F = F NOR T
+027F FFFA 0000 001B       SVC       #31 write boolean 0X0000
+False  NOR  True = F
+0282 FFFC 001B            SVC       #42 write ENDL
+0285 FFFC 001B            PUSHA     SB(287) memory[EA = 0X05A3]
+0289 FFFA 05A3 001B       SVC       #51 write string
+028C FFFC 001B            PUSH      #memory[EA = 0X028E] = 0X0000
+0290 FFFA 0000 001B       PUSH      #memory[EA = 0X0292] = 0X0000
+0294 FFF8 0000 0000  001B NOR       T = F NOR F
+0295 FFFA FFFF 001B       SVC       #31 write boolean 0XFFFF
+False  NOR False = T
+0298 FFFC 001B            SVC       #42 write ENDL
+029B FFFC 001B            PUSHA     SB(308) memory[EA = 0X05CD]
+029F FFFA 05CD 001B       SVC       #51 write string
+02A2 FFFC 001B            PUSH      #memory[EA = 0X02A4] = 0XFFFF
+02A6 FFFA FFFF 001B       PUSH      #memory[EA = 0X02A8] = 0XFFFF
+02AA FFF8 FFFF FFFF  001B XOR       F = T XOR T
+02AB FFFA 0000 001B       SVC       #31 write boolean 0X0000
+ True  XOR  True = F
+02AE FFFC 001B            SVC       #42 write ENDL
+02B1 FFFC 001B            PUSHA     SB(329) memory[EA = 0X05F7]
+02B5 FFFA 05F7 001B       SVC       #51 write string
+02B8 FFFC 001B            PUSH      #memory[EA = 0X02BA] = 0X0000
+02BC FFFA 0000 001B       PUSH      #memory[EA = 0X02BE] = 0X0000
+02C0 FFF8 0000 0000  001B XOR       F = F XOR F
+02C1 FFFA 0000 001B       SVC       #31 write boolean 0X0000
+False  XOR False = F
+02C4 FFFC 001B            SVC       #42 write ENDL
+02C7 FFFC 001B            PUSHA     SB(350) memory[EA = 0X0621]
+02CB FFFA 0621 001B       SVC       #51 write string
+02CE FFFC 001B            PUSH      #memory[EA = 0X02D0] = 0XFFFF
+02D2 FFFA FFFF 001B       PUSH      #memory[EA = 0X02D4] = 0XFFFF
+02D6 FFF8 FFFF FFFF  001B AND       T = T AND T
+02D7 FFFA FFFF 001B       SVC       #31 write boolean 0XFFFF
+ True  AND  True = T
+02DA FFFC 001B            SVC       #42 write ENDL
+02DD FFFC 001B            PUSHA     SB(371) memory[EA = 0X064B]
+02E1 FFFA 064B 001B       SVC       #51 write string
+02E4 FFFC 001B            PUSH      #memory[EA = 0X02E6] = 0XFFFF
+02E8 FFFA FFFF 001B       PUSH      #memory[EA = 0X02EA] = 0X0000
+02EC FFF8 0000 FFFF  001B AND       F = T AND F
+02ED FFFA 0000 001B       SVC       #31 write boolean 0X0000
+ True  AND False = F
+02F0 FFFC 001B            SVC       #42 write ENDL
+02F3 FFFC 001B            PUSHA     SB(392) memory[EA = 0X0675]
+02F7 FFFA 0675 001B       SVC       #51 write string
+02FA FFFC 001B            PUSH      #memory[EA = 0X02FC] = 0X0000
+02FE FFFA 0000 001B       PUSH      #memory[EA = 0X0300] = 0XFFFF
+0302 FFF8 FFFF 0000  001B NAND      T = F NAND T
+0303 FFFA FFFF 001B       SVC       #31 write boolean 0XFFFF
+False NAND  True = T
+0306 FFFC 001B            SVC       #42 write ENDL
+0309 FFFC 001B            PUSHA     SB(413) memory[EA = 0X069F]
+030D FFFA 069F 001B       SVC       #51 write string
+0310 FFFC 001B            PUSH      #memory[EA = 0X0312] = 0X0000
+0314 FFFA 0000 001B       PUSH      #memory[EA = 0X0316] = 0X0000
+0318 FFF8 0000 0000  001B NAND      T = F NAND F
+0319 FFFA FFFF 001B       SVC       #31 write boolean 0XFFFF
+False NAND False = T
+031C FFFC 001B            SVC       #42 write ENDL
+031F FFFC 001B            PUSHA     SB(434) memory[EA = 0X06C9]
+0323 FFFA 06C9 001B       SVC       #51 write string
+0326 FFFC 001B            PUSH      #memory[EA = 0X0328] = 0X0000
+032A FFFA 0000 001B       NOT       T = NOT F
+032B FFFA FFFF 001B       SVC       #31 write boolean 0XFFFF
+NOT False = T
+032E FFFC 001B            SVC       #42 write ENDL
+0331 FFFC 001B            PUSHA     SB(448) memory[EA = 0X06E5]
+0335 FFFA 06E5 001B       SVC       #51 write string
+0338 FFFC 001B            PUSH      #memory[EA = 0X033A] = 0XFFFF
+033C FFFA FFFF 001B       NOT       F = NOT T
+033D FFFA 0000 001B       SVC       #31 write boolean 0X0000
+NOT  True = F
+0340 FFFC 001B            SVC       #42 write ENDL
+0343 FFFC 001B            RETURN    to 0X001B
+001B FFFE                 PUSHA     SB(  0) memory[EA = 0X0365]
+001F FFFC 0365            SVC       #51 write string
+Normal program termination
+0022 FFFE                 SVC       #42 write ENDL
+0025 FFFE                 PUSH      #memory[EA = 0X0027] = 0X0000
+0029 FFFC 0000            SVC       #1 terminate program with status 0, SP = 0XFFFE
+

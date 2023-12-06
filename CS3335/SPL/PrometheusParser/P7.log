@@ -1,0 +1,656 @@
+Page   1  P7.hoyo
+
+    LC  Object    Line  Source Line
+------  --------  ----  -------------------------------------------------------------
+0X0000               1  ;--------------------------------------------------------------
+0X0000               2  ; P7.stm
+0X0000               3  ;--------------------------------------------------------------
+0X0000               4  ; SVC numbers
+0X0000               5  SVC_DONOTHING          EQU       0D0                  ; force context switch
+0X0000               6  SVC_TERMINATE          EQU       0D1
+0X0000               7  SVC_READ_INTEGER       EQU       0D10
+0X0000               8  SVC_WRITE_INTEGER      EQU       0D11
+0X0000               9  SVC_READ_FLOAT         EQU       0D20
+0X0000              10  SVC_WRITE_FLOAT        EQU       0D21
+0X0000              11  SVC_READ_BOOLEAN       EQU       0D30
+0X0000              12  SVC_WRITE_BOOLEAN      EQU       0D31
+0X0000              13  SVC_READ_CHARACTER     EQU       0D40
+0X0000              14  SVC_WRITE_CHARACTER    EQU       0D41
+0X0000              15  SVC_WRITE_ENDL         EQU       0D42
+0X0000              16  SVC_READ_STRING        EQU       0D50
+0X0000              17  SVC_WRITE_STRING       EQU       0D51
+0X0000              18  SVC_INITIALIZE_HEAP    EQU       0D90
+0X0000              19  SVC_ALLOCATE_BLOCK     EQU       0D91
+0X0000              20  SVC_DEALLOCATE_BLOCK   EQU       0D92
+0X0000              21  
+0X0000              22                         ORG       0X0000
+0X0000              23  
+0X0000  800003      24                         JMP       PROGRAMMAIN
+0X0003              25  ;    1 # P7.honkai
+0X0003              26  ;    2 # Weiss Del Carmen
+0X0003              27  ;    3 
+0X0003              28  ;    4 Herrscher
+0X0003              29  ;    5    Veliona x: Bronya, y: Bronya >>
+0X0003              30  ; **** =========
+0X0003              31  ; **** PROGRAM module (   4)
+0X0003              32  ; **** =========
+0X0003              33  PROGRAMMAIN            EQU       *
+0X0003  0100FFFE    34                         PUSH      #RUNTIMESTACK        ; set SP
+0X0007  0A          35                         POPSP     
+0X0008  0201029A    36                         PUSHA     STATICDATA           ; set SB
+0X000C  0C          37                         POPSB     
+0X000D  01000424    38                         PUSH      #HEAPBASE            ; initialize heap
+0X0011  01001000    39                         PUSH      #HEAPSIZE
+0X0015  FF005A      40                         SVC       #SVC_INITIALIZE_HEAP
+0X0018  A0002C      41                         CALL      PROGRAMBODY0010
+0X001B  020A0000    42                         PUSHA     SB:0D0
+0X001F  FF0033      43                         SVC       #SVC_WRITE_STRING
+0X0022  FF002A      44                         SVC       #SVC_WRITE_ENDL
+0X0025  01000000    45                         PUSH      #0D0                 ; terminate with status = 0
+0X0029  FF0001      46                         SVC       #SVC_TERMINATE
+0X002C              47  
+0X002C              48  PROGRAMBODY0010        EQU       *
+0X002C              49  ;    6 
+0X002C              50  ;    7    Provide "x? " x >>
+0X002C              51  ; **** INPUT statement (   7)
+0X002C              52  ;    8    Provide "y? " y >>
+0X002C  020A001E    53                         PUSHA     SB:0D30
+0X0030  FF0033      54                         SVC       #SVC_WRITE_STRING
+0X0033  020A001C    55                         PUSHA     SB:0D28
+0X0037  FF000A      56                         SVC       #SVC_READ_INTEGER
+Page   2  P7.hoyo
+
+    LC  Object    Line  Source Line
+------  --------  ----  -------------------------------------------------------------
+0X003A  03050001    57                         POP       @SP:0D1
+0X003E  040001      58                         DISCARD   #0D1
+0X0041              59  ; **** INPUT statement (   8)
+0X0041              60  ;    9 
+0X0041              61  ;   10    If ( x < y ) Execute
+0X0041  020A0023    62                         PUSHA     SB:0D35
+0X0045  FF0033      63                         SVC       #SVC_WRITE_STRING
+0X0048  020A001D    64                         PUSHA     SB:0D29
+0X004C  FF000A      65                         SVC       #SVC_READ_INTEGER
+0X004F  03050001    66                         POP       @SP:0D1
+0X0053  040001      67                         DISCARD   #0D1
+0X0056              68  ; **** IF statement (  10)
+0X0056  010A001C    69                         PUSH      SB:0D28
+0X005A              70  ;   11       Speak "x  < y",EndL >>
+0X005A  010A001D    71                         PUSH      SB:0D29
+0X005E  70          72                         CMPI      
+0X005F  810069      73                         JMPL      T0020
+0X0062  01000000    74                         PUSH      #0X0000
+0X0066  80006D      75                         JMP       E0030
+0X0069  0100FFFF    76  T0020                  PUSH      #0XFFFF
+0X006D              77  E0030                  EQU       *
+0X006D  74          78                         SETT      
+0X006E  040001      79                         DISCARD   #0D1
+0X0071  8E0081      80                         JMPNT     I0050
+0X0074              81  ; **** PRINT statement (  11)
+0X0074  020A0028    82                         PUSHA     SB:0D40
+0X0078  FF0033      83                         SVC       #SVC_WRITE_STRING
+0X007B              84  ;   12    Stop
+0X007B              85  ;   13 
+0X007B              86  ;   14    If ( x != y ) Execute
+0X007B  FF002A      87                         SVC       #SVC_WRITE_ENDL
+0X007E  800081      88                         JMP       E0040
+0X0081              89  I0050                  EQU       *
+0X0081              90  E0040                  EQU       *
+0X0081              91  ; **** IF statement (  14)
+0X0081  010A001C    92                         PUSH      SB:0D28
+0X0085              93  ;   15       Speak "x != y",EndL >>
+0X0085  010A001D    94                         PUSH      SB:0D29
+0X0089  70          95                         CMPI      
+0X008A  850094      96                         JMPNE     T0060
+0X008D  01000000    97                         PUSH      #0X0000
+0X0091  800098      98                         JMP       E0070
+0X0094  0100FFFF    99  T0060                  PUSH      #0XFFFF
+0X0098             100  E0070                  EQU       *
+0X0098  74         101                         SETT      
+0X0099  040001     102                         DISCARD   #0D1
+0X009C  8E00AC     103                         JMPNT     I0090
+0X009F             104  ; **** PRINT statement (  15)
+0X009F  020A0030   105                         PUSHA     SB:0D48
+0X00A3  FF0033     106                         SVC       #SVC_WRITE_STRING
+0X00A6             107  ;   16    Stop
+0X00A6             108  ;   17 
+0X00A6             109  ;   18    If ( x <> y ) Execute
+0X00A6  FF002A     110                         SVC       #SVC_WRITE_ENDL
+0X00A9  8000AC     111                         JMP       E0080
+0X00AC             112  I0090                  EQU       *
+Page   3  P7.hoyo
+
+    LC  Object    Line  Source Line
+------  --------  ----  -------------------------------------------------------------
+0X00AC             113  E0080                  EQU       *
+0X00AC             114  ; **** IF statement (  18)
+0X00AC  010A001C   115                         PUSH      SB:0D28
+0X00B0             116  ;   19       Speak "x <> y",EndL >>
+0X00B0  010A001D   117                         PUSH      SB:0D29
+0X00B4  70         118                         CMPI      
+0X00B5  8500BF     119                         JMPNE     T0100
+0X00B8  01000000   120                         PUSH      #0X0000
+0X00BC  8000C3     121                         JMP       E0110
+0X00BF  0100FFFF   122  T0100                  PUSH      #0XFFFF
+0X00C3             123  E0110                  EQU       *
+0X00C3  74         124                         SETT      
+0X00C4  040001     125                         DISCARD   #0D1
+0X00C7  8E00D7     126                         JMPNT     I0130
+0X00CA             127  ; **** PRINT statement (  19)
+0X00CA  020A0038   128                         PUSHA     SB:0D56
+0X00CE  FF0033     129                         SVC       #SVC_WRITE_STRING
+0X00D1             130  ;   20    Stop
+0X00D1             131  ;   21 
+0X00D1             132  ;   22    If ( x < y ) Execute
+0X00D1  FF002A     133                         SVC       #SVC_WRITE_ENDL
+0X00D4  8000D7     134                         JMP       E0120
+0X00D7             135  I0130                  EQU       *
+0X00D7             136  E0120                  EQU       *
+0X00D7             137  ; **** IF statement (  22)
+0X00D7  010A001C   138                         PUSH      SB:0D28
+0X00DB             139  ;   23       Speak "x  < y",EndL >>
+0X00DB  010A001D   140                         PUSH      SB:0D29
+0X00DF  70         141                         CMPI      
+0X00E0  8100EA     142                         JMPL      T0140
+0X00E3  01000000   143                         PUSH      #0X0000
+0X00E7  8000EE     144                         JMP       E0150
+0X00EA  0100FFFF   145  T0140                  PUSH      #0XFFFF
+0X00EE             146  E0150                  EQU       *
+0X00EE  74         147                         SETT      
+0X00EF  040001     148                         DISCARD   #0D1
+0X00F2  8E0102     149                         JMPNT     I0170
+0X00F5             150  ; **** PRINT statement (  23)
+0X00F5  020A0040   151                         PUSHA     SB:0D64
+0X00F9  FF0033     152                         SVC       #SVC_WRITE_STRING
+0X00FC             153  ;   24    Else
+0X00FC             154  ;   25       Speak "x >= y",EndL >>
+0X00FC  FF002A     155                         SVC       #SVC_WRITE_ENDL
+0X00FF  80010C     156                         JMP       E0160
+0X0102             157  I0170                  EQU       *
+0X0102             158  ; **** PRINT statement (  25)
+0X0102  020A0048   159                         PUSHA     SB:0D72
+0X0106  FF0033     160                         SVC       #SVC_WRITE_STRING
+0X0109             161  ;   26    Stop
+0X0109             162  ;   27 
+0X0109             163  ;   28    If     ( x < y ) Execute
+0X0109  FF002A     164                         SVC       #SVC_WRITE_ENDL
+0X010C             165  E0160                  EQU       *
+0X010C             166  ; **** IF statement (  28)
+0X010C  010A001C   167                         PUSH      SB:0D28
+0X0110             168  ;   29       Speak "x  < y",EndL >>
+Page   4  P7.hoyo
+
+    LC  Object    Line  Source Line
+------  --------  ----  -------------------------------------------------------------
+0X0110  010A001D   169                         PUSH      SB:0D29
+0X0114  70         170                         CMPI      
+0X0115  81011F     171                         JMPL      T0180
+0X0118  01000000   172                         PUSH      #0X0000
+0X011C  800123     173                         JMP       E0190
+0X011F  0100FFFF   174  T0180                  PUSH      #0XFFFF
+0X0123             175  E0190                  EQU       *
+0X0123  74         176                         SETT      
+0X0124  040001     177                         DISCARD   #0D1
+0X0127  8E0137     178                         JMPNT     I0210
+0X012A             179  ; **** PRINT statement (  29)
+0X012A  020A0050   180                         PUSHA     SB:0D80
+0X012E  FF0033     181                         SVC       #SVC_WRITE_STRING
+0X0131             182  ;   30    ElIf ( x = y ) Execute
+0X0131  FF002A     183                         SVC       #SVC_WRITE_ENDL
+0X0134  80018D     184                         JMP       E0200
+0X0137             185  I0210                  EQU       *
+0X0137  010A001C   186                         PUSH      SB:0D28
+0X013B             187  ;   31       Speak "x  = y",EndL >>
+0X013B  010A001D   188                         PUSH      SB:0D29
+0X013F  70         189                         CMPI      
+0X0140  82014A     190                         JMPE      T0220
+0X0143  01000000   191                         PUSH      #0X0000
+0X0147  80014E     192                         JMP       E0230
+0X014A  0100FFFF   193  T0220                  PUSH      #0XFFFF
+0X014E             194  E0230                  EQU       *
+0X014E  74         195                         SETT      
+0X014F  040001     196                         DISCARD   #0D1
+0X0152  8E0162     197                         JMPNT     I0240
+0X0155             198  ; **** PRINT statement (  31)
+0X0155  020A0058   199                         PUSHA     SB:0D88
+0X0159  FF0033     200                         SVC       #SVC_WRITE_STRING
+0X015C             201  ;   32    ElIf ( x > y ) Execute
+0X015C  FF002A     202                         SVC       #SVC_WRITE_ENDL
+0X015F  80018D     203                         JMP       E0200
+0X0162             204  I0240                  EQU       *
+0X0162  010A001C   205                         PUSH      SB:0D28
+0X0166             206  ;   33       Speak "x  > y",EndL >>
+0X0166  010A001D   207                         PUSH      SB:0D29
+0X016A  70         208                         CMPI      
+0X016B  830175     209                         JMPG      T0250
+0X016E  01000000   210                         PUSH      #0X0000
+0X0172  800179     211                         JMP       E0260
+0X0175  0100FFFF   212  T0250                  PUSH      #0XFFFF
+0X0179             213  E0260                  EQU       *
+0X0179  74         214                         SETT      
+0X017A  040001     215                         DISCARD   #0D1
+0X017D  8E018D     216                         JMPNT     I0270
+0X0180             217  ; **** PRINT statement (  33)
+0X0180  020A0060   218                         PUSHA     SB:0D96
+0X0184  FF0033     219                         SVC       #SVC_WRITE_STRING
+0X0187             220  ;   34    Stop
+0X0187             221  ;   35 
+0X0187             222  ;   36    If     ( x < y ) Execute
+0X0187  FF002A     223                         SVC       #SVC_WRITE_ENDL
+0X018A  80018D     224                         JMP       E0200
+Page   5  P7.hoyo
+
+    LC  Object    Line  Source Line
+------  --------  ----  -------------------------------------------------------------
+0X018D             225  I0270                  EQU       *
+0X018D             226  E0200                  EQU       *
+0X018D             227  ; **** IF statement (  36)
+0X018D  010A001C   228                         PUSH      SB:0D28
+0X0191             229  ;   37       Speak "x  < y",EndL >>
+0X0191  010A001D   230                         PUSH      SB:0D29
+0X0195  70         231                         CMPI      
+0X0196  8101A0     232                         JMPL      T0280
+0X0199  01000000   233                         PUSH      #0X0000
+0X019D  8001A4     234                         JMP       E0290
+0X01A0  0100FFFF   235  T0280                  PUSH      #0XFFFF
+0X01A4             236  E0290                  EQU       *
+0X01A4  74         237                         SETT      
+0X01A5  040001     238                         DISCARD   #0D1
+0X01A8  8E01B8     239                         JMPNT     I0310
+0X01AB             240  ; **** PRINT statement (  37)
+0X01AB  020A0068   241                         PUSHA     SB:0D104
+0X01AF  FF0033     242                         SVC       #SVC_WRITE_STRING
+0X01B2             243  ;   38    ElIf ( x = y ) Execute
+0X01B2  FF002A     244                         SVC       #SVC_WRITE_ENDL
+0X01B5  800218     245                         JMP       E0300
+0X01B8             246  I0310                  EQU       *
+0X01B8  010A001C   247                         PUSH      SB:0D28
+0X01BC             248  ;   39       Speak "x  = y",EndL >>
+0X01BC  010A001D   249                         PUSH      SB:0D29
+0X01C0  70         250                         CMPI      
+0X01C1  8201CB     251                         JMPE      T0320
+0X01C4  01000000   252                         PUSH      #0X0000
+0X01C8  8001CF     253                         JMP       E0330
+0X01CB  0100FFFF   254  T0320                  PUSH      #0XFFFF
+0X01CF             255  E0330                  EQU       *
+0X01CF  74         256                         SETT      
+0X01D0  040001     257                         DISCARD   #0D1
+0X01D3  8E01E3     258                         JMPNT     I0340
+0X01D6             259  ; **** PRINT statement (  39)
+0X01D6  020A0070   260                         PUSHA     SB:0D112
+0X01DA  FF0033     261                         SVC       #SVC_WRITE_STRING
+0X01DD             262  ;   40    ElIf ( x > y ) Execute
+0X01DD  FF002A     263                         SVC       #SVC_WRITE_ENDL
+0X01E0  800218     264                         JMP       E0300
+0X01E3             265  I0340                  EQU       *
+0X01E3  010A001C   266                         PUSH      SB:0D28
+0X01E7             267  ;   41       Speak "x  > y",EndL >>
+0X01E7  010A001D   268                         PUSH      SB:0D29
+0X01EB  70         269                         CMPI      
+0X01EC  8301F6     270                         JMPG      T0350
+0X01EF  01000000   271                         PUSH      #0X0000
+0X01F3  8001FA     272                         JMP       E0360
+0X01F6  0100FFFF   273  T0350                  PUSH      #0XFFFF
+0X01FA             274  E0360                  EQU       *
+0X01FA  74         275                         SETT      
+0X01FB  040001     276                         DISCARD   #0D1
+0X01FE  8E020E     277                         JMPNT     I0370
+0X0201             278  ; **** PRINT statement (  41)
+0X0201  020A0078   279                         PUSHA     SB:0D120
+0X0205  FF0033     280                         SVC       #SVC_WRITE_STRING
+Page   6  P7.hoyo
+
+    LC  Object    Line  Source Line
+------  --------  ----  -------------------------------------------------------------
+0X0208             281  ;   42    Else
+0X0208             282  ;   43       Speak "***ERROR***",EndL >>
+0X0208  FF002A     283                         SVC       #SVC_WRITE_ENDL
+0X020B  800218     284                         JMP       E0300
+0X020E             285  I0370                  EQU       *
+0X020E             286  ; **** PRINT statement (  43)
+0X020E  020A0080   287                         PUSHA     SB:0D128
+0X0212  FF0033     288                         SVC       #SVC_WRITE_STRING
+0X0215             289  ;   44    Stop
+0X0215             290  ;   45 
+0X0215             291  ;   46    If     ( x = y ) Execute
+0X0215  FF002A     292                         SVC       #SVC_WRITE_ENDL
+0X0218             293  E0300                  EQU       *
+0X0218             294  ; **** IF statement (  46)
+0X0218  010A001C   295                         PUSH      SB:0D28
+0X021C             296  ;   47       Speak "x  = y",EndL >>
+0X021C  010A001D   297                         PUSH      SB:0D29
+0X0220  70         298                         CMPI      
+0X0221  82022B     299                         JMPE      T0380
+0X0224  01000000   300                         PUSH      #0X0000
+0X0228  80022F     301                         JMP       E0390
+0X022B  0100FFFF   302  T0380                  PUSH      #0XFFFF
+0X022F             303  E0390                  EQU       *
+0X022F  74         304                         SETT      
+0X0230  040001     305                         DISCARD   #0D1
+0X0233  8E0243     306                         JMPNT     I0410
+0X0236             307  ; **** PRINT statement (  47)
+0X0236  020A008D   308                         PUSHA     SB:0D141
+0X023A  FF0033     309                         SVC       #SVC_WRITE_STRING
+0X023D             310  ;   48    Else
+0X023D             311  ;   49       If ( x > y ) Execute
+0X023D  FF002A     312                         SVC       #SVC_WRITE_ENDL
+0X0240  800278     313                         JMP       E0400
+0X0243             314  I0410                  EQU       *
+0X0243             315  ; **** IF statement (  49)
+0X0243  010A001C   316                         PUSH      SB:0D28
+0X0247             317  ;   50          Speak "x  > y",EndL >>
+0X0247  010A001D   318                         PUSH      SB:0D29
+0X024B  70         319                         CMPI      
+0X024C  830256     320                         JMPG      T0420
+0X024F  01000000   321                         PUSH      #0X0000
+0X0253  80025A     322                         JMP       E0430
+0X0256  0100FFFF   323  T0420                  PUSH      #0XFFFF
+0X025A             324  E0430                  EQU       *
+0X025A  74         325                         SETT      
+0X025B  040001     326                         DISCARD   #0D1
+0X025E  8E026E     327                         JMPNT     I0450
+0X0261             328  ; **** PRINT statement (  50)
+0X0261  020A0095   329                         PUSHA     SB:0D149
+0X0265  FF0033     330                         SVC       #SVC_WRITE_STRING
+0X0268             331  ;   51       Else
+0X0268             332  ;   52          Speak "x  < y",EndL >>
+0X0268  FF002A     333                         SVC       #SVC_WRITE_ENDL
+0X026B  800278     334                         JMP       E0440
+0X026E             335  I0450                  EQU       *
+0X026E             336  ; **** PRINT statement (  52)
+Page   7  P7.hoyo
+
+    LC  Object    Line  Source Line
+------  --------  ----  -------------------------------------------------------------
+0X026E  020A009D   337                         PUSHA     SB:0D157
+0X0272  FF0033     338                         SVC       #SVC_WRITE_STRING
+0X0275             339  ;   53       Stop
+0X0275             340  ;   54    Stop
+0X0275  FF002A     341                         SVC       #SVC_WRITE_ENDL
+0X0278             342  ;   55 Stop
+0X0278             343  ;   56 
+0X0278             344  E0440                  EQU       *
+0X0278             345  E0400                  EQU       *
+0X0278  A1         346                         RETURN    
+0X0279             347  ; **** =========
+0X0279             348  ; **** END (  55)
+0X0279             349  ; **** =========
+0X0279             350  
+0X0279             351  ;------------------------------------------------------------
+0X0279             352  ; Issue "Run-time error #X..X near line #X..X" to handle run-time errors
+0X0279             353  ;------------------------------------------------------------
+0X0279             354  HANDLERUNTIMEERROR     EQU       *
+0X0279  FF002A     355                         SVC       #SVC_WRITE_ENDL
+0X027C  020A00A5   356                         PUSHA     SB:0D165
+0X0280  FF0033     357                         SVC       #SVC_WRITE_STRING
+0X0283  FF000B     358                         SVC       #SVC_WRITE_INTEGER
+0X0286  020A00B7   359                         PUSHA     SB:0D183
+0X028A  FF0033     360                         SVC       #SVC_WRITE_STRING
+0X028D  FF000B     361                         SVC       #SVC_WRITE_INTEGER
+0X0290  FF002A     362                         SVC       #SVC_WRITE_ENDL
+0X0293  01000001   363                         PUSH      #0D1
+0X0297  FF0001     364                         SVC       #SVC_TERMINATE
+0X029A             365  
+0X029A             366  ;------------------------------------------------------------
+0X029A             367  ; Static allocation of global data and PROGRAM module data
+0X029A             368  ;------------------------------------------------------------
+0X029A             369  STATICDATA             EQU       *
+0X029A  001A001A   370                         DS        "Normal program termination"
+0X029E  004E006F
+0X02A2  0072006D
+0X02A6  0061006C
+0X02AA  00200070
+0X02AE  0072006F
+0X02B2  00670072
+0X02B6  0061006D
+0X02BA  00200074
+0X02BE  00650072
+0X02C2  006D0069
+0X02C6  006E0061
+0X02CA  00740069
+0X02CE  006F006E
+0X02D2             371                         RW        0D1                  ; x
+0X02D4             372                         RW        0D1                  ; y
+0X02D6  00030003   373                         DS        "x? "
+0X02DA  0078003F
+0X02DE  0020    
+0X02E0  00030003   374                         DS        "y? "
+0X02E4  0079003F
+0X02E8  0020    
+0X02EA  00060006   375                         DS        "x  < y"
+Page   8  P7.hoyo
+
+    LC  Object    Line  Source Line
+------  --------  ----  -------------------------------------------------------------
+0X02EE  00780020
+0X02F2  0020003C
+0X02F6  00200079
+0X02FA  00060006   376                         DS        "x != y"
+0X02FE  00780020
+0X0302  0021003D
+0X0306  00200079
+0X030A  00060006   377                         DS        "x <> y"
+0X030E  00780020
+0X0312  003C003E
+0X0316  00200079
+0X031A  00060006   378                         DS        "x  < y"
+0X031E  00780020
+0X0322  0020003C
+0X0326  00200079
+0X032A  00060006   379                         DS        "x >= y"
+0X032E  00780020
+0X0332  003E003D
+0X0336  00200079
+0X033A  00060006   380                         DS        "x  < y"
+0X033E  00780020
+0X0342  0020003C
+0X0346  00200079
+0X034A  00060006   381                         DS        "x  = y"
+0X034E  00780020
+0X0352  0020003D
+0X0356  00200079
+0X035A  00060006   382                         DS        "x  > y"
+0X035E  00780020
+0X0362  0020003E
+0X0366  00200079
+0X036A  00060006   383                         DS        "x  < y"
+0X036E  00780020
+0X0372  0020003C
+0X0376  00200079
+0X037A  00060006   384                         DS        "x  = y"
+0X037E  00780020
+0X0382  0020003D
+0X0386  00200079
+0X038A  00060006   385                         DS        "x  > y"
+0X038E  00780020
+0X0392  0020003E
+0X0396  00200079
+0X039A  000B000B   386                         DS        "***ERROR***"
+0X039E  002A002A
+0X03A2  002A0045
+0X03A6  00520052
+0X03AA  004F0052
+0X03AE  002A002A
+0X03B2  002A    
+0X03B4  00060006   387                         DS        "x  = y"
+0X03B8  00780020
+0X03BC  0020003D
+0X03C0  00200079
+0X03C4  00060006   388                         DS        "x  > y"
+0X03C8  00780020
+Page   9  P7.hoyo
+
+    LC  Object    Line  Source Line
+------  --------  ----  -------------------------------------------------------------
+0X03CC  0020003E
+0X03D0  00200079
+0X03D4  00060006   389                         DS        "x  < y"
+0X03D8  00780020
+0X03DC  0020003C
+0X03E0  00200079
+0X03E4  00100010   390                         DS        "Run-time error #"
+0X03E8  00520075
+0X03EC  006E002D
+0X03F0  00740069
+0X03F4  006D0065
+0X03F8  00200065
+0X03FC  00720072
+0X0400  006F0072
+0X0404  00200023
+0X0408  000C000C   391                         DS        " near line #"
+0X040C  0020006E
+0X0410  00650061
+0X0414  00720020
+0X0418  006C0069
+0X041C  006E0065
+0X0420  00200023
+0X0424             392  
+0X0424             393  ;------------------------------------------------------------
+0X0424             394  ; Heap space for dynamic memory allocation (to support future SPL syntax)
+0X0424             395  ;------------------------------------------------------------
+0X0424             396  HEAPBASE               EQU       *
+0X0424             397  HEAPSIZE               EQU       0B0001000000000000   ; 8K bytes = 4K words
+0X0424             398  
+0X0424             399  ;------------------------------------------------------------
+0X0424             400  ; Run-time stack
+0X0424             401  ;------------------------------------------------------------
+0X0424             402  RUNTIMESTACK           EQU       0XFFFE
+
+
+  PC   SP TOS0 TOS1 TOS2 mnemonic  information
+---- ---- ---- ---- ---- --------- ----------------------------------------------
+0000 FFFE                 JMP       0X0003
+0003 FFFE                 PUSH      #memory[EA = 0X0005] = 0XFFFE
+0007 FFFC FFFE            POPSP     SP = 0XFFFE
+0008 FFFE                 PUSHA     memory[EA = 0X029A]
+000C FFFC 029A            POPSB     SB = 0X029A
+000D FFFE                 PUSH      #memory[EA = 0X000F] = 0X0424
+0011 FFFC 0424            PUSH      #memory[EA = 0X0013] = 0X1000
+-------------------------------------------------------------
+FREE nodes list
+   0X0424:0X1423(0X0FFC)
+-------------------------------------------------------------
+0015 FFFA 1000 0424       SVC       #90 initialize heap, heapBase = 0X0424, heapSize = 0X1000 words
+0018 FFFE                 CALL      0X002C return to 0X001B
+002C FFFC 001B            PUSHA     SB( 30) memory[EA = 0X02D6]
+0030 FFFA 02D6 001B       SVC       #51 write string
+0033 FFFC 001B            PUSHA     SB( 28) memory[EA = 0X02D2]
+x? 6
+0037 FFFA 02D2 001B       SVC       #10 read integer 0X0006
+003A FFF8 0006 02D2  001B POP       @SP(  1) memory[EA = 0X02D2 = memory[0XFFFC]] = 0X0006
+003E FFFA 02D2 001B       DISCARD   #1 words from top-of-stack
+0041 FFFC 001B            PUSHA     SB( 35) memory[EA = 0X02E0]
+0045 FFFA 02E0 001B       SVC       #51 write string
+0048 FFFC 001B            PUSHA     SB( 29) memory[EA = 0X02D4]
+y? 7
+004C FFFA 02D4 001B       SVC       #10 read integer 0X0007
+004F FFF8 0007 02D4  001B POP       @SP(  1) memory[EA = 0X02D4 = memory[0XFFFC]] = 0X0007
+0053 FFFA 02D4 001B       DISCARD   #1 words from top-of-stack
+0056 FFFC 001B            PUSH      SB( 28) memory[EA = 0X02D2] = 0X0006
+005A FFFA 0006 001B       PUSH      SB( 29) memory[EA = 0X02D4] = 0X0007
+005E FFF8 0007 0006  001B CMPI      0X0006 ? 0X0007 LEG = 100
+005F FFFC 001B            JMPL      0X0069 LEG = 100
+0069 FFFC 001B            PUSH      #memory[EA = 0X006B] = 0XFFFF
+006D FFFA FFFF 001B       SETT      T = 1
+006E FFFA FFFF 001B       DISCARD   #1 words from top-of-stack
+0071 FFFC 001B            JMPNT     0X0081 T = 1
+0074 FFFC 001B            PUSHA     SB( 40) memory[EA = 0X02EA]
+0078 FFFA 02EA 001B       SVC       #51 write string
+x  < y
+007B FFFC 001B            SVC       #42 write ENDL
+007E FFFC 001B            JMP       0X0081
+0081 FFFC 001B            PUSH      SB( 28) memory[EA = 0X02D2] = 0X0006
+0085 FFFA 0006 001B       PUSH      SB( 29) memory[EA = 0X02D4] = 0X0007
+0089 FFF8 0007 0006  001B CMPI      0X0006 ? 0X0007 LEG = 100
+008A FFFC 001B            JMPNE     0X0094 LEG = 100
+0094 FFFC 001B            PUSH      #memory[EA = 0X0096] = 0XFFFF
+0098 FFFA FFFF 001B       SETT      T = 1
+0099 FFFA FFFF 001B       DISCARD   #1 words from top-of-stack
+009C FFFC 001B            JMPNT     0X00AC T = 1
+009F FFFC 001B            PUSHA     SB( 48) memory[EA = 0X02FA]
+00A3 FFFA 02FA 001B       SVC       #51 write string
+x != y
+00A6 FFFC 001B            SVC       #42 write ENDL
+00A9 FFFC 001B            JMP       0X00AC
+00AC FFFC 001B            PUSH      SB( 28) memory[EA = 0X02D2] = 0X0006
+00B0 FFFA 0006 001B       PUSH      SB( 29) memory[EA = 0X02D4] = 0X0007
+00B4 FFF8 0007 0006  001B CMPI      0X0006 ? 0X0007 LEG = 100
+00B5 FFFC 001B            JMPNE     0X00BF LEG = 100
+00BF FFFC 001B            PUSH      #memory[EA = 0X00C1] = 0XFFFF
+00C3 FFFA FFFF 001B       SETT      T = 1
+00C4 FFFA FFFF 001B       DISCARD   #1 words from top-of-stack
+00C7 FFFC 001B            JMPNT     0X00D7 T = 1
+00CA FFFC 001B            PUSHA     SB( 56) memory[EA = 0X030A]
+00CE FFFA 030A 001B       SVC       #51 write string
+x <> y
+00D1 FFFC 001B            SVC       #42 write ENDL
+00D4 FFFC 001B            JMP       0X00D7
+00D7 FFFC 001B            PUSH      SB( 28) memory[EA = 0X02D2] = 0X0006
+00DB FFFA 0006 001B       PUSH      SB( 29) memory[EA = 0X02D4] = 0X0007
+00DF FFF8 0007 0006  001B CMPI      0X0006 ? 0X0007 LEG = 100
+00E0 FFFC 001B            JMPL      0X00EA LEG = 100
+00EA FFFC 001B            PUSH      #memory[EA = 0X00EC] = 0XFFFF
+00EE FFFA FFFF 001B       SETT      T = 1
+00EF FFFA FFFF 001B       DISCARD   #1 words from top-of-stack
+00F2 FFFC 001B            JMPNT     0X0102 T = 1
+00F5 FFFC 001B            PUSHA     SB( 64) memory[EA = 0X031A]
+00F9 FFFA 031A 001B       SVC       #51 write string
+x  < y
+00FC FFFC 001B            SVC       #42 write ENDL
+00FF FFFC 001B            JMP       0X010C
+010C FFFC 001B            PUSH      SB( 28) memory[EA = 0X02D2] = 0X0006
+0110 FFFA 0006 001B       PUSH      SB( 29) memory[EA = 0X02D4] = 0X0007
+0114 FFF8 0007 0006  001B CMPI      0X0006 ? 0X0007 LEG = 100
+0115 FFFC 001B            JMPL      0X011F LEG = 100
+011F FFFC 001B            PUSH      #memory[EA = 0X0121] = 0XFFFF
+0123 FFFA FFFF 001B       SETT      T = 1
+0124 FFFA FFFF 001B       DISCARD   #1 words from top-of-stack
+0127 FFFC 001B            JMPNT     0X0137 T = 1
+012A FFFC 001B            PUSHA     SB( 80) memory[EA = 0X033A]
+012E FFFA 033A 001B       SVC       #51 write string
+x  < y
+0131 FFFC 001B            SVC       #42 write ENDL
+0134 FFFC 001B            JMP       0X018D
+018D FFFC 001B            PUSH      SB( 28) memory[EA = 0X02D2] = 0X0006
+0191 FFFA 0006 001B       PUSH      SB( 29) memory[EA = 0X02D4] = 0X0007
+0195 FFF8 0007 0006  001B CMPI      0X0006 ? 0X0007 LEG = 100
+0196 FFFC 001B            JMPL      0X01A0 LEG = 100
+01A0 FFFC 001B            PUSH      #memory[EA = 0X01A2] = 0XFFFF
+01A4 FFFA FFFF 001B       SETT      T = 1
+01A5 FFFA FFFF 001B       DISCARD   #1 words from top-of-stack
+01A8 FFFC 001B            JMPNT     0X01B8 T = 1
+01AB FFFC 001B            PUSHA     SB(104) memory[EA = 0X036A]
+01AF FFFA 036A 001B       SVC       #51 write string
+x  < y
+01B2 FFFC 001B            SVC       #42 write ENDL
+01B5 FFFC 001B            JMP       0X0218
+0218 FFFC 001B            PUSH      SB( 28) memory[EA = 0X02D2] = 0X0006
+021C FFFA 0006 001B       PUSH      SB( 29) memory[EA = 0X02D4] = 0X0007
+0220 FFF8 0007 0006  001B CMPI      0X0006 ? 0X0007 LEG = 100
+0221 FFFC 001B            JMPE      0X022B LEG = 100
+0224 FFFC 001B            PUSH      #memory[EA = 0X0226] = 0X0000
+0228 FFFA 0000 001B       JMP       0X022F
+022F FFFA 0000 001B       SETT      T = 0
+0230 FFFA 0000 001B       DISCARD   #1 words from top-of-stack
+0233 FFFC 001B            JMPNT     0X0243 T = 0
+0243 FFFC 001B            PUSH      SB( 28) memory[EA = 0X02D2] = 0X0006
+0247 FFFA 0006 001B       PUSH      SB( 29) memory[EA = 0X02D4] = 0X0007
+024B FFF8 0007 0006  001B CMPI      0X0006 ? 0X0007 LEG = 100
+024C FFFC 001B            JMPG      0X0256 LEG = 100
+024F FFFC 001B            PUSH      #memory[EA = 0X0251] = 0X0000
+0253 FFFA 0000 001B       JMP       0X025A
+025A FFFA 0000 001B       SETT      T = 0
+025B FFFA 0000 001B       DISCARD   #1 words from top-of-stack
+025E FFFC 001B            JMPNT     0X026E T = 0
+026E FFFC 001B            PUSHA     SB(157) memory[EA = 0X03D4]
+0272 FFFA 03D4 001B       SVC       #51 write string
+x  < y
+0275 FFFC 001B            SVC       #42 write ENDL
+0278 FFFC 001B            RETURN    to 0X001B
+001B FFFE                 PUSHA     SB(  0) memory[EA = 0X029A]
+001F FFFC 029A            SVC       #51 write string
+Normal program termination
+0022 FFFE                 SVC       #42 write ENDL
+0025 FFFE                 PUSH      #memory[EA = 0X0027] = 0X0000
+0029 FFFC 0000            SVC       #1 terminate program with status 0, SP = 0XFFFE
+

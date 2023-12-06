@@ -1,0 +1,24 @@
+﻿  STM.c
+D:\ClassProjects\SPL\PrometheusParser\STM.c(2701,33): warning C4473: 'sprintf' : not enough arguments passed for format string
+D:\ClassProjects\SPL\PrometheusParser\STM.c(2701,33): message : placeholders and their parameters expect 4 variadic arguments, but 3 were provided
+D:\ClassProjects\SPL\PrometheusParser\STM.c(2701,33): message : the missing variadic argument 4 is required by format string '%04hX'
+D:\ClassProjects\SPL\PrometheusParser\STM.c(3468,25): warning C4013: 'gets' undefined; assuming extern returning int
+D:\ClassProjects\SPL\PrometheusParser\STM.c(3483,34): warning C4267: '=': conversion from 'size_t' to 'WORD', possible loss of data
+D:\ClassProjects\SPL\PrometheusParser\STM.c(1887,23): warning C4101: 'R': unreferenced local variable
+D:\ClassProjects\SPL\PrometheusParser\STM.c(2076,52): warning C4101: 'valueM': unreferenced local variable
+D:\ClassProjects\SPL\PrometheusParser\STM.c(2118,40): warning C4101: 'valueS': unreferenced local variable
+D:\ClassProjects\SPL\PrometheusParser\STM.c(2157,52): warning C4101: 'valueM': unreferenced local variable
+D:\ClassProjects\SPL\PrometheusParser\STM.c(2157,40): warning C4101: 'valueS': unreferenced local variable
+D:\ClassProjects\SPL\PrometheusParser\STM.c(2273,43): warning C4101: 'character': unreferenced local variable
+D:\ClassProjects\SPL\PrometheusParser\STM.c(2294,37): warning C4101: 'index': unreferenced local variable
+D:\ClassProjects\SPL\PrometheusParser\STM.c(2381,23): warning C4101: 'capacity': unreferenced local variable
+D:\ClassProjects\SPL\PrometheusParser\STM.c(2414,23): warning C4101: 'capacity': unreferenced local variable
+D:\ClassProjects\SPL\PrometheusParser\STM.c(2447,23): warning C4101: 'capacity': unreferenced local variable
+D:\ClassProjects\SPL\PrometheusParser\STM.c(3003,21): warning C4101: 'base10TOS': unreferenced local variable
+D:\ClassProjects\SPL\PrometheusParser\STM.c(3031,21): warning C4101: 'base10TOS': unreferenced local variable
+D:\ClassProjects\SPL\PrometheusParser\STM.c(3449,27): warning C4101: 'datum': unreferenced local variable
+  Generating code
+  Previous IPDB not found, fall back to full compilation.
+  All 39 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  PrometheusParser.vcxproj -> D:\ClassProjects\SPL\x64\Release\PrometheusParser.exe

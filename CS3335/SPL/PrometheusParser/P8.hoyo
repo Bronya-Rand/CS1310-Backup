@@ -1,0 +1,660 @@
+;--------------------------------------------------------------
+; P8.stm
+;--------------------------------------------------------------
+; SVC numbers
+SVC_DONOTHING          EQU       0D0                  ; force context switch
+SVC_TERMINATE          EQU       0D1
+SVC_READ_INTEGER       EQU       0D10
+SVC_WRITE_INTEGER      EQU       0D11
+SVC_READ_FLOAT         EQU       0D20
+SVC_WRITE_FLOAT        EQU       0D21
+SVC_READ_BOOLEAN       EQU       0D30
+SVC_WRITE_BOOLEAN      EQU       0D31
+SVC_READ_CHARACTER     EQU       0D40
+SVC_WRITE_CHARACTER    EQU       0D41
+SVC_WRITE_ENDL         EQU       0D42
+SVC_READ_STRING        EQU       0D50
+SVC_WRITE_STRING       EQU       0D51
+SVC_INITIALIZE_HEAP    EQU       0D90
+SVC_ALLOCATE_BLOCK     EQU       0D91
+SVC_DEALLOCATE_BLOCK   EQU       0D92
+
+                       ORG       0X0000
+
+                       JMP       PROGRAMMAIN
+;    1 # P8.honkai
+;    2 # Weiss Del Carmen
+;    3 # :RaidenScream:
+;    4 
+;    5 Luna initialX: Bronya := 1 >>
+;    6 
+;    7 Veliona i: Bronya >>
+;    8 
+;    9 Herrscher
+;   10    Luna initialY: Bronya := 3 >>
+; **** =========
+; **** PROGRAM module (   9)
+; **** =========
+PROGRAMMAIN            EQU       *
+                       PUSH      #RUNTIMESTACK        ; set SP
+                       POPSP     
+                       PUSHA     STATICDATA           ; set SB
+                       POPSB     
+                       PUSH      #HEAPBASE            ; initialize heap
+                       PUSH      #HEAPSIZE
+                       SVC       #SVC_INITIALIZE_HEAP
+                       CALL      PROGRAMBODY0010
+                       PUSHA     SB:0D2
+                       SVC       #SVC_WRITE_STRING
+                       SVC       #SVC_WRITE_ENDL
+                       PUSH      #0D0                 ; terminate with status = 0
+                       SVC       #SVC_TERMINATE
+
+PROGRAMBODY0010        EQU       *
+;   11 
+;   12    Veliona n: Bronya,x: Bronya,y: Bronya >>
+;   13 
+;   14    Provide "n? " n >>
+; **** INPUT statement (  14)
+;   15 
+;   16    Speak "For-loop (1)",EndL >>
+                       PUSHA     SB:0D34
+                       SVC       #SVC_WRITE_STRING
+                       PUSHA     SB:0D31
+                       SVC       #SVC_READ_INTEGER
+                       POP       @SP:0D1
+                       DISCARD   #0D1
+; **** PRINT statement (  16)
+                       PUSHA     SB:0D39
+                       SVC       #SVC_WRITE_STRING
+;   17    x := initialX >> y := initialY >>
+                       SVC       #SVC_WRITE_ENDL
+; **** assignment statement (  17)
+                       PUSHA     SB:0D32
+                       PUSH      SB:0D0
+                       MAKEDUP   
+                       POP       @SP:0D2
+                       SWAP      
+                       DISCARD   #0D1
+                       DISCARD   #0D1
+; **** assignment statement (  17)
+                       PUSHA     SB:0D33
+;   18    For i := 1 Towards n Account 1
+                       PUSH      SB:0D30
+                       MAKEDUP   
+                       POP       @SP:0D2
+                       SWAP      
+                       DISCARD   #0D1
+                       DISCARD   #0D1
+; **** FOR statement (  18)
+                       PUSHA     SB:0D1
+                       PUSH      #0D1
+;   19       Speak i,": " >>
+                       POP       @SP:0D1
+                       PUSH      SB:0D31
+                       PUSH      #0D1
+                       SETNZPI   
+                       JMPNZ     D0020
+                       PUSH      #0D19
+                       PUSH      #0D2
+                       JMP       HANDLERUNTIMEERROR
+D0020                  SETNZPI   
+                       JMPN      L0030
+                       SWAP      
+                       MAKEDUP   
+                       PUSH      @SP:0D3
+                       SWAP      
+                       CMPI      
+                       JMPLE     C0040
+                       JMP       E0050
+L0030                  SWAP      
+                       MAKEDUP   
+                       PUSH      @SP:0D3
+                       SWAP      
+                       CMPI      
+                       JMPGE     C0040
+                       JMP       E0050
+C0040                  EQU       *
+; **** PRINT statement (  19)
+                       PUSH      SB:0D1
+;   20       If   ( x < y ) Execute
+                       SVC       #SVC_WRITE_INTEGER
+                       PUSHA     SB:0D53
+                       SVC       #SVC_WRITE_STRING
+; **** IF statement (  20)
+                       PUSH      SB:0D32
+;   21          Speak x," < ",y,EndL >>
+                       PUSH      SB:0D33
+                       CMPI      
+                       JMPL      T0060
+                       PUSH      #0X0000
+                       JMP       E0070
+T0060                  PUSH      #0XFFFF
+E0070                  EQU       *
+                       SETT      
+                       DISCARD   #0D1
+                       JMPNT     I0090
+; **** PRINT statement (  21)
+                       PUSH      SB:0D32
+                       SVC       #SVC_WRITE_INTEGER
+                       PUSHA     SB:0D57
+                       SVC       #SVC_WRITE_STRING
+                       PUSH      SB:0D33
+;   22       ElIf ( x = y ) Execute
+                       SVC       #SVC_WRITE_INTEGER
+                       SVC       #SVC_WRITE_ENDL
+                       JMP       E0080
+I0090                  EQU       *
+                       PUSH      SB:0D32
+;   23          Speak x," = ",y,EndL >>
+                       PUSH      SB:0D33
+                       CMPI      
+                       JMPE      T0100
+                       PUSH      #0X0000
+                       JMP       E0110
+T0100                  PUSH      #0XFFFF
+E0110                  EQU       *
+                       SETT      
+                       DISCARD   #0D1
+                       JMPNT     I0120
+; **** PRINT statement (  23)
+                       PUSH      SB:0D32
+                       SVC       #SVC_WRITE_INTEGER
+                       PUSHA     SB:0D62
+                       SVC       #SVC_WRITE_STRING
+                       PUSH      SB:0D33
+;   24       ElIf ( x > y ) Execute
+                       SVC       #SVC_WRITE_INTEGER
+                       SVC       #SVC_WRITE_ENDL
+                       JMP       E0080
+I0120                  EQU       *
+                       PUSH      SB:0D32
+;   25          Speak x," > ",y,EndL >>
+                       PUSH      SB:0D33
+                       CMPI      
+                       JMPG      T0130
+                       PUSH      #0X0000
+                       JMP       E0140
+T0130                  PUSH      #0XFFFF
+E0140                  EQU       *
+                       SETT      
+                       DISCARD   #0D1
+                       JMPNT     I0150
+; **** PRINT statement (  25)
+                       PUSH      SB:0D32
+                       SVC       #SVC_WRITE_INTEGER
+                       PUSHA     SB:0D67
+                       SVC       #SVC_WRITE_STRING
+                       PUSH      SB:0D33
+;   26       Stop
+                       SVC       #SVC_WRITE_INTEGER
+;   27       x := x+1 >>
+                       SVC       #SVC_WRITE_ENDL
+                       JMP       E0080
+I0150                  EQU       *
+E0080                  EQU       *
+; **** assignment statement (  27)
+                       PUSHA     SB:0D32
+                       PUSH      SB:0D32
+;   28       y := y-1 >>
+                       PUSH      #0D1
+                       ADDI      
+                       MAKEDUP   
+                       POP       @SP:0D2
+                       SWAP      
+                       DISCARD   #0D1
+                       DISCARD   #0D1
+; **** assignment statement (  28)
+                       PUSHA     SB:0D33
+                       PUSH      SB:0D33
+;   29    Stop
+;   30 
+;   31    Speak "For-loop (2)",EndL >>
+                       PUSH      #0D1
+                       SUBI      
+                       MAKEDUP   
+                       POP       @SP:0D2
+                       SWAP      
+                       DISCARD   #0D1
+                       DISCARD   #0D1
+                       SWAP      
+                       MAKEDUP   
+                       PUSH      @SP:0D3
+                       ADDI      
+                       POP       @SP:0D3
+                       JMP       D0020
+E0050                  DISCARD   #0D3
+; **** PRINT statement (  31)
+                       PUSHA     SB:0D72
+                       SVC       #SVC_WRITE_STRING
+;   32    x := initialX >> y := initialY >>
+                       SVC       #SVC_WRITE_ENDL
+; **** assignment statement (  32)
+                       PUSHA     SB:0D32
+                       PUSH      SB:0D0
+                       MAKEDUP   
+                       POP       @SP:0D2
+                       SWAP      
+                       DISCARD   #0D1
+                       DISCARD   #0D1
+; **** assignment statement (  32)
+                       PUSHA     SB:0D33
+;   33    For i := 1 Towards n
+                       PUSH      SB:0D30
+                       MAKEDUP   
+                       POP       @SP:0D2
+                       SWAP      
+                       DISCARD   #0D1
+                       DISCARD   #0D1
+; **** FOR statement (  33)
+                       PUSHA     SB:0D1
+;   34       Speak i,": " >>
+                       PUSH      #0D1
+                       POP       @SP:0D1
+                       PUSH      SB:0D31
+                       PUSH      #0D1
+                       SETNZPI   
+                       JMPNZ     D0160
+                       PUSH      #0D34
+                       PUSH      #0D2
+                       JMP       HANDLERUNTIMEERROR
+D0160                  SETNZPI   
+                       JMPN      L0170
+                       SWAP      
+                       MAKEDUP   
+                       PUSH      @SP:0D3
+                       SWAP      
+                       CMPI      
+                       JMPLE     C0180
+                       JMP       E0190
+L0170                  SWAP      
+                       MAKEDUP   
+                       PUSH      @SP:0D3
+                       SWAP      
+                       CMPI      
+                       JMPGE     C0180
+                       JMP       E0190
+C0180                  EQU       *
+; **** PRINT statement (  34)
+                       PUSH      SB:0D1
+;   35       If   ( x < y ) Execute
+                       SVC       #SVC_WRITE_INTEGER
+                       PUSHA     SB:0D86
+                       SVC       #SVC_WRITE_STRING
+; **** IF statement (  35)
+                       PUSH      SB:0D32
+;   36          Speak x," < ",y,EndL >>
+                       PUSH      SB:0D33
+                       CMPI      
+                       JMPL      T0200
+                       PUSH      #0X0000
+                       JMP       E0210
+T0200                  PUSH      #0XFFFF
+E0210                  EQU       *
+                       SETT      
+                       DISCARD   #0D1
+                       JMPNT     I0230
+; **** PRINT statement (  36)
+                       PUSH      SB:0D32
+                       SVC       #SVC_WRITE_INTEGER
+                       PUSHA     SB:0D90
+                       SVC       #SVC_WRITE_STRING
+                       PUSH      SB:0D33
+;   37       ElIf ( x = y ) Execute
+                       SVC       #SVC_WRITE_INTEGER
+                       SVC       #SVC_WRITE_ENDL
+                       JMP       E0220
+I0230                  EQU       *
+                       PUSH      SB:0D32
+;   38          Speak x," = ",y,EndL >>
+                       PUSH      SB:0D33
+                       CMPI      
+                       JMPE      T0240
+                       PUSH      #0X0000
+                       JMP       E0250
+T0240                  PUSH      #0XFFFF
+E0250                  EQU       *
+                       SETT      
+                       DISCARD   #0D1
+                       JMPNT     I0260
+; **** PRINT statement (  38)
+                       PUSH      SB:0D32
+                       SVC       #SVC_WRITE_INTEGER
+                       PUSHA     SB:0D95
+                       SVC       #SVC_WRITE_STRING
+                       PUSH      SB:0D33
+;   39       ElIf ( x > y ) Execute
+                       SVC       #SVC_WRITE_INTEGER
+                       SVC       #SVC_WRITE_ENDL
+                       JMP       E0220
+I0260                  EQU       *
+                       PUSH      SB:0D32
+;   40          Speak x," > ",y,EndL >>
+                       PUSH      SB:0D33
+                       CMPI      
+                       JMPG      T0270
+                       PUSH      #0X0000
+                       JMP       E0280
+T0270                  PUSH      #0XFFFF
+E0280                  EQU       *
+                       SETT      
+                       DISCARD   #0D1
+                       JMPNT     I0290
+; **** PRINT statement (  40)
+                       PUSH      SB:0D32
+                       SVC       #SVC_WRITE_INTEGER
+                       PUSHA     SB:0D100
+                       SVC       #SVC_WRITE_STRING
+                       PUSH      SB:0D33
+;   41       Stop
+                       SVC       #SVC_WRITE_INTEGER
+;   42       x := x+2 >>
+                       SVC       #SVC_WRITE_ENDL
+                       JMP       E0220
+I0290                  EQU       *
+E0220                  EQU       *
+; **** assignment statement (  42)
+                       PUSHA     SB:0D32
+                       PUSH      SB:0D32
+;   43       y := y-2 >>
+                       PUSH      #0D2
+                       ADDI      
+                       MAKEDUP   
+                       POP       @SP:0D2
+                       SWAP      
+                       DISCARD   #0D1
+                       DISCARD   #0D1
+; **** assignment statement (  43)
+                       PUSHA     SB:0D33
+                       PUSH      SB:0D33
+;   44    Stop
+;   45 
+;   46    Speak "For-loop (3)",EndL >>
+                       PUSH      #0D2
+                       SUBI      
+                       MAKEDUP   
+                       POP       @SP:0D2
+                       SWAP      
+                       DISCARD   #0D1
+                       DISCARD   #0D1
+                       SWAP      
+                       MAKEDUP   
+                       PUSH      @SP:0D3
+                       ADDI      
+                       POP       @SP:0D3
+                       JMP       D0160
+E0190                  DISCARD   #0D3
+; **** PRINT statement (  46)
+                       PUSHA     SB:0D105
+                       SVC       #SVC_WRITE_STRING
+;   47    x := initialX >> y := initialY >>
+                       SVC       #SVC_WRITE_ENDL
+; **** assignment statement (  47)
+                       PUSHA     SB:0D32
+                       PUSH      SB:0D0
+                       MAKEDUP   
+                       POP       @SP:0D2
+                       SWAP      
+                       DISCARD   #0D1
+                       DISCARD   #0D1
+; **** assignment statement (  47)
+                       PUSHA     SB:0D33
+;   48    For i := n Towards 1 Account -1
+                       PUSH      SB:0D30
+                       MAKEDUP   
+                       POP       @SP:0D2
+                       SWAP      
+                       DISCARD   #0D1
+                       DISCARD   #0D1
+; **** FOR statement (  48)
+                       PUSHA     SB:0D1
+                       PUSH      SB:0D31
+                       POP       @SP:0D1
+;   49       Speak i,": " >>
+                       PUSH      #0D1
+                       PUSH      #0D1
+                       NEGI      
+                       SETNZPI   
+                       JMPNZ     D0300
+                       PUSH      #0D49
+                       PUSH      #0D2
+                       JMP       HANDLERUNTIMEERROR
+D0300                  SETNZPI   
+                       JMPN      L0310
+                       SWAP      
+                       MAKEDUP   
+                       PUSH      @SP:0D3
+                       SWAP      
+                       CMPI      
+                       JMPLE     C0320
+                       JMP       E0330
+L0310                  SWAP      
+                       MAKEDUP   
+                       PUSH      @SP:0D3
+                       SWAP      
+                       CMPI      
+                       JMPGE     C0320
+                       JMP       E0330
+C0320                  EQU       *
+; **** PRINT statement (  49)
+                       PUSH      SB:0D1
+;   50       If   ( x < y ) Execute
+                       SVC       #SVC_WRITE_INTEGER
+                       PUSHA     SB:0D119
+                       SVC       #SVC_WRITE_STRING
+; **** IF statement (  50)
+                       PUSH      SB:0D32
+;   51          Speak x," < ",y,EndL >>
+                       PUSH      SB:0D33
+                       CMPI      
+                       JMPL      T0340
+                       PUSH      #0X0000
+                       JMP       E0350
+T0340                  PUSH      #0XFFFF
+E0350                  EQU       *
+                       SETT      
+                       DISCARD   #0D1
+                       JMPNT     I0370
+; **** PRINT statement (  51)
+                       PUSH      SB:0D32
+                       SVC       #SVC_WRITE_INTEGER
+                       PUSHA     SB:0D123
+                       SVC       #SVC_WRITE_STRING
+                       PUSH      SB:0D33
+;   52       ElIf ( x = y ) Execute
+                       SVC       #SVC_WRITE_INTEGER
+                       SVC       #SVC_WRITE_ENDL
+                       JMP       E0360
+I0370                  EQU       *
+                       PUSH      SB:0D32
+;   53          Speak x," = ",y,EndL >>
+                       PUSH      SB:0D33
+                       CMPI      
+                       JMPE      T0380
+                       PUSH      #0X0000
+                       JMP       E0390
+T0380                  PUSH      #0XFFFF
+E0390                  EQU       *
+                       SETT      
+                       DISCARD   #0D1
+                       JMPNT     I0400
+; **** PRINT statement (  53)
+                       PUSH      SB:0D32
+                       SVC       #SVC_WRITE_INTEGER
+                       PUSHA     SB:0D128
+                       SVC       #SVC_WRITE_STRING
+                       PUSH      SB:0D33
+;   54       ElIf ( x > y ) Execute
+                       SVC       #SVC_WRITE_INTEGER
+                       SVC       #SVC_WRITE_ENDL
+                       JMP       E0360
+I0400                  EQU       *
+                       PUSH      SB:0D32
+;   55          Speak x," > ",y,EndL >>
+                       PUSH      SB:0D33
+                       CMPI      
+                       JMPG      T0410
+                       PUSH      #0X0000
+                       JMP       E0420
+T0410                  PUSH      #0XFFFF
+E0420                  EQU       *
+                       SETT      
+                       DISCARD   #0D1
+                       JMPNT     I0430
+; **** PRINT statement (  55)
+                       PUSH      SB:0D32
+                       SVC       #SVC_WRITE_INTEGER
+                       PUSHA     SB:0D133
+                       SVC       #SVC_WRITE_STRING
+                       PUSH      SB:0D33
+;   56       Stop
+                       SVC       #SVC_WRITE_INTEGER
+;   57       x := x+3 >>
+                       SVC       #SVC_WRITE_ENDL
+                       JMP       E0360
+I0430                  EQU       *
+E0360                  EQU       *
+; **** assignment statement (  57)
+                       PUSHA     SB:0D32
+                       PUSH      SB:0D32
+;   58       y := y-3 >>
+                       PUSH      #0D3
+                       ADDI      
+                       MAKEDUP   
+                       POP       @SP:0D2
+                       SWAP      
+                       DISCARD   #0D1
+                       DISCARD   #0D1
+; **** assignment statement (  58)
+                       PUSHA     SB:0D33
+                       PUSH      SB:0D33
+;   59    Stop
+;   60 
+;   61    Speak "For-loop (4)",EndL >>
+                       PUSH      #0D3
+                       SUBI      
+                       MAKEDUP   
+                       POP       @SP:0D2
+                       SWAP      
+                       DISCARD   #0D1
+                       DISCARD   #0D1
+                       SWAP      
+                       MAKEDUP   
+                       PUSH      @SP:0D3
+                       ADDI      
+                       POP       @SP:0D3
+                       JMP       D0300
+E0330                  DISCARD   #0D3
+; **** PRINT statement (  61)
+                       PUSHA     SB:0D138
+                       SVC       #SVC_WRITE_STRING
+;   62    For i := 1 Towards n Account 1-1              # run-time error #2 (e3 = 0)
+                       SVC       #SVC_WRITE_ENDL
+; **** FOR statement (  62)
+                       PUSHA     SB:0D1
+                       PUSH      #0D1
+                       POP       @SP:0D1
+                       PUSH      SB:0D31
+                       PUSH      #0D1
+;   63       Speak "UNREACHABLE",EndL >>
+                       PUSH      #0D1
+                       SUBI      
+                       SETNZPI   
+                       JMPNZ     D0440
+                       PUSH      #0D63
+                       PUSH      #0D2
+                       JMP       HANDLERUNTIMEERROR
+D0440                  SETNZPI   
+                       JMPN      L0450
+                       SWAP      
+                       MAKEDUP   
+                       PUSH      @SP:0D3
+                       SWAP      
+                       CMPI      
+                       JMPLE     C0460
+                       JMP       E0470
+L0450                  SWAP      
+                       MAKEDUP   
+                       PUSH      @SP:0D3
+                       SWAP      
+                       CMPI      
+                       JMPGE     C0460
+                       JMP       E0470
+C0460                  EQU       *
+; **** PRINT statement (  63)
+                       PUSHA     SB:0D152
+                       SVC       #SVC_WRITE_STRING
+;   64    Stop
+;   65 
+;   66 Stop
+                       SVC       #SVC_WRITE_ENDL
+;   67 
+                       SWAP      
+                       MAKEDUP   
+                       PUSH      @SP:0D3
+                       ADDI      
+                       POP       @SP:0D3
+                       JMP       D0440
+E0470                  DISCARD   #0D3
+                       RETURN    
+; **** =========
+; **** END (  66)
+; **** =========
+
+;------------------------------------------------------------
+; Issue "Run-time error #X..X near line #X..X" to handle run-time errors
+;------------------------------------------------------------
+HANDLERUNTIMEERROR     EQU       *
+                       SVC       #SVC_WRITE_ENDL
+                       PUSHA     SB:0D165
+                       SVC       #SVC_WRITE_STRING
+                       SVC       #SVC_WRITE_INTEGER
+                       PUSHA     SB:0D183
+                       SVC       #SVC_WRITE_STRING
+                       SVC       #SVC_WRITE_INTEGER
+                       SVC       #SVC_WRITE_ENDL
+                       PUSH      #0D1
+                       SVC       #SVC_TERMINATE
+
+;------------------------------------------------------------
+; Static allocation of global data and PROGRAM module data
+;------------------------------------------------------------
+STATICDATA             EQU       *
+                       DW        0D1                  ; initialX
+                       RW        0D1                  ; i
+                       DS        "Normal program termination"
+                       DW        0D3                  ; initialY
+                       RW        0D1                  ; n
+                       RW        0D1                  ; x
+                       RW        0D1                  ; y
+                       DS        "n? "
+                       DS        "For-loop (1)"
+                       DS        ": "
+                       DS        " < "
+                       DS        " = "
+                       DS        " > "
+                       DS        "For-loop (2)"
+                       DS        ": "
+                       DS        " < "
+                       DS        " = "
+                       DS        " > "
+                       DS        "For-loop (3)"
+                       DS        ": "
+                       DS        " < "
+                       DS        " = "
+                       DS        " > "
+                       DS        "For-loop (4)"
+                       DS        "UNREACHABLE"
+                       DS        "Run-time error #"
+                       DS        " near line #"
+
+;------------------------------------------------------------
+; Heap space for dynamic memory allocation (to support future SPL syntax)
+;------------------------------------------------------------
+HEAPBASE               EQU       *
+HEAPSIZE               EQU       0B0001000000000000   ; 8K bytes = 4K words
+
+;------------------------------------------------------------
+; Run-time stack
+;------------------------------------------------------------
+RUNTIMESTACK           EQU       0XFFFE

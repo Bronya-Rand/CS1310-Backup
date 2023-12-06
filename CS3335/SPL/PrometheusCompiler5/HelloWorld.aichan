@@ -1,0 +1,13 @@
+"HelloWorld.honkai" Page    1
+Line Source Line
+---- -------------------------------------------------------------------------------
+   1 # HelloWorld.honkai
+   2 # Weiss Del Carmen
+   3 # Sample Hello World to Prometheus.
+   4 
+   5 Herrscher
+   6     Speak "Hello Dr. MEI. " >>
+   7     Speak "I am Terminal Aide 0017.", EndL >>
+   8 Stop
+   9 
+******* SPL compiler ending
