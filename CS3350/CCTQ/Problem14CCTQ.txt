@@ -1,0 +1,29 @@
+1. T
+2. E
+3. F
+4. T
+5. C
+6. B
+7. T
+8. T
+9. F
+10. D
+11. F
+12. F
+13. T
+14. A
+15. The active child count never decreases so the count will always be greater than 0. 
+The JMPP is in a position that is not inside the Do statement nor does the while allow you to call it, making it dead code
+
+16. T
+17. 42
+18. Void returning functions cannot return a value/return code and as such all registers (R0-R15) should not contain any values as this is the C equivalent to return codes.
+
+19. T
+20. T
+21. D
+22. T
+23. T
+24. T
+25. T
+
